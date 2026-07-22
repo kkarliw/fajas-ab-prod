@@ -1,0 +1,92 @@
+import { Link } from "react-router-dom";
+import { Heart, ImageOff } from "lucide-react";
+import { useState } from "react";
+import { CatalogProduct, formatCOP } from "@/data/catalog";
+import LazyImage from "@/components/LazyImage";
+import { getProductImageUrl } from "@/lib/utils";
+
+const tagStyles: Record<string, string> = {
+  bestseller: "bg-ink text-gold-light",
+  new: "bg-gold text-ink",
+  sale: "bg-[#8A3A2A] text-[#F0E0D0]",
+  promo: "bg-pink-600 text-white",
+  low_stock: "bg-orange-500 text-white",
+};
+
+const tagLabels: Record<string, string> = {
+  bestseller: "Bestseller",
+  new: "Nuevo",
+  sale: "Sale",
+  promo: "Promo Especial",
+  low_stock: "Pocas Unidades",
+};
+
+const ProductCard = ({ product }: { product: CatalogProduct }) => {
+  const [wished, setWished] = useState(false);
+  return (
+    <article className="product-card group relative">
+      <Link to={`/product/${product.slug}`} className="block relative overflow-hidden bg-cream-2 aspect-[3/4]">
+        {product.name ? (
+          <LazyImage
+            src={getProductImageUrl(product.gallery?.[0] ?? product.image, product.slug)}
+            alt={product.name}
+            className={`product-image absolute inset-0 w-full h-full object-cover transition-all duration-500 ${product.isOutOfStock ? 'grayscale opacity-75' : ''}`}
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink/35 bg-cream-2">
+            <ImageOff size={28} strokeWidth={1.4} />
+            <span className="text-[10px] uppercase tracking-[0.18em]">Sin foto</span>
+          </div>
+        )}
+        {product.isOutOfStock ? (
+          <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] font-body font-medium bg-red-600/90 text-white z-10">
+            Agotado
+          </span>
+        ) : product.tag ? (
+          <span
+            className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] font-body font-medium z-10 ${
+              tagStyles[product.tag] ?? "bg-ink text-ink-soft"
+            }`}
+          >
+            {tagLabels[product.tag] ?? product.tag}
+          </span>
+        ) : null}
+        <button
+          type="button"
+          aria-label={wished ? "Quitar de favoritos" : "Agregar a favoritos"}
+          onClick={(e) => {
+            e.preventDefault();
+            setWished((v) => !v);
+          }}
+          className="absolute top-3 right-3 w-8 h-8 inline-flex items-center justify-center bg-cream/90 hover:bg-cream transition-colors z-10"
+        >
+          <Heart
+            size={14}
+            strokeWidth={1.4}
+            className={wished ? "fill-gold text-gold" : "text-ink"}
+          />
+        </button>
+        <div className="quick-cta absolute inset-x-3 bottom-3 z-10">
+          <span className={`block w-full text-center py-2.5 text-[11px] uppercase tracking-[0.2em] font-body ${product.isOutOfStock ? 'bg-red-600/90 text-white' : 'bg-cream/95 text-ink'}`}>
+            {product.isOutOfStock ? 'Agotado' : 'Ver producto'}
+          </span>
+        </div>
+      </Link>
+      <div className="pt-4 pb-2 text-center">
+        <h3 className="text-[12px] uppercase tracking-[0.18em] font-body text-ink/85">
+          {product.name}
+        </h3>
+        <div className="mt-2 flex items-baseline justify-center gap-2">
+          <span className="font-display text-[18px] text-ink">{formatCOP(product.price)}</span>
+          {product.originalPrice && (
+            <span className="font-body text-[12px] text-ink/45 line-through">
+              {formatCOP(product.originalPrice)}
+            </span>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+};
+
+export default ProductCard;

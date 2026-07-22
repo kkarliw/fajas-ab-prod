@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const o = await prisma.order.findFirst({orderBy: {createdAt: 'desc'}}); console.log('Order:', o); } main().finally(() => prisma.$disconnect());

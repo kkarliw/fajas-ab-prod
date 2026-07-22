@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const v = await prisma.productVariant.findFirst({where: {productId: 'cmrccw6xz000qonw28h9vfbv6'}}); console.log('Variant:', v); } main().finally(() => prisma.$disconnect());

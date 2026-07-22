@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const p = await prisma.product.findFirst({where: {slug: 'bra-nat'}}); console.log('Product:', p); } main().finally(() => prisma.$disconnect());

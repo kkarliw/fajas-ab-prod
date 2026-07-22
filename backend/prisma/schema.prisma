@@ -1,0 +1,636 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+
+  @@map("roles")
+}
+
+model User {
+  id                        String                @id @default(cuid())
+  roleId                    String
+  email                     String                @unique
+  passwordHash              String
+  name                      String
+  phone                     String?
+  status                    UserStatus            @default(active)
+  emailVerifiedAt           DateTime?
+  verificationCode          String?
+  verificationExpires       DateTime?
+  resetPasswordCode         String?
+  resetPasswordExpires      DateTime?
+  createdAt                 DateTime              @default(now())
+  updatedAt                 DateTime              @updatedAt
+  auditLogs                 AuditLog[]            @relation("AuditLogActor")
+  carts                     Cart[]
+  couponRedemptions         CouponRedemption[]    @relation("CouponRedemptionUser")
+  inventoryMovementsCreated InventoryMovement[]   @relation("InventoryMovementCreatedBy")
+  newsletterSubs            NewsletterSubscriber?
+  orders                    Order[]
+  pqrMessagesSent           PqrMessage[]          @relation("PqrMessageSender")
+  pqrTickets                PqrTicket[]
+  addresses                 UserAddress[]
+  role                      Role                  @relation(fields: [roleId], references: [id])
+  wishlistItems             WishlistItem[]
+
+  @@index([roleId], map: "users_roleId_fkey")
+  @@map("users")
+}
+
+model UserAddress {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  phone        String?
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  department   String
+  postalCode   String?
+  country      String   @default("CO")
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "user_addresses_userId_fkey")
+  @@map("user_addresses")
+}
+
+model Category {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  name        String
+  description String?
+  sortOrder   Int            @default(0)
+  status      CategoryStatus @default(active)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                  String           @id @default(cuid())
+  categoryId          String
+  slug                String           @unique
+  name                String
+  description         String           @db.Text
+  material            String?
+  controlLevel        String?
+  uses                String?
+  basePriceCents      Int
+  compareAtPriceCents Int?
+  tag                 products_tag?
+  status              ProductStatus    @default(draft)
+  seoTitle            String?
+  seoDescription      String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  cartItems           CartItem[]
+  orderItems          OrderItem[]
+  images              ProductImage[]
+  variants            ProductVariant[]
+  videos              ProductVideo[]
+  category            Category         @relation(fields: [categoryId], references: [id])
+  wishlistItems       WishlistItem[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([categoryId])
+  @@map("products")
+}
+
+model ProductVariant {
+  id                 String               @id @default(cuid())
+  productId          String
+  sku                String               @unique
+  size               String?
+  colorName          String?
+  colorHex           String?
+  priceCents         Int?
+  stock              Int                  @default(0)
+  reservedStock      Int                  @default(0)
+  status             ProductVariantStatus @default(active)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  cartItems          CartItem[]
+  inventoryMovements InventoryMovement[]
+  orderItems         OrderItem[]
+  images             ProductImage[]
+  product            Product              @relation(fields: [productId], references: [id])
+
+  @@index([sku])
+  @@index([productId])
+  @@map("product_variants")
+}
+
+model ProductImage {
+  id        String          @id @default(cuid())
+  productId String
+  variantId String?
+  url       String
+  alt       String?
+  sortOrder Int             @default(0)
+  isPrimary Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  product   Product         @relation(fields: [productId], references: [id])
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([productId], map: "product_images_productId_fkey")
+  @@index([variantId], map: "product_images_variantId_fkey")
+  @@map("product_images")
+}
+
+model ProductVideo {
+  id           String   @id @default(cuid())
+  productId    String
+  url          String
+  thumbnailUrl String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  product      Product  @relation(fields: [productId], references: [id])
+
+  @@index([productId], map: "product_videos_productId_fkey")
+  @@map("product_videos")
+}
+
+model InventoryMovement {
+  id            String                @id @default(cuid())
+  variantId     String
+  type          InventoryMovementType
+  quantityDelta Int
+  reason        String
+  orderId       String?
+  createdBy     String?
+  createdAt     DateTime              @default(now())
+  createdByUser User?                 @relation("InventoryMovementCreatedBy", fields: [createdBy], references: [id])
+  order         Order?                @relation(fields: [orderId], references: [id])
+  variant       ProductVariant        @relation(fields: [variantId], references: [id])
+
+  @@index([createdBy], map: "inventory_movements_createdBy_fkey")
+  @@index([orderId], map: "inventory_movements_orderId_fkey")
+  @@index([variantId], map: "inventory_movements_variantId_fkey")
+  @@map("inventory_movements")
+}
+
+model Order {
+  id                  String              @id @default(cuid())
+  reference           String              @unique
+  userId              String?
+  email               String
+  phone               String
+  customerName        String
+  status              OrderStatus         @default(pending)
+  paymentStatus       PaymentStatus       @default(pending)
+  subtotalCents       Int
+  discountCents       Int                 @default(0)
+  shippingCents       Int                 @default(0)
+  totalCents          Int
+  couponId            String?
+  shippingAddressJson Json
+  billingAddressJson  Json?
+  notes               String?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  couponRedemptions   CouponRedemption[]
+  inventoryMovements  InventoryMovement[]
+  items               OrderItem[]
+  coupon              Coupon?             @relation(fields: [couponId], references: [id])
+  user                User?               @relation(fields: [userId], references: [id])
+  payments            Payment[]
+  pqrTickets          PqrTicket[]         @relation("PqrTicketOrder")
+  shipments           Shipment[]
+
+  @@index([reference])
+  @@index([userId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([couponId], map: "orders_couponId_fkey")
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String          @id @default(cuid())
+  orderId        String
+  productId      String
+  variantId      String?
+  skuSnapshot    String
+  nameSnapshot   String
+  sizeSnapshot   String?
+  colorSnapshot  String?
+  unitPriceCents Int
+  quantity       Int
+  totalCents     Int
+  order          Order           @relation(fields: [orderId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id])
+  variant        ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([orderId], map: "order_items_orderId_fkey")
+  @@index([productId], map: "order_items_productId_fkey")
+  @@index([variantId], map: "order_items_variantId_fkey")
+  @@map("order_items")
+}
+
+model Payment {
+  id                    String          @id @default(cuid())
+  orderId               String
+  provider              PaymentProvider @default(wompi)
+  providerTransactionId String          @unique
+  reference             String
+  status                PaymentStatus   @default(pending)
+  amountCents           Int
+  currency              String          @default("COP")
+  paymentMethod         PaymentMethod?
+  rawResponseJson       Json?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  events                PaymentEvent[]
+  order                 Order           @relation(fields: [orderId], references: [id])
+
+  @@index([providerTransactionId])
+  @@index([orderId], map: "payments_orderId_fkey")
+  @@map("payments")
+}
+
+model PaymentEvent {
+  id              String    @id @default(cuid())
+  paymentId       String?
+  providerEventId String    @unique
+  eventType       String
+  signatureValid  Boolean
+  payloadJson     Json?
+  processedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  payment         Payment?  @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId], map: "payment_events_paymentId_fkey")
+  @@map("payment_events")
+}
+
+model Shipment {
+  id             String         @id @default(cuid())
+  orderId        String
+  carrier        String?
+  trackingNumber String?
+  trackingUrl    String?
+  status         ShipmentStatus @default(pending)
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  order          Order          @relation(fields: [orderId], references: [id])
+
+  @@index([orderId], map: "shipments_orderId_fkey")
+  @@map("shipments")
+}
+
+model Coupon {
+  id            String             @id @default(cuid())
+  code          String             @unique
+  type          CouponType
+  value         Int?
+  minOrderCents Int?
+  startsAt      DateTime?
+  endsAt        DateTime?
+  usageLimit    Int?
+  usageCount    Int                @default(0)
+  perUserLimit  Int?
+  status        CouponStatus       @default(active)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  redemptions   CouponRedemption[]
+  orders        Order[]
+
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id            String   @id @default(cuid())
+  couponId      String
+  orderId       String
+  userId        String?
+  email         String
+  discountCents Int
+  createdAt     DateTime @default(now())
+  coupon        Coupon   @relation(fields: [couponId], references: [id])
+  order         Order    @relation(fields: [orderId], references: [id])
+  user          User?    @relation("CouponRedemptionUser", fields: [userId], references: [id])
+
+  @@index([couponId], map: "coupon_redemptions_couponId_fkey")
+  @@index([orderId], map: "coupon_redemptions_orderId_fkey")
+  @@index([userId], map: "coupon_redemptions_userId_fkey")
+  @@map("coupon_redemptions")
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId])
+  @@index([productId], map: "wishlist_items_productId_fkey")
+  @@map("wishlist_items")
+}
+
+model PqrTicket {
+  id           String       @id @default(cuid())
+  ticketNumber String       @unique
+  userId       String?
+  orderId      String?
+  name         String
+  email        String
+  phone        String?
+  type         PqrType
+  subject      String
+  message      String
+  status       PqrStatus    @default(open)
+  priority     PqrPriority  @default(medium)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  messages     PqrMessage[]
+  order        Order?       @relation("PqrTicketOrder", fields: [orderId], references: [id])
+  user         User?        @relation(fields: [userId], references: [id])
+
+  @@index([ticketNumber])
+  @@index([orderId], map: "pqr_tickets_orderId_fkey")
+  @@index([userId], map: "pqr_tickets_userId_fkey")
+  @@map("pqr_tickets")
+}
+
+model PqrMessage {
+  id              String        @id @default(cuid())
+  ticketId        String
+  senderType      PqrSenderType
+  senderUserId    String?
+  message         String
+  attachmentsJson Json?
+  createdAt       DateTime      @default(now())
+  senderUser      User?         @relation("PqrMessageSender", fields: [senderUserId], references: [id])
+  ticket          PqrTicket     @relation(fields: [ticketId], references: [id])
+
+  @@index([senderUserId], map: "pqr_messages_senderUserId_fkey")
+  @@index([ticketId], map: "pqr_messages_ticketId_fkey")
+  @@map("pqr_messages")
+}
+
+model ContactMessage {
+  id        String               @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    ContactMessageStatus @default(new)
+  createdAt DateTime             @default(now())
+
+  @@map("contact_messages")
+}
+
+model NewsletterSubscriber {
+  id         String           @id @default(cuid())
+  email      String           @unique
+  source     String?
+  consentAt  DateTime?
+  status     SubscriberStatus @default(active)
+  couponCode String?
+  createdAt  DateTime         @default(now())
+  userId     String?          @unique
+  user       User?            @relation(fields: [userId], references: [id])
+
+  @@index([email])
+  @@map("newsletter_subscribers")
+}
+
+model ContentBlock {
+  id          String             @id @default(cuid())
+  placement   String
+  key         String
+  payloadJson Json?
+  status      ContentBlockStatus @default(active)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  sortOrder   Int                @default(0)
+
+  @@map("content_blocks")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  beforeJson  Json?
+  afterJson   Json?
+  ip          String?
+  createdAt   DateTime @default(now())
+  actor       User?    @relation("AuditLogActor", fields: [actorUserId], references: [id])
+
+  @@index([actorUserId], map: "audit_logs_actorUserId_fkey")
+  @@map("audit_logs")
+}
+
+model CartItem {
+  id               String          @id @default(cuid())
+  cartId           String
+  productId        String
+  variantId        String?
+  quantity         Int             @default(1)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  cart             Cart            @relation(fields: [cartId], references: [id])
+  product          Product         @relation(fields: [productId], references: [id])
+  variant          ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([cartId])
+  @@index([productId], map: "cart_items_productId_fkey")
+  @@index([variantId], map: "cart_items_variantId_fkey")
+  @@map("cart_items")
+}
+
+model Cart {
+  id         String       @id @default(cuid())
+  userId     String?
+  sessionId  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  items      CartItem[]
+  user       User?        @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
+  @@index([userId])
+  @@map("carts")
+}
+
+model Testimonial {
+  id        String              @id @default(cuid())
+  name      String
+  rating    Int
+  content   String              @db.Text
+  status    TestimonialStatus   @default(pending)
+  source    String              @default("store")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@index([status])
+  @@map("testimonials")
+}
+
+enum UserStatus {
+  active
+  blocked
+}
+
+enum CategoryStatus {
+  active
+  inactive
+}
+
+enum ProductStatus {
+  draft
+  published
+  archived
+}
+
+enum ProductVariantStatus {
+  active
+  inactive
+}
+
+enum InventoryMovementType {
+  adjustment
+  sale
+  return
+  reservation_release
+}
+
+enum OrderStatus {
+  pending
+  processing
+  fulfilled
+  cancelled
+}
+
+enum PaymentStatus {
+  pending
+  approved
+  declined
+  refunded
+}
+
+enum PaymentProvider {
+  wompi
+}
+
+enum PaymentMethod {
+  card
+  bank_transfer
+  pse
+  cash
+  other
+}
+
+enum ShipmentStatus {
+  pending
+  shipped
+  delivered
+  cancelled
+}
+
+enum CouponType {
+  percentage
+  fixed
+  free_shipping
+}
+
+enum CouponStatus {
+  active
+  inactive
+  expired
+}
+
+enum PqrType {
+  peticion
+  queja
+  reclamo
+  sugerencia
+  felicitacion
+}
+
+enum PqrStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+enum PqrPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum PqrSenderType {
+  customer
+  agent
+  system
+}
+
+enum ContactMessageStatus {
+  new
+  read
+  replied
+  archived
+}
+
+enum SubscriberStatus {
+  active
+  unsubscribed
+}
+
+enum ContentBlockStatus {
+  active
+  inactive
+}
+
+enum TestimonialStatus {
+  pending
+  approved
+  rejected
+}
+
+enum products_tag {
+  bestseller
+  new
+  sale
+  promo
+  low_stock
+}
+
+model Campaign {
+  id             String    @id @default(cuid())
+  subject        String
+  content        String    @db.Text
+  status         String    @default("draft") // "draft" or "sent"
+  recipientCount Int       @default(0)
+  sentAt         DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("campaigns")
+}
