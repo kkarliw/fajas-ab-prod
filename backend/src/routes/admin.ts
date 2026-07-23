@@ -551,10 +551,69 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         const { getBaseEmailTemplate } = await import("../utils/emailTemplate.js");
         const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
         
+        let title = data.subject;
+        let messageContent = data.content;
+        let attachedProductHtml = "";
+        let attachedCouponHtml = "";
+
+        try {
+          if (data.content.trim().startsWith("{")) {
+            const parsed = JSON.parse(data.content);
+            if (parsed.title) title = parsed.title;
+            if (parsed.content) messageContent = parsed.content;
+
+            if (parsed.attachedProductSlug) {
+              const prod = await prisma.product.findUnique({
+                where: { slug: parsed.attachedProductSlug },
+                include: { images: true }
+              });
+              if (prod) {
+                const primaryImg = prod.images.find(img => img.isPrimary) || prod.images[0];
+                let imgUrl = primaryImg?.url || "";
+                if (imgUrl.startsWith("@/assets/")) {
+                  imgUrl = imgUrl.replace("@/assets/", "/assets/");
+                }
+                if (imgUrl && !imgUrl.startsWith("http")) {
+                  imgUrl = `${frontendUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
+                }
+                const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(prod.priceCents / 100);
+
+                attachedProductHtml = `
+                  <div style="background-color: #ffffff; border: 1px solid #EAE6DF; border-radius: 12px; padding: 20px; margin-top: 25px; text-align: center;">
+                    ${imgUrl ? `<img src="${imgUrl}" alt="${prod.name}" style="max-width: 220px; height: auto; border-radius: 8px; margin-bottom: 15px;" />` : ""}
+                    <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #1C1A17; margin: 0 0 5px 0;">${prod.name}</h3>
+                    <p style="font-size: 16px; font-weight: bold; color: #8A3A2A; margin: 0 0 15px 0;">${priceFormatted}</p>
+                    <a href="${frontendUrl}/product/${prod.slug}" class="btn" style="display: inline-block; padding: 12px 24px; background-color: #1C1A17; color: #D4A96A; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Ver Producto</a>
+                  </div>
+                `;
+              }
+            }
+
+            if (parsed.attachedCouponCode) {
+              const coupon = await prisma.coupon.findUnique({ where: { code: parsed.attachedCouponCode } });
+              if (coupon) {
+                const discountText = coupon.discountType === "percentage" ? `${coupon.discountValue}% DE DESCUENTO` : `$${(coupon.discountValue / 100).toLocaleString("es-CO")} DE DESCUENTO`;
+                attachedCouponHtml = `
+                  <div style="border: 2px dashed #D4A96A; background-color: #FAF7F2; border-radius: 12px; padding: 20px; margin-top: 25px; text-align: center;">
+                    <span style="font-size: 11px; text-transform: uppercase; color: #7A7060; font-weight: bold; display: block; margin-bottom: 5px;">CUPÓN ESPECIAL PARA TI</span>
+                    <div style="font-size: 22px; font-weight: bold; color: #D4A96A; letter-spacing: 3px; font-family: monospace; background: #ffffff; padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 10px;">${coupon.code}</div>
+                    <p style="font-size: 14px; color: #1C1A17; margin: 0;">Disfruta un <strong>${discountText}</strong> en tu próxima compra.</p>
+                  </div>
+                `;
+              }
+            }
+          }
+        } catch (e) {
+          // Keep raw text if not JSON
+        }
+
         const campaignHtmlBody = `
-          ${data.content}
-          <p class="text" style="text-align: center; margin-top: 30px;">
-            <a href="${frontendUrl}/shop" class="btn">Ver Colección en FAJAS AB</a>
+          <h2 class="title">${title}</h2>
+          <div class="text" style="white-space: pre-wrap; font-size: 15px; color: #333333; line-height: 1.6;">${messageContent}</div>
+          ${attachedProductHtml}
+          ${attachedCouponHtml}
+          <p class="text" style="text-align: center; margin-top: 35px;">
+            <a href="${frontendUrl}/shop" class="btn">Explorar Colección en FAJAS AB</a>
           </p>
         `;
 

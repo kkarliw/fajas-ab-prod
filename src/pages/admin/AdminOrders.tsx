@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 
 type DbOrder = {
   id: string;
+  reference?: string;
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
@@ -20,6 +21,7 @@ type DbOrder = {
   city?: string;
   department?: string;
   date: string;
+  createdAt?: string;
   total: number;
   paymentStatus: "pending" | "approved" | "declined" | "refunded";
   shippingStatus: "pending" | "shipped" | "delivered" | "cancelled" | "processing" | "fulfilled";
@@ -61,17 +63,19 @@ const AdminOrders = () => {
   const orders: DbOrder[] = useMemo(() => {
     return rawOrders.map((o: any) => ({
       id: o.id,
+      reference: o.reference || `#AB-${o.id.slice(-6).toUpperCase()}`,
       customerName: o.customerName || o.user?.name || "Desconocido",
       customerEmail: o.email || "Sin email",
       customerPhone: o.phone || "Sin teléfono",
       address: o.shippingAddressJson?.addressLine1 || "",
       city: o.shippingAddressJson?.city || "",
       department: o.shippingAddressJson?.department || "",
-      date: o.createdAt,
+      date: o.createdAt || o.date || new Date().toISOString(),
+      createdAt: o.createdAt || o.date || new Date().toISOString(),
       total: o.totalCents ? o.totalCents / 100 : 0,
       paymentStatus: o.paymentStatus || "pending",
       shippingStatus: o.status || "pending",
-      trackingCode: "", 
+      trackingCode: o.trackingNumber || "", 
       items: o.items?.map((i: any) => ({
         name: i.nameSnapshot,
         quantity: i.quantity,
@@ -218,15 +222,23 @@ const AdminOrders = () => {
             <tbody className="divide-y divide-hairline/5">
               {filtered.map((order) => (
                 <tr key={order.id} className="hover:bg-cream-2/5 transition-colors">
-                  <td className="p-4 font-mono text-[12px] font-bold text-ink/80">{order.id}</td>
+                  <td className="p-4 font-mono text-[12px] font-bold text-ink/80" title={order.id}>
+                    {order.reference || `#AB-${order.id.slice(-6).toUpperCase()}`}
+                  </td>
                   <td className="p-4 text-[12px] text-ink/75">
-                    {new Date(order.createdAt).toLocaleDateString("es-CO", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
+                    {(() => {
+                      const rawDate = order.date || order.createdAt;
+                      const d = rawDate ? new Date(rawDate) : null;
+                      return d && !isNaN(d.getTime())
+                        ? d.toLocaleDateString("es-CO", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                          })
+                        : "Reciente";
+                    })()}
                   </td>
                   <td className="p-4">
                     <div className="font-semibold text-ink leading-snug">{order.customerName}</div>
@@ -275,7 +287,7 @@ const AdminOrders = () => {
                   Detalle del Pedido
                 </h3>
                 <span className="font-mono text-[12px] font-bold text-ink-soft bg-ink/75 px-2 py-0.5 rounded mt-1.5 inline-block">
-                  {selectedOrder.id}
+                  {selectedOrder.reference || `#AB-${selectedOrder.id.slice(-6).toUpperCase()}`}
                 </span>
               </div>
               <button
