@@ -81,7 +81,7 @@ const AdminLogin = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="admin@fajasab.com"
+                  placeholder="fajasabcol@gmail.com"
                   className="w-full h-12 pl-11 pr-4 bg-[#F5EFE6]/60 border border-[#1C1A17]/20 rounded-lg text-sm font-body text-[#1C1A17] placeholder:text-[#1C1A17]/30 outline-none transition-all focus-visible:border-[#D4A96A] focus-visible:ring-2 focus-visible:ring-[#D4A96A]/30"
                 />
               </div>

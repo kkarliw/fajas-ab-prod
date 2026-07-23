@@ -181,13 +181,15 @@ export const authService = {
   },
 
   async login(input: LoginInput, reply: FastifyReply) {
-    const user = await prisma.user.findUnique({
-      where: { email: input.email },
+    const normalizedEmail = input.email.trim().toLowerCase();
+    const user = await prisma.user.findFirst({
+      where: { email: normalizedEmail },
       include: { role: true }
     });
 
     const validPassword = user ? await bcrypt.compare(input.password, user.passwordHash) : false;
     if (!user || !validPassword) {
+      console.warn(`[Login Failed] email: "${normalizedEmail}", userFound: ${!!user}, validPass: ${validPassword}`);
       throw new AppError("Invalid credentials", 401);
     }
 
