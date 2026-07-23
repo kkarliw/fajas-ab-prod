@@ -10,14 +10,14 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
   <title>${title}</title>
   <!--[if mso]>
   <style type="text/css">
-    body, table, td, a { font-family: Arial, sans-serif !important; }
+    body, table, td, a { font-family: Georgia, Arial, sans-serif !important; }
   </style>
   <![endif]-->
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #F4F1EA;
+      background-color: #F6F3EE;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #1C1A17;
       -webkit-font-smoothing: antialiased;
@@ -42,95 +42,89 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
     }
     .wrapper {
       width: 100%;
-      background-color: #F4F1EA;
-      padding: 30px 10px;
+      background-color: #F6F3EE;
+      padding: 40px 12px;
     }
     .main-table {
       width: 100%;
       max-width: 600px;
       margin: 0 auto;
       background-color: #ffffff;
-      border: 1px solid #E2DCD0;
-      border-radius: 12px;
+      border: 1px solid #EAE4DC;
+      border-radius: 4px;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 8px 30px rgba(28, 26, 23, 0.06);
     }
     .header {
-      padding: 32px 20px;
+      padding: 38px 24px 32px 24px;
       text-align: center;
-      background-color: #1C1A17;
-      border-bottom: 3px solid #C4A46A;
+      background-color: #141311;
+      border-bottom: 2px solid #D4A96A;
     }
     .brand-title {
-      font-family: 'Georgia', serif;
-      font-size: 28px;
-      font-weight: 700;
+      font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+      font-size: 26px;
+      font-weight: 600;
       color: #FFFFFF;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.35em;
       margin: 0;
       text-transform: uppercase;
     }
     .brand-tagline {
-      font-size: 10px;
-      color: #C4A46A;
-      letter-spacing: 0.3em;
+      font-size: 9px;
+      color: #D4A96A;
+      letter-spacing: 0.4em;
       text-transform: uppercase;
-      margin-top: 6px;
-      font-weight: 600;
+      margin-top: 8px;
+      font-weight: 500;
     }
     .content {
-      padding: 36px 30px;
-    }
-    .title {
-      font-family: 'Georgia', serif;
-      font-size: 22px;
-      font-weight: 600;
-      color: #1C1A17;
-      margin-top: 0;
-      margin-bottom: 20px;
-      letter-spacing: -0.01em;
+      padding: 42px 36px;
+      background-color: #FFFFFF;
     }
     .text {
       font-size: 15px;
-      line-height: 1.65;
-      color: #33302B;
-      margin: 0 0 20px 0;
+      line-height: 1.7;
+      color: #2C2925;
+      margin: 0 0 22px 0;
     }
     .code-box {
       text-align: center;
-      margin: 28px 0;
-      background-color: #FAF8F5;
-      border: 1px dashed #C4A46A;
-      border-radius: 8px;
-      padding: 20px;
+      margin: 32px 0;
+      background-color: #FAF7F2;
+      border: 1px solid #D4A96A;
+      border-radius: 4px;
+      padding: 24px;
     }
     .code-value {
-      font-family: monospace, monospace;
-      font-size: 34px;
+      font-family: monospace;
+      font-size: 36px;
       font-weight: 700;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.3em;
       color: #1C1A17;
     }
     .order-card {
-      background-color: #FAF8F5;
-      border: 1px solid #EBE7DF;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
+      background-color: #FAF7F2;
+      border: 1px solid #EAE4DC;
+      border-radius: 4px;
+      padding: 24px;
+      margin: 24px 0;
     }
     .order-title {
-      font-family: 'Georgia', serif;
-      font-size: 16px;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 17px;
       font-weight: 600;
       color: #1C1A17;
       margin-top: 0;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #E0D9CC;
-      padding-bottom: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #E4DDD2;
+      padding-bottom: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
     .item-row {
-      padding: 10px 0;
-      border-bottom: 1px solid #EEE9E0;
+      padding: 12px 0;
+      border-bottom: 1px solid #EAE4DC;
     }
     .item-name {
       font-weight: 600;
@@ -140,6 +134,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
     .item-meta {
       font-size: 12px;
       color: #7A7060;
+      margin-top: 2px;
     }
     .item-price {
       float: right;
@@ -148,7 +143,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       color: #1C1A17;
     }
     .totals-row {
-      padding: 6px 0;
+      padding: 8px 0;
       font-size: 14px;
       color: #555048;
     }
@@ -164,8 +159,8 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       font-weight: 700;
       color: #1C1A17;
       border-top: 1px solid #D8D0C2;
-      padding-top: 10px;
-      margin-top: 6px;
+      padding-top: 12px;
+      margin-top: 8px;
     }
     .clearfix::after {
       content: "";
@@ -173,42 +168,43 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       display: table;
     }
     .footer {
-      padding: 28px 20px;
+      padding: 32px 24px;
       text-align: center;
-      background-color: #FAF8F5;
-      border-top: 1px solid #EBE7DF;
+      background-color: #141311;
+      border-top: 1px solid #282522;
+      color: #A0988C;
     }
     .footer-text {
-      font-size: 12px;
-      color: #7A7060;
-      line-height: 1.5;
-      margin: 0 0 8px 0;
+      font-size: 11px;
+      color: #8C8478;
+      line-height: 1.6;
+      margin: 0 0 10px 0;
     }
     .social-links {
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .social-links a {
-      color: #1C1A17;
+      color: #D4A96A;
       font-weight: 600;
-      font-size: 12px;
-      margin: 0 8px;
+      font-size: 11px;
+      margin: 0 10px;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
     }
     .btn {
       display: inline-block;
       background-color: #1C1A17;
-      color: #FFFFFF !important;
+      color: #D4A96A !important;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
-      font-size: 12px;
+      letter-spacing: 0.2em;
+      font-size: 11px;
       font-weight: 700;
-      padding: 14px 32px;
+      padding: 15px 36px;
       text-decoration: none !important;
       text-align: center;
-      margin-top: 12px;
-      border-radius: 6px;
-      border: 1px solid #C4A46A;
+      margin-top: 16px;
+      border-radius: 2px;
+      border: 1px solid #D4A96A;
     }
   </style>
 </head>
@@ -227,19 +223,19 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       </tr>
       <tr>
         <td class="content">
-          <h1 class="title">${title}</h1>
           ${contentHtml}
         </td>
       </tr>
       <tr>
         <td class="footer">
           <div class="social-links">
-            <a href="${frontendUrl}/shop">Colección</a> • 
-            <a href="${frontendUrl}/account">Mi Cuenta</a> • 
-            <a href="${frontendUrl}/contact">Contacto</a>
+            <a href="${frontendUrl}/shop">COLECCIÓN</a> • 
+            <a href="${frontendUrl}/account">MI CUENTA</a> • 
+            <a href="${frontendUrl}/contact">CONTACTO</a>
           </div>
+          <p class="footer-text" style="color: #D4A96A; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; margin-bottom: 12px;">ENVÍOS A TODA COLOMBIA · PAGOS 100% SEGUROS</p>
           <p class="footer-text">© ${new Date().getFullYear()} FAJAS AB. Todos los derechos reservados.</p>
-          <p class="footer-text" style="font-size: 11px; color: #9A9080;">Este es un correo automático enviado por FAJAS AB.</p>
+          <p class="footer-text" style="font-size: 10px; color: #666056;">Recibiste este mensaje automático de parte de FAJAS AB.</p>
         </td>
       </tr>
     </table>
@@ -248,3 +244,4 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
 </html>
   `;
 }
+

@@ -579,12 +579,17 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
                 const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(prod.priceCents / 100);
 
                 attachedProductHtml = `
-                  <div style="background-color: #ffffff; border: 1px solid #EAE6DF; border-radius: 12px; padding: 20px; margin-top: 25px; text-align: center;">
-                    ${imgUrl ? `<img src="${imgUrl}" alt="${prod.name}" style="max-width: 220px; height: auto; border-radius: 8px; margin-bottom: 15px;" />` : ""}
-                    <h3 style="font-family: 'Cinzel', serif; font-size: 18px; color: #1C1A17; margin: 0 0 5px 0;">${prod.name}</h3>
-                    <p style="font-size: 16px; font-weight: bold; color: #8A3A2A; margin: 0 0 15px 0;">${priceFormatted}</p>
-                    <a href="${frontendUrl}/product/${prod.slug}" class="btn" style="display: inline-block; padding: 12px 24px; background-color: #1C1A17; color: #D4A96A; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Ver Producto</a>
-                  </div>
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF7F2; border: 1px solid #EAE4DC; border-radius: 2px; margin-top: 28px;">
+                    <tr>
+                      <td style="padding: 28px; text-align: center;">
+                        ${imgUrl ? `<img src="${imgUrl}" alt="${prod.name}" style="max-width: 240px; width: 100%; height: auto; border-radius: 2px; margin: 0 auto 18px auto; display: block; border: 1px solid #EAE4DC;" />` : ""}
+                        <span style="font-size: 9px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: #C4A46A; display: block; margin-bottom: 6px;">PRODUCTO DESTACADO</span>
+                        <h3 style="font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 600; color: #1C1A17; margin: 0 0 8px 0;">${prod.name}</h3>
+                        <p style="font-size: 17px; font-weight: 700; color: #8A3A2A; margin: 0 0 20px 0;">${priceFormatted}</p>
+                        <a href="${frontendUrl}/product/${prod.slug}" class="btn" style="display: inline-block; padding: 14px 32px; background-color: #141311; color: #D4A96A !important; text-decoration: none; border-radius: 2px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; border: 1px solid #D4A96A;">Ver Producto</a>
+                      </td>
+                    </tr>
+                  </table>
                 `;
               }
             }
@@ -594,11 +599,15 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
               if (coupon) {
                 const discountText = coupon.discountType === "percentage" ? `${coupon.discountValue}% DE DESCUENTO` : `$${(coupon.discountValue / 100).toLocaleString("es-CO")} DE DESCUENTO`;
                 attachedCouponHtml = `
-                  <div style="border: 2px dashed #D4A96A; background-color: #FAF7F2; border-radius: 12px; padding: 20px; margin-top: 25px; text-align: center;">
-                    <span style="font-size: 11px; text-transform: uppercase; color: #7A7060; font-weight: bold; display: block; margin-bottom: 5px;">CUPÓN ESPECIAL PARA TI</span>
-                    <div style="font-size: 22px; font-weight: bold; color: #D4A96A; letter-spacing: 3px; font-family: monospace; background: #ffffff; padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 10px;">${coupon.code}</div>
-                    <p style="font-size: 14px; color: #1C1A17; margin: 0;">Disfruta un <strong>${discountText}</strong> en tu próxima compra.</p>
-                  </div>
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF7F2; border: 1px solid #D4A96A; border-radius: 2px; margin-top: 28px;">
+                    <tr>
+                      <td style="padding: 24px; text-align: center;">
+                        <span style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #7A7060; font-weight: 600; display: block; margin-bottom: 8px;">BENEFICIO EXCLUSIVO</span>
+                        <div style="font-size: 24px; font-weight: 700; color: #D4A96A; letter-spacing: 0.25em; font-family: monospace; background: #FFFFFF; border: 1px solid #D4A96A; padding: 10px 24px; border-radius: 2px; display: inline-block; margin-bottom: 12px;">${coupon.code}</div>
+                        <p style="font-size: 14px; color: #1C1A17; margin: 0;">Obtén un <strong>${discountText}</strong> aplicando este código en el proceso de compra.</p>
+                      </td>
+                    </tr>
+                  </table>
                 `;
               }
             }
@@ -608,13 +617,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         }
 
         const campaignHtmlBody = `
-          <h2 class="title">${title}</h2>
-          <div class="text" style="white-space: pre-wrap; font-size: 15px; color: #333333; line-height: 1.6;">${messageContent}</div>
+          <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 600; color: #1C1A17; margin-top: 0; margin-bottom: 18px; letter-spacing: 0.02em;">${title}</h2>
+          <div class="text" style="white-space: pre-wrap; font-size: 15px; color: #2C2925; line-height: 1.7;">${messageContent}</div>
           ${attachedProductHtml}
           ${attachedCouponHtml}
-          <p class="text" style="text-align: center; margin-top: 35px;">
-            <a href="${frontendUrl}/shop" class="btn">Explorar Colección en FAJAS AB</a>
-          </p>
+          <div style="text-align: center; margin-top: 36px; padding-top: 24px; border-top: 1px solid #EAE4DC;">
+            <a href="${frontendUrl}/shop" class="btn" style="display: inline-block; padding: 15px 36px; background-color: #141311; color: #D4A96A !important; text-decoration: none; border-radius: 2px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; border: 1px solid #D4A96A;">Descubrir la Colección</a>
+          </div>
         `;
 
         for (const sub of activeSubscribers) {
