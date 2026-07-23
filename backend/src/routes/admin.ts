@@ -576,7 +576,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
                 if (imgUrl && !imgUrl.startsWith("http")) {
                   imgUrl = `${frontendUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
                 }
-                const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(prod.priceCents / 100);
+                const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((prod.basePriceCents || 0) / 100);
 
                 attachedProductHtml = `
                   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF7F2; border: 1px solid #EAE4DC; border-radius: 2px; margin-top: 28px;">
@@ -597,7 +597,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
             if (parsed.attachedCouponCode) {
               const coupon = await prisma.coupon.findUnique({ where: { code: parsed.attachedCouponCode } });
               if (coupon) {
-                const discountText = coupon.discountType === "percentage" ? `${coupon.discountValue}% DE DESCUENTO` : `$${(coupon.discountValue / 100).toLocaleString("es-CO")} DE DESCUENTO`;
+                const discountText = coupon.type === "percentage" ? `${coupon.value}% DE DESCUENTO` : `$${((coupon.value || 0) / 100).toLocaleString("es-CO")} DE DESCUENTO`;
                 attachedCouponHtml = `
                   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF7F2; border: 1px solid #D4A96A; border-radius: 2px; margin-top: 28px;">
                     <tr>
