@@ -213,9 +213,9 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
     <table class="main-table">
       <tr>
         <td class="header">
-          <a href="${frontendUrl}" style="text-decoration: none;">
+          <a href="${frontendUrl}" style="text-decoration: none; display: block;">
             <div style="text-align: center;">
-              <h1 class="brand-title">FAJAS AB</h1>
+              <img src="${frontendUrl}/assets/fajas-ab-logo.png" alt="FAJAS AB" style="height: 68px; width: auto; margin: 0 auto 8px auto; display: block;" />
               <div class="brand-tagline">FAJAS COLOMBIANAS DE ALTA COMPRESIÓN</div>
             </div>
           </a>

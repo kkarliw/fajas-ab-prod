@@ -573,9 +573,12 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
                 if (imgUrl.startsWith("@/assets/")) {
                   imgUrl = imgUrl.replace("@/assets/", "/assets/");
                 }
-                if (imgUrl && !imgUrl.startsWith("http")) {
+                if (!imgUrl || imgUrl.includes("placeholder")) {
+                  imgUrl = `${frontendUrl}/assets/hero-luxe-1.jpg`;
+                } else if (!imgUrl.startsWith("http")) {
                   imgUrl = `${frontendUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
                 }
+                imgUrl = encodeURI(imgUrl);
                 const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((prod.basePriceCents || 0) / 100);
 
                 attachedProductHtml = `
