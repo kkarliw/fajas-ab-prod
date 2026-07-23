@@ -1,5 +1,7 @@
 export function getBaseEmailTemplate(title: string, contentHtml: string): string {
-  const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
+  // Use active Hostinger preview domain for images if main domain is not yet active/migrated
+  const frontendUrl = process.env.FRONTEND_URL || "https://wheat-gerbil-544508.hostingersite.com";
+  const assetBaseUrl = "https://wheat-gerbil-544508.hostingersite.com";
 
   return `
 <!DOCTYPE html>
@@ -215,7 +217,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
         <td class="header">
           <a href="${frontendUrl}" style="text-decoration: none; display: block;">
             <div style="text-align: center;">
-              <img src="${frontendUrl}/assets/fajas-ab-logo.png" alt="FAJAS AB" style="height: 68px; width: auto; margin: 0 auto 8px auto; display: block;" />
+              <img src="${assetBaseUrl}/assets/fajas-ab-logo.png" alt="FAJAS AB" style="height: 68px; width: auto; margin: 0 auto 8px auto; display: block;" />
               <div class="brand-tagline">FAJAS COLOMBIANAS DE ALTA COMPRESIÓN</div>
             </div>
           </a>

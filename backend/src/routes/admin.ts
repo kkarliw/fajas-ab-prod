@@ -569,14 +569,15 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
               });
               if (prod) {
                 const primaryImg = prod.images.find(img => img.isPrimary) || prod.images[0];
+                const assetBaseUrl = "https://wheat-gerbil-544508.hostingersite.com";
                 let imgUrl = primaryImg?.url || "";
                 if (imgUrl.startsWith("@/assets/")) {
                   imgUrl = imgUrl.replace("@/assets/", "/assets/");
                 }
                 if (!imgUrl || imgUrl.includes("placeholder")) {
-                  imgUrl = `${frontendUrl}/assets/hero-luxe-1.jpg`;
+                  imgUrl = `${assetBaseUrl}/assets/hero-luxe-1.jpg`;
                 } else if (!imgUrl.startsWith("http")) {
-                  imgUrl = `${frontendUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
+                  imgUrl = `${assetBaseUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
                 }
                 imgUrl = encodeURI(imgUrl);
                 const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((prod.basePriceCents || 0) / 100);
