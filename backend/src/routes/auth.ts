@@ -17,7 +17,7 @@ const loginSchema = z.object({
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
   const isDev = process.env.NODE_ENV === "development";
-  const authRateLimit = { max: isDev ? 500 : 5, timeWindow: "15 minutes" };
+  const authRateLimit = { max: isDev ? 500 : 50, timeWindow: "15 minutes" };
 
   app.post(
     "/register",
