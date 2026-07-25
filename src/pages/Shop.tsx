@@ -101,7 +101,8 @@ const Shop = () => {
     queryKey: ["products", "all"],
     queryFn: async () => {
       return await getProducts();
-    }
+    },
+    staleTime: 1000 * 60 * 10,
   });
 
   const fullCatalog: CatalogProduct[] = useMemo(() => {

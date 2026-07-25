@@ -2,8 +2,21 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+let productsCache: { key: string; data: any; expiresAt: number } | null = null;
+
+export const invalidateProductCache = () => {
+  productsCache = null;
+};
+
 export const productService = {
   async getProducts(filters: { q?: string; category?: string; tag?: string }) {
+    const cacheKey = JSON.stringify(filters || {});
+    const now = Date.now();
+
+    if (productsCache && productsCache.key === cacheKey && productsCache.expiresAt > now) {
+      return productsCache.data;
+    }
+
     const where: any = { status: 'published' };
     
     if (filters.q) {
@@ -34,7 +47,14 @@ export const productService = {
       },
     });
 
-    return products.map(mapToDTO);
+    const result = products.map(mapToDTO);
+    productsCache = {
+      key: cacheKey,
+      data: result,
+      expiresAt: now + 5 * 60 * 1000 // Cache for 5 minutes
+    };
+
+    return result;
   },
 
   async getProductBySlug(slug: string) {
