@@ -48,6 +48,7 @@ const AdminOrders = () => {
   // Form edit states
   const [paymentStatus, setPaymentStatus] = useState<DbOrder["paymentStatus"]>("pending");
   const [shippingStatus, setShippingStatus] = useState<DbOrder["shippingStatus"]>("pending");
+  const [carrier, setCarrier] = useState("Servientrega");
   const [trackingCode, setTrackingCode] = useState("");
 
   const queryClient = useQueryClient();
@@ -107,6 +108,7 @@ const AdminOrders = () => {
         paymentStatus: o.paymentStatus || "pending",
         shippingStatus: o.status || "pending",
         trackingCode: o.trackingNumber || "", 
+        carrier: o.carrier || "Servientrega",
         items: o.items?.map((i: any) => ({
           name: i.nameSnapshot || i.name || "Producto",
           quantity: i.quantity || 1,
@@ -119,19 +121,20 @@ const AdminOrders = () => {
   }, [rawOrders]);
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string, status: string }) => api.admin.updateOrderStatus(id, status),
+    mutationFn: ({ id, status, trackingCode, paymentStatus, carrier }: { id: string; status: string; trackingCode?: string; paymentStatus?: string; carrier?: string }) => 
+      api.admin.updateOrderStatus(id, status, trackingCode, paymentStatus, carrier),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       toast({
-        title: "Pedido Actualizado",
-        description: `El estado del pedido ha sido actualizado con éxito.`
+        title: "Pedido y Guía Actualizados",
+        description: `Se guardaron los estados y el número de guía.`
       });
       setIsDetailsOpen(false);
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "No se pudo actualizar el estado.",
+        description: "No se pudo actualizar el estado del pedido.",
         variant: "destructive"
       });
     }
@@ -141,6 +144,7 @@ const AdminOrders = () => {
     setSelectedOrder(o);
     setPaymentStatus(o.paymentStatus);
     setShippingStatus(o.shippingStatus);
+    setCarrier(o.carrier || "Servientrega");
     setTrackingCode(o.trackingCode || "");
     setIsDetailsOpen(true);
   };
@@ -149,8 +153,13 @@ const AdminOrders = () => {
     e.preventDefault();
     if (!selectedOrder) return;
     
-    // We update the main order status via the API. The API expects status to be one of OrderStatus
-    updateStatusMutation.mutate({ id: selectedOrder.id, status: shippingStatus });
+    updateStatusMutation.mutate({
+      id: selectedOrder.id,
+      status: shippingStatus,
+      trackingCode,
+      paymentStatus,
+      carrier
+    });
   };
 
   const getPaymentStatusBadge = (status: DbOrder["paymentStatus"]) => {
@@ -380,15 +389,34 @@ const AdminOrders = () => {
                     </select>
                   </div>
 
+                  {/* Carrier Selection */}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Empresa de Transporte</label>
+                    <select
+                      value={carrier}
+                      onChange={(e) => setCarrier(e.target.value)}
+                      className="w-full h-10 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold"
+                    >
+                      <option value="Servientrega">Servientrega</option>
+                      <option value="Interrapidísimo">Interrapidísimo</option>
+                      <option value="Envía Colvanes">Envía Colvanes</option>
+                      <option value="Coordinadora">Coordinadora</option>
+                      <option value="TCC">TCC</option>
+                      <option value="Deprisa">Deprisa</option>
+                      <option value="Domina">Domina / Mensajería Urbana</option>
+                      <option value="Otra">Otra Transportadora</option>
+                    </select>
+                  </div>
+
                   {/* Tracking Code */}
                   <div className="space-y-1">
-                    <label className="block text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Código de Rastreo (Guía)</label>
+                    <label className="block text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Número de Guía / Rastreo</label>
                     <input
                       type="text"
-                      placeholder="Ej. ENV-8891238 (Servientrega, etc)"
+                      placeholder="Ej. 91823746501"
                       value={trackingCode}
                       onChange={(e) => setTrackingCode(e.target.value)}
-                      className="w-full h-10 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold"
+                      className="w-full h-10 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-mono"
                     />
                   </div>
                 </div>

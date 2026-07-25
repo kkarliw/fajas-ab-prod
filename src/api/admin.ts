@@ -8,8 +8,8 @@ export async function getAdminOrders() {
   return client.get<any>("/api/v1/admin/orders");
 }
 
-export async function updateOrderStatus(orderId: string, status: string) {
-  return client.patch<any>(`/api/v1/admin/orders/${orderId}/status`, { status });
+export async function updateOrderStatus(orderId: string, status?: string, trackingNumber?: string, paymentStatus?: string, carrier?: string) {
+  return client.patch<any>(`/api/v1/admin/orders/${orderId}/status`, { status, trackingNumber, paymentStatus, carrier });
 }
 
 export async function getAdminProducts() {

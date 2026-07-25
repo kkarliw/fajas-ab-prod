@@ -355,11 +355,25 @@ export const orderService = {
       const { getBaseEmailTemplate } = await import("../utils/emailTemplate.js");
       const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
 
+      const getTrackingUrl = (c?: string, num?: string) => {
+        if (!num) return null;
+        const norm = (c || "").toLowerCase();
+        if (norm.includes("servientrega")) return `https://www.servientrega.com/wps/portal/Colombia/transaccional/rastreo-envio?id=${num}`;
+        if (norm.includes("interrapidisimo") || norm.includes("inter rapidisimo")) return `https://www.interrapidisimo.com/sigue-tu-envio/?guia=${num}`;
+        if (norm.includes("coordinadora")) return `https://www.coordinadora.com/portafolio-de-servicios/servicios-linea/rastrear-guias/?guia=${num}`;
+        if (norm.includes("envia") || norm.includes("envía")) return `https://envia.co/rastreo?guia=${num}`;
+        if (norm.includes("tcc")) return `https://tcc.com.co/rastreo-de-guias/?guia=${num}`;
+        return null;
+      };
+
+      const trackingUrl = getTrackingUrl(carrier, trackingNumber);
+
       const trackingInfo = trackingNumber
-        ? `<div style="background-color: #FAF8F5; border: 1px dashed #C4A46A; padding: 18px; border-radius: 8px; margin: 20px 0; text-align: center;">
-             <p style="margin: 0 0 6px 0; font-size: 11px; color: #7A7060; text-transform: uppercase; letter-spacing: 0.1em;">Número de Guía / Tracking</p>
-             <p style="margin: 0; font-size: 22px; font-weight: bold; color: #1C1A17; letter-spacing: 0.05em;">${trackingNumber}</p>
-             ${carrier ? `<p style="margin: 6px 0 0 0; font-size: 13px; color: #555048;">Transportadora: <strong>${carrier}</strong></p>` : ''}
+        ? `<div style="background-color: #FAF8F5; border: 1px solid #C4A46A; padding: 20px; border-radius: 4px; margin: 24px 0; text-align: center;">
+             <p style="margin: 0 0 6px 0; font-size: 10px; color: #777777; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600;">Número de Guía / Tracking</p>
+             <p style="margin: 0 0 8px 0; font-size: 24px; font-weight: 700; color: #1C1A17; letter-spacing: 0.1em; font-family: monospace;">${trackingNumber}</p>
+             ${carrier ? `<p style="margin: 0 0 16px 0; font-size: 13px; color: #333333;">Transportadora: <strong>${carrier}</strong></p>` : ''}
+             ${trackingUrl ? `<a href="${trackingUrl}" target="_blank" class="btn" style="display: inline-block; padding: 12px 28px; background-color: #1C1A17; color: #FFFFFF !important; text-decoration: none; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em;">Rastrear Paquete en ${carrier}</a>` : ''}
            </div>`
         : '';
 
@@ -369,8 +383,8 @@ export const orderService = {
         
         ${trackingInfo}
 
-        <p class="text" style="text-align: center; margin-top: 25px;">
-          <a href="${frontendUrl}/account" class="btn">Rastrear Mi Pedido en FAJAS AB</a>
+        <p class="text" style="text-align: center; margin-top: 24px;">
+          <a href="${frontendUrl}/account" style="color: #1C1A17; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em;">Ver Detalles en Mi Cuenta FAJAS AB</a>
         </p>
       `;
 
