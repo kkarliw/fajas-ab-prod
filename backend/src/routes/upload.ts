@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import { createWriteStream, mkdirSync } from "fs";
 import { join, extname } from "path";
-import { randomBytes } from "crypto";
+import { randomBytes, createHash } from "crypto";
 import { sendSuccess } from "../utils/response.js";
 import { authenticateAdmin } from "../middleware/authenticateAdmin.js";
 import { pipeline } from "stream/promises";
@@ -13,16 +13,57 @@ const UPLOADS_DIR = join(process.cwd(), "uploads");
 mkdirSync(UPLOADS_DIR, { recursive: true });
 
 const ALLOWED_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/avif"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB limit
+
+async function uploadToCloudinary(buffer: Buffer, mimetype: string): Promise<string | null> {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const preset = process.env.CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName) return null;
+
+  try {
+    const formData = new FormData();
+    const blob = new Blob([buffer], { type: mimetype });
+    formData.append("file", blob, "image.jpg");
+
+    if (preset) {
+      formData.append("upload_preset", preset);
+    } else if (apiKey && apiSecret) {
+      const timestamp = Math.floor(Date.now() / 1000).toString();
+      const strToSign = `timestamp=${timestamp}${apiSecret}`;
+      const signature = createHash("sha1").update(strToSign).digest("hex");
+
+      formData.append("api_key", apiKey);
+      formData.append("timestamp", timestamp);
+      formData.append("signature", signature);
+    } else {
+      return null;
+    }
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const json = await res.json() as any;
+    if (res.ok && json.secure_url) {
+      return json.secure_url;
+    }
+    console.warn("⚠️ Cloudinary upload error response:", json);
+    return null;
+  } catch (err) {
+    console.error("⚠️ Failed to upload to Cloudinary:", err);
+    return null;
+  }
+}
 
 export const uploadRoutes: FastifyPluginAsync = async (app) => {
   /**
    * POST /api/v1/admin/upload
-   * Receives a multipart form-data with field name "file".
-   * Returns a JSON { ok: true, data: { url: "/uploads/<filename>" } }
-   *
-   * The URL is short and fits comfortably in the ProductImage.url VARCHAR column.
-   * For production, replace this handler with a Cloudinary/S3 upload.
+   * Receives multipart form-data ("file").
+   * Uploads to Cloudinary (if configured) or local disk.
    */
   app.post(
     "/upload",
@@ -30,9 +71,7 @@ export const uploadRoutes: FastifyPluginAsync = async (app) => {
     async (request, reply) => {
       try {
         const data = await request.file({
-          limits: {
-            fileSize: MAX_FILE_SIZE,
-          },
+          limits: { fileSize: MAX_FILE_SIZE },
         });
 
         if (!data) {
@@ -46,21 +85,22 @@ export const uploadRoutes: FastifyPluginAsync = async (app) => {
           });
         }
 
-        // Generate a unique filename: <timestamp>-<random>.<ext>
+        const buffer = await data.toBuffer();
+
+        // 1. Try Cloudinary upload if credentials are provided in env
+        const cloudinaryUrl = await uploadToCloudinary(buffer, data.mimetype);
+        if (cloudinaryUrl) {
+          return sendSuccess(reply, { url: cloudinaryUrl }, 201);
+        }
+
+        // 2. Fallback to local server disk storage
         const ext = extname(data.filename) || ".jpg";
         const uniqueName = `${Date.now()}-${randomBytes(6).toString("hex")}${ext}`;
         const destPath = join(UPLOADS_DIR, uniqueName);
 
-        // Stream the file to disk
-        await pipeline(data.file, createWriteStream(destPath));
-
-        // Check for truncation (file exceeded size limit)
-        if ((data.file as any).truncated) {
-          return reply.status(413).send({
-            ok: false,
-            error: `El archivo supera el límite de ${MAX_FILE_SIZE / 1024 / 1024}MB.`,
-          });
-        }
+        const { createWriteStream } = await import("fs");
+        const { Readable } = await import("stream");
+        await pipeline(Readable.from(buffer), createWriteStream(destPath));
 
         const backendBase = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL || "https://fajas-ab-prod.onrender.com";
         const url = `${backendBase.replace(/\/$/, "")}/uploads/${uniqueName}`;
