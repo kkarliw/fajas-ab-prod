@@ -255,7 +255,9 @@ const Checkout = () => {
 
       checkout.open(async (result: any) => {
         const transaction = result?.transaction;
-        if (transaction && (transaction.status === "APPROVED" || transaction.status === "PENDING")) {
+        const status = transaction?.status;
+
+        if (transaction && status === "APPROVED") {
           setSuccess(true);
           localStorage.setItem("ab_last_order", JSON.stringify({
             reference: paymentData.reference,
@@ -278,8 +280,8 @@ const Checkout = () => {
 
           clear();
           navigate(`/checkout/success?ref=${encodeURIComponent(paymentData.reference)}`);
-        } else {
-          // If transaction is null, declined, or canceled, mark order as declined in DB
+        } else if (status === "DECLINED" || status === "ERROR" || status === "VOIDED") {
+          // Explicit rejection from bank/Nequi -> set DB status to declined
           try {
             await api.orders.declinePayment({
               reference: paymentData.reference,
@@ -288,6 +290,18 @@ const Checkout = () => {
             });
           } catch (e) {
             console.warn("Payment decline handler warning:", e);
+          }
+          navigate("/checkout/error?reason=payment_failed");
+        } else {
+          // Closed or cancelled by user
+          try {
+            await api.orders.declinePayment({
+              reference: paymentData.reference,
+              transactionId: transaction?.id || `TX-CANCELLED-${Date.now()}`,
+              amountInCents: transaction?.amount_in_cents || paymentData.amountInCents
+            });
+          } catch (e) {
+            console.warn("Payment cancel handler warning:", e);
           }
           navigate("/checkout/error?reason=cancelled");
         }

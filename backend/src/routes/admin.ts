@@ -86,9 +86,11 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
 
   app.patch("/orders/:id/status", async (request, reply) => {
     const { id } = request.params as { id: string };
-    const { status, trackingNumber, carrier } = request.body as { status: string; trackingNumber?: string; carrier?: string };
+    const { status, paymentStatus, trackingNumber, carrier } = request.body as { status?: string; paymentStatus?: string; trackingNumber?: string; carrier?: string };
 
-    const updateData: any = { status: status as any };
+    const updateData: any = {};
+    if (status !== undefined) updateData.status = status;
+    if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
     if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
     if (carrier !== undefined) updateData.carrier = carrier;
 
