@@ -62,7 +62,8 @@ export const uploadRoutes: FastifyPluginAsync = async (app) => {
           });
         }
 
-        const url = `/uploads/${uniqueName}`;
+        const backendBase = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL || "https://fajas-ab-prod.onrender.com";
+        const url = `${backendBase.replace(/\/$/, "")}/uploads/${uniqueName}`;
         return sendSuccess(reply, { url }, 201);
       } catch (err: any) {
         request.log.error(err);

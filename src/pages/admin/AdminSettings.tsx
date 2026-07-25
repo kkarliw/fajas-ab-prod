@@ -309,15 +309,15 @@ const AdminSettings = () => {
                     </select>
                     <p className="text-[10px] text-muted-foreground mt-1">El cupón seleccionado aparecerá cuando la persona deje su correo y le será enviado por email automáticamente.</p>
                   </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Imagen del Pop-up</label>
+                  <div className="sm:col-span-2 space-y-3">
+                    <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Imagen del Pop-up</label>
                     {settings.promoPopup.imageUrl ? (
-                      <div className="relative w-full max-w-xs aspect-[3/4] rounded-lg overflow-hidden border border-border">
+                      <div className="relative w-full max-w-xs aspect-[3/4] rounded-lg overflow-hidden border border-border shadow-sm">
                         <img src={settings.promoPopup.imageUrl} alt="Pop-up" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={handleRemoveImage}
-                          className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm"
+                          className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-sm"
                         >
                           <X size={14} />
                         </button>
@@ -327,18 +327,29 @@ const AdminSettings = () => {
                         {uploadingImage ? (
                           <div className="flex flex-col items-center text-muted-foreground">
                             <Loader2 size={24} className="animate-spin mb-2" />
-                            <span className="text-xs">Subiendo...</span>
+                            <span className="text-xs font-medium">Subiendo a la nube...</span>
                           </div>
                         ) : (
-                          <div className="flex flex-col items-center text-muted-foreground">
+                          <div className="flex flex-col items-center text-muted-foreground text-center p-4">
                             <ImagePlus size={28} className="mb-2 opacity-50" />
-                            <span className="text-[11px] font-semibold uppercase tracking-wider">Subir Foto</span>
-                            <span className="text-xs opacity-70 mt-1">Recomendado: Vertical (3:4)</span>
+                            <span className="text-[11px] font-semibold uppercase tracking-wider">Subir Foto desde tu Equipo</span>
+                            <span className="text-[10px] opacity-70 mt-1">Vertical 3:4 · JPG, PNG, WEBP</span>
                           </div>
                         )}
                         <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} />
                       </label>
                     )}
+
+                    <div className="max-w-md">
+                      <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1 font-medium">O pega una URL directa de la imagen:</label>
+                      <input
+                        type="url"
+                        placeholder="https://ejemplo.com/mi-banner.jpg"
+                        value={settings.promoPopup.imageUrl || ""}
+                        onChange={(e) => setSettings({ ...settings, promoPopup: { ...settings.promoPopup, imageUrl: e.target.value } })}
+                        className="w-full h-9 px-3 bg-background border border-border rounded-md text-xs outline-none focus:border-gold font-mono"
+                      />
+                    </div>
                   </div>
                 </div>
               )}

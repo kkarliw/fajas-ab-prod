@@ -84,11 +84,24 @@ const PromoPopup = () => {
           >
             {/* Left Panel: Photo (Visible only on desktop) */}
             <div className="relative hidden md:block aspect-[4/5] bg-cream-2 overflow-hidden">
-              <img
-                src={settings.promoPopup?.imageUrl || popupImg}
-                alt="Colección Fajas AB"
-                className="absolute inset-0 w-full h-full object-cover object-top"
-              />
+              {(() => {
+                const rawUrl = settings.promoPopup?.imageUrl;
+                let finalSrc = popupImg;
+                if (rawUrl) {
+                  if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("data:")) {
+                    finalSrc = rawUrl;
+                  } else {
+                    finalSrc = `https://fajas-ab-prod.onrender.com${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
+                  }
+                }
+                return (
+                  <img
+                    src={finalSrc}
+                    alt="Colección Fajas AB"
+                    className="absolute inset-0 w-full h-full object-cover object-top"
+                  />
+                );
+              })()}
               <div className="absolute inset-0 bg-black/5" />
             </div>
 
