@@ -60,30 +60,62 @@ const AdminOrders = () => {
     }
   });
 
+  const getShortRef = (o: any) => {
+    if (o.reference && o.reference.startsWith("ORD-")) {
+      const parts = o.reference.split("-");
+      const lastPart = parts[parts.length - 1];
+      return `#AB-${lastPart.toUpperCase()}`;
+    }
+    if (o.reference && o.reference.length <= 10) {
+      return o.reference.startsWith("#") ? o.reference : `#${o.reference}`;
+    }
+    const cleanId = (o.id || o.reference || "").replace(/[^a-zA-Z0-9]/g, "");
+    return `#AB-${cleanId.slice(-6).toUpperCase()}`;
+  };
+
+  const formatDate = (raw?: any) => {
+    if (!raw) return "Reciente";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return "Reciente";
+    return d.toLocaleDateString("es-CO", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+
   const orders: DbOrder[] = useMemo(() => {
-    return rawOrders.map((o: any) => ({
-      id: o.id,
-      reference: o.reference || `#AB-${o.id.slice(-6).toUpperCase()}`,
-      customerName: o.customerName || o.user?.name || "Desconocido",
-      customerEmail: o.email || "Sin email",
-      customerPhone: o.phone || "Sin teléfono",
-      address: o.shippingAddressJson?.addressLine1 || "",
-      city: o.shippingAddressJson?.city || "",
-      department: o.shippingAddressJson?.department || "",
-      date: o.createdAt || o.date || new Date().toISOString(),
-      createdAt: o.createdAt || o.date || new Date().toISOString(),
-      total: o.totalCents ? o.totalCents / 100 : 0,
-      paymentStatus: o.paymentStatus || "pending",
-      shippingStatus: o.status || "pending",
-      trackingCode: o.trackingNumber || "", 
-      items: o.items?.map((i: any) => ({
-        name: i.nameSnapshot,
-        quantity: i.quantity,
-        price: i.unitPriceCents ? i.unitPriceCents / 100 : 0,
-        size: i.sizeSnapshot,
-        color: i.colorSnapshot
-      })) || []
-    }));
+    return rawOrders.map((o: any) => {
+      const formattedRef = getShortRef(o);
+      const rawDate = o.createdAt || o.date || o.updatedAt;
+      const formattedDate = formatDate(rawDate);
+
+      return {
+        id: o.id,
+        reference: formattedRef,
+        customerName: o.customerName || o.user?.name || "Desconocido",
+        customerEmail: o.email || o.user?.email || "Sin email",
+        customerPhone: o.phone || o.user?.phone || "Sin teléfono",
+        address: o.shippingAddressJson?.addressLine1 || "",
+        city: o.shippingAddressJson?.city || "",
+        department: o.shippingAddressJson?.department || "",
+        date: formattedDate,
+        createdAt: formattedDate,
+        total: o.totalCents ? o.totalCents / 100 : (o.total || 0),
+        paymentStatus: o.paymentStatus || "pending",
+        shippingStatus: o.status || "pending",
+        trackingCode: o.trackingNumber || "", 
+        items: o.items?.map((i: any) => ({
+          name: i.nameSnapshot || i.name || "Producto",
+          quantity: i.quantity || 1,
+          price: i.unitPriceCents ? i.unitPriceCents / 100 : (i.price || 0),
+          size: i.sizeSnapshot || i.size || "Única",
+          color: i.colorSnapshot || i.color || ""
+        })) || []
+      };
+    });
   }, [rawOrders]);
 
   const updateStatusMutation = useMutation({
@@ -223,22 +255,10 @@ const AdminOrders = () => {
               {filtered.map((order) => (
                 <tr key={order.id} className="hover:bg-cream-2/5 transition-colors">
                   <td className="p-4 font-mono text-[12px] font-bold text-ink/80" title={order.id}>
-                    {order.reference || `#AB-${order.id.slice(-6).toUpperCase()}`}
+                    {order.reference}
                   </td>
                   <td className="p-4 text-[12px] text-ink/75">
-                    {(() => {
-                      const rawDate = order.date || order.createdAt;
-                      const d = rawDate ? new Date(rawDate) : null;
-                      return d && !isNaN(d.getTime())
-                        ? d.toLocaleDateString("es-CO", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })
-                        : "Reciente";
-                    })()}
+                    {order.date}
                   </td>
                   <td className="p-4">
                     <div className="font-semibold text-ink leading-snug">{order.customerName}</div>
