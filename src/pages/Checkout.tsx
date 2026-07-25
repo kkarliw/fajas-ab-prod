@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, Lock, ShieldCheck, Truck, CheckCircle2, Loader2 } from "lucide-react";
+import { ChevronLeft, Lock, ShieldCheck, Truck, CheckCircle2, Loader2, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart, formatCOP } from "@/context/CartContext";
@@ -564,6 +564,23 @@ const Checkout = () => {
                     </div>
                   )}
                 </div>
+
+                {selectedDept?.includes("Internacional") && (
+                  <div className="bg-[#FAF8F5] border border-gold/40 p-4 rounded flex flex-col sm:flex-row items-center justify-between gap-4 my-2">
+                    <div className="space-y-1 text-center sm:text-left">
+                      <span className="text-xs font-bold text-ink uppercase tracking-wider block">✈️ Envíos Internacionales (EE.UU., España, Latam, Otros)</span>
+                      <p className="text-xs text-muted-foreground leading-relaxed">Cotizamos la tarifa exacta del flete a tu ciudad y país directamente por WhatsApp para coordinar tu envío.</p>
+                    </div>
+                    <a
+                      href="https://wa.me/573107086902?text=¡Hola!%20Me%20interesa%20hacer%20un%20pedido%20con%20envío%20internacional"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-2.5 rounded text-xs font-bold uppercase tracking-wider shrink-0 transition-colors shadow-sm"
+                    >
+                      <MessageCircle size={16} /> Cotizar en WhatsApp
+                    </a>
+                  </div>
+                )}
                 <div>
                   <label htmlFor="field-couponCode" className="block text-[11px] tracking-[0.2em] uppercase text-muted-foreground font-medium mb-2">
                     Cupón de Descuento
