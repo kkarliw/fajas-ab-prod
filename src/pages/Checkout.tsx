@@ -249,7 +249,8 @@ const Checkout = () => {
         amountInCents: paymentData.amountInCents,
         reference: paymentData.reference,
         publicKey: publicKey,
-        signature: { integrity: paymentData.integritySignature }
+        signature: { integrity: paymentData.integritySignature },
+        redirectUrl: `${window.location.origin}/checkout/success?ref=${encodeURIComponent(paymentData.reference)}`
       });
 
       checkout.open(async (result: any) => {
