@@ -1,4 +1,5 @@
 export const colombianDepartments = [
+  "Envío Internacional (EE.UU., España, Latam, Otros)",
   "Amazonas",
   "Antioquia",
   "Arauca",
