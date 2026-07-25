@@ -313,7 +313,18 @@ const AdminSettings = () => {
                     <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Imagen del Pop-up</label>
                     {settings.promoPopup.imageUrl ? (
                       <div className="relative w-full max-w-xs aspect-[3/4] rounded-lg overflow-hidden border border-border shadow-sm">
-                        <img src={settings.promoPopup.imageUrl} alt="Pop-up" className="w-full h-full object-cover" />
+                        <img
+                          src={
+                            settings.promoPopup.imageUrl.startsWith("http") || settings.promoPopup.imageUrl.startsWith("data")
+                              ? settings.promoPopup.imageUrl
+                              : `https://fajas-ab-prod.onrender.com${settings.promoPopup.imageUrl.startsWith("/") ? "" : "/"}${settings.promoPopup.imageUrl}`
+                          }
+                          alt="Pop-up"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/assets/hero-luxe-1.jpg";
+                          }}
+                        />
                         <button
                           type="button"
                           onClick={handleRemoveImage}
@@ -370,7 +381,18 @@ const AdminSettings = () => {
                     {/* Image Side */}
                     <div className="w-full md:w-1/2 h-[200px] md:h-auto relative bg-cream">
                       {settings.promoPopup.imageUrl ? (
-                        <img src={settings.promoPopup.imageUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
+                        <img
+                          src={
+                            settings.promoPopup.imageUrl.startsWith("http") || settings.promoPopup.imageUrl.startsWith("data")
+                              ? settings.promoPopup.imageUrl
+                              : `https://fajas-ab-prod.onrender.com${settings.promoPopup.imageUrl.startsWith("/") ? "" : "/"}${settings.promoPopup.imageUrl}`
+                          }
+                          alt="Preview"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/assets/hero-luxe-1.jpg";
+                          }}
+                        />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/50 flex-col gap-2">
                           <ImagePlus size={32} />
