@@ -29,3 +29,7 @@ export async function initiateCheckout(payload: InitiateCheckoutPayload): Promis
 export async function confirmPayment(payload: { reference: string; transactionId: string; amountInCents: number }): Promise<any> {
   return client.post<any>("/api/v1/orders/confirm-payment", payload, { auth: false });
 }
+
+export async function declinePayment(payload: { reference: string; transactionId: string; amountInCents: number }): Promise<any> {
+  return client.post<any>("/api/v1/orders/decline-payment", payload, { auth: false });
+}

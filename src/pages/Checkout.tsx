@@ -279,7 +279,16 @@ const Checkout = () => {
           clear();
           navigate(`/checkout/success?ref=${encodeURIComponent(paymentData.reference)}`);
         } else {
-          // If transaction is null, declined, or canceled, redirect to error page
+          // If transaction is null, declined, or canceled, mark order as declined in DB
+          try {
+            await api.orders.declinePayment({
+              reference: paymentData.reference,
+              transactionId: transaction?.id || `TX-DECLINED-${Date.now()}`,
+              amountInCents: transaction?.amount_in_cents || paymentData.amountInCents
+            });
+          } catch (e) {
+            console.warn("Payment decline handler warning:", e);
+          }
           navigate("/checkout/error?reason=cancelled");
         }
       });

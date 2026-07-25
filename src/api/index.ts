@@ -38,6 +38,8 @@ export const api = {
     getOrderByReference,
     getGuestOrderByReference,
     initiateCheckout,
+    confirmPayment: (payload: { reference: string; transactionId: string; amountInCents: number }) => import("./orders").then(m => m.confirmPayment(payload)),
+    declinePayment: (payload: { reference: string; transactionId: string; amountInCents: number }) => import("./orders").then(m => m.declinePayment(payload)),
   },
   admin: {
     getAdminStats,

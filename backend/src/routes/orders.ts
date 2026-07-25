@@ -64,6 +64,17 @@ export const ordersRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
+  app.post("/decline-payment", async (request, reply) => {
+    const payload = confirmPaymentSchema.parse(request.body);
+    try {
+      await orderService.handlePaymentFailure(payload.reference, payload.transactionId, payload.amountInCents);
+      const order = await orderService.getOrderByIdOrReference(payload.reference);
+      return sendSuccess(reply, { order });
+    } catch (err: any) {
+      return reply.status(400).send({ ok: false, error: err.message });
+    }
+  });
+
   app.get("/", { preHandler: authenticate }, async (request, reply) => {
     const userPayload = request.user as any;
     const userId = userPayload.sub || userPayload.id;
