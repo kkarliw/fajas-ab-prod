@@ -1,5 +1,4 @@
 export function getBaseEmailTemplate(title: string, contentHtml: string): string {
-  // Use active Hostinger preview domain for images if main domain is not yet active/migrated
   const frontendUrl = process.env.FRONTEND_URL || "https://wheat-gerbil-544508.hostingersite.com";
   const assetBaseUrl = "https://wheat-gerbil-544508.hostingersite.com";
 
@@ -19,7 +18,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
     body {
       margin: 0;
       padding: 0;
-      background-color: #F6F3EE;
+      background-color: #FFFFFF;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #1C1A17;
       -webkit-font-smoothing: antialiased;
@@ -44,89 +43,84 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
     }
     .wrapper {
       width: 100%;
-      background-color: #F6F3EE;
-      padding: 40px 12px;
+      background-color: #FFFFFF;
+      padding: 24px 10px;
     }
     .main-table {
       width: 100%;
-      max-width: 600px;
+      max-width: 580px;
       margin: 0 auto;
-      background-color: #ffffff;
-      border: 1px solid #EAE4DC;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 8px 30px rgba(28, 26, 23, 0.06);
+      background-color: #FFFFFF;
+      border: 1px solid #EAE6DF;
     }
     .header {
-      padding: 38px 24px 32px 24px;
+      padding: 28px 24px 20px 24px;
       text-align: center;
-      background-color: #141311;
-      border-bottom: 2px solid #D4A96A;
+      background-color: #FFFFFF;
+      border-bottom: 2px solid #C4A46A;
     }
     .brand-title {
       font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
-      font-size: 26px;
-      font-weight: 600;
-      color: #FFFFFF;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1C1A17;
       letter-spacing: 0.35em;
       margin: 0;
       text-transform: uppercase;
     }
     .brand-tagline {
       font-size: 9px;
-      color: #D4A96A;
-      letter-spacing: 0.4em;
+      color: #C4A46A;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
-      margin-top: 8px;
-      font-weight: 500;
+      margin-top: 5px;
+      font-weight: 600;
     }
     .content {
-      padding: 42px 36px;
+      padding: 32px 28px;
       background-color: #FFFFFF;
     }
     .text {
       font-size: 15px;
       line-height: 1.7;
-      color: #2C2925;
-      margin: 0 0 22px 0;
+      color: #222222;
+      margin: 0 0 20px 0;
     }
     .code-box {
       text-align: center;
-      margin: 32px 0;
-      background-color: #FAF7F2;
-      border: 1px solid #D4A96A;
-      border-radius: 4px;
-      padding: 24px;
+      margin: 28px 0;
+      background-color: #FAF8F5;
+      border: 1px solid #C4A46A;
+      padding: 20px;
     }
     .code-value {
       font-family: monospace;
-      font-size: 36px;
+      font-size: 32px;
       font-weight: 700;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.25em;
       color: #1C1A17;
     }
     .order-card {
-      background-color: #FAF7F2;
-      border: 1px solid #EAE4DC;
-      border-radius: 4px;
-      padding: 24px;
-      margin: 24px 0;
+      background-color: #FAF8F5;
+      border: 1px solid #EAE6DF;
+      padding: 20px;
+      margin: 20px 0;
     }
     .order-title {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       color: #1C1A17;
       margin-top: 0;
-      margin-bottom: 14px;
-      border-bottom: 1px solid #E4DDD2;
-      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #EAE6DF;
+      padding-bottom: 8px;
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
     .item-row {
-      padding: 12px 0;
-      border-bottom: 1px solid #EAE4DC;
+      padding: 10px 0;
+      border-bottom: 1px solid #EAE6DF;
     }
     .item-name {
       font-weight: 600;
@@ -135,7 +129,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
     }
     .item-meta {
       font-size: 12px;
-      color: #7A7060;
+      color: #666666;
       margin-top: 2px;
     }
     .item-price {
@@ -145,9 +139,9 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       color: #1C1A17;
     }
     .totals-row {
-      padding: 8px 0;
+      padding: 6px 0;
       font-size: 14px;
-      color: #555048;
+      color: #555555;
     }
     .totals-label {
       float: left;
@@ -160,9 +154,9 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       font-size: 16px;
       font-weight: 700;
       color: #1C1A17;
-      border-top: 1px solid #D8D0C2;
-      padding-top: 12px;
-      margin-top: 8px;
+      border-top: 1px solid #DDDDDD;
+      padding-top: 10px;
+      margin-top: 6px;
     }
     .clearfix::after {
       content: "";
@@ -170,43 +164,42 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       display: table;
     }
     .footer {
-      padding: 32px 24px;
+      padding: 28px 20px;
       text-align: center;
-      background-color: #141311;
-      border-top: 1px solid #282522;
-      color: #A0988C;
+      background-color: #FFFFFF;
+      border-top: 1px solid #EEEEEE;
+      color: #777777;
     }
     .footer-text {
       font-size: 11px;
-      color: #8C8478;
+      color: #777777;
       line-height: 1.6;
-      margin: 0 0 10px 0;
+      margin: 0 0 8px 0;
     }
     .social-links {
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
     .social-links a {
-      color: #D4A96A;
+      color: #1C1A17;
       font-weight: 600;
       font-size: 11px;
-      margin: 0 10px;
+      margin: 0 8px;
       text-transform: uppercase;
       letter-spacing: 0.15em;
     }
     .btn {
       display: inline-block;
       background-color: #1C1A17;
-      color: #D4A96A !important;
+      color: #FFFFFF !important;
       text-transform: uppercase;
       letter-spacing: 0.2em;
       font-size: 11px;
       font-weight: 700;
-      padding: 15px 36px;
+      padding: 14px 32px;
       text-decoration: none !important;
       text-align: center;
       margin-top: 16px;
-      border-radius: 2px;
-      border: 1px solid #D4A96A;
+      border: 1px solid #1C1A17;
     }
   </style>
 </head>
@@ -217,7 +210,8 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
         <td class="header">
           <a href="${frontendUrl}" style="text-decoration: none; display: block;">
             <div style="text-align: center;">
-              <img src="${assetBaseUrl}/assets/fajas-ab-logo.png" alt="FAJAS AB" style="height: 68px; width: auto; margin: 0 auto 8px auto; display: block;" />
+              <img src="${assetBaseUrl}/assets/fajas-ab-logo.png" alt="FAJAS AB" style="height: 55px; width: auto; margin: 0 auto 6px auto; display: block;" />
+              <div class="brand-title">FAJAS AB</div>
               <div class="brand-tagline">FAJAS COLOMBIANAS DE ALTA COMPRESIÓN</div>
             </div>
           </a>
@@ -235,9 +229,9 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
             <a href="${frontendUrl}/account">MI CUENTA</a> • 
             <a href="${frontendUrl}/contact">CONTACTO</a>
           </div>
-          <p class="footer-text" style="color: #D4A96A; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; margin-bottom: 12px;">ENVÍOS A TODA COLOMBIA · PAGOS 100% SEGUROS</p>
+          <p class="footer-text" style="color: #C4A46A; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; margin-bottom: 10px;">ENVÍOS A TODA COLOMBIA · PAGOS 100% SEGUROS</p>
           <p class="footer-text">© ${new Date().getFullYear()} FAJAS AB. Todos los derechos reservados.</p>
-          <p class="footer-text" style="font-size: 10px; color: #666056;">Recibiste este mensaje automático de parte de FAJAS AB.</p>
+          <p class="footer-text" style="font-size: 10px; color: #999999;">Recibiste este mensaje automático de parte de FAJAS AB.</p>
         </td>
       </tr>
     </table>
@@ -246,4 +240,5 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
 </html>
   `;
 }
+
 
