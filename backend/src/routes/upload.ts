@@ -16,10 +16,22 @@ const ALLOWED_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp", "ima
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB limit
 
 async function uploadToCloudinary(buffer: Buffer, mimetype: string): Promise<string | null> {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  let cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  let apiKey = process.env.CLOUDINARY_API_KEY;
+  let apiSecret = process.env.CLOUDINARY_API_SECRET;
   const preset = process.env.CLOUDINARY_UPLOAD_PRESET;
+
+  // Support CLOUDINARY_URL string parsing if provided
+  if (!cloudName && process.env.CLOUDINARY_URL) {
+    try {
+      const match = process.env.CLOUDINARY_URL.match(/^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/);
+      if (match) {
+        apiKey = match[1];
+        apiSecret = match[2];
+        cloudName = match[3];
+      }
+    } catch {/* ignore */}
+  }
 
   if (!cloudName) return null;
 
