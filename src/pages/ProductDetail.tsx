@@ -264,10 +264,10 @@ const ProductDetail = () => {
                     e.stopPropagation();
                     setThumb((prev) => (prev === 0 ? currentGallery.length - 1 : prev - 1));
                   }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-background/80 hover:bg-background rounded-full border border-border flex items-center justify-center text-ink/75 hover:text-ink transition-all shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 z-10 duration-200"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-background/90 hover:bg-background rounded-full border border-border flex items-center justify-center text-ink transition-all shadow-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 z-10 duration-200"
                   aria-label="Imagen anterior"
                 >
-                  <ChevronLeft size={18} strokeWidth={1.2} />
+                  <ChevronLeft size={18} strokeWidth={1.4} />
                 </button>
                 <button
                   type="button"
@@ -275,10 +275,10 @@ const ProductDetail = () => {
                     e.stopPropagation();
                     setThumb((prev) => (prev === currentGallery.length - 1 ? 0 : prev + 1));
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-background/80 hover:bg-background rounded-full border border-border flex items-center justify-center text-ink/75 hover:text-ink transition-all shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 z-10 duration-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-background/90 hover:bg-background rounded-full border border-border flex items-center justify-center text-ink transition-all shadow-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 z-10 duration-200"
                   aria-label="Siguiente imagen"
                 >
-                  <ChevronRight size={18} strokeWidth={1.2} />
+                  <ChevronRight size={18} strokeWidth={1.4} />
                 </button>
               </>
             )}
@@ -520,6 +520,35 @@ const ProductDetail = () => {
         availableSizes={product.sizes}
         onSelectSize={(selectedSize) => setSize(selectedSize)}
       />
+
+      {/* Sticky Mobile Add to Cart Bar */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 bg-cream/95 backdrop-blur-md border-t border-hairline/20 p-3 z-40 flex items-center justify-between gap-3 shadow-2xl">
+        <div className="min-w-0 flex-1">
+          <span className="text-[11px] font-bold text-ink uppercase tracking-wider block truncate">{product.name}</span>
+          <span className="font-display text-sm font-semibold text-gold-dark">{formatCOP(product.price)}</span>
+        </div>
+        <button
+          type="button"
+          disabled={product.isOutOfStock}
+          onClick={() =>
+            addItem({
+              slug: product.slug,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              category: product.category,
+              size,
+            })
+          }
+          className={`px-5 py-3 text-[10px] uppercase tracking-[0.2em] font-bold shrink-0 transition-all rounded shadow-sm ${
+            product.isOutOfStock 
+              ? 'bg-cream-2 text-ink/40 cursor-not-allowed border border-hairline' 
+              : 'bg-gold hover:bg-gold/90 text-ink active:scale-95'
+          }`}
+        >
+          {product.isOutOfStock ? 'Agotado' : 'Agregar al carrito'}
+        </button>
+      </div>
 
       <Footer />
     </div>

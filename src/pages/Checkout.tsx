@@ -795,7 +795,7 @@ const Field = ({
       autoComplete={autoComplete}
       aria-invalid={!!error}
       aria-describedby={error ? `${id}-error` : undefined}
-      className={`w-full bg-background border px-4 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gold/40 ${
+      className={`w-full bg-background border px-4 py-3 text-base sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gold/40 ${
         error ? "border-destructive" : "border-border focus:border-foreground"
       }`}
     />
@@ -831,7 +831,7 @@ const SelectField = ({
       {...register}
       aria-invalid={!!error}
       aria-describedby={error ? `${id}-error` : undefined}
-      className={`w-full bg-background border px-4 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gold/40 ${
+      className={`w-full bg-background border px-4 py-3 text-base sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gold/40 ${
         error ? "border-destructive" : "border-border focus:border-foreground"
       }`}
     >

@@ -66,8 +66,8 @@ const ProductCard = ({ product }: { product: CatalogProduct }) => {
             className={wished ? "fill-gold text-gold" : "text-ink"}
           />
         </button>
-        <div className="quick-cta absolute inset-x-3 bottom-3 z-10">
-          <span className={`block w-full text-center py-2.5 text-[11px] uppercase tracking-[0.2em] font-body ${product.isOutOfStock ? 'bg-red-600/90 text-white' : 'bg-cream/95 text-ink'}`}>
+        <div className="quick-cta absolute inset-x-3 bottom-3 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+          <span className={`block w-full text-center py-2.5 text-[11px] uppercase tracking-[0.2em] font-body shadow-sm ${product.isOutOfStock ? 'bg-red-600/90 text-white' : 'bg-cream/95 text-ink'}`}>
             {product.isOutOfStock ? 'Agotado' : 'Ver producto'}
           </span>
         </div>
