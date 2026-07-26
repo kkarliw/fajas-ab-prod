@@ -131,8 +131,14 @@ const Shop = () => {
   })), [fullCatalog]);
   const materialOptions = useMemo(() => unique(fullCatalog.map((p) => p.material).filter(Boolean)), [fullCatalog]);
 
+  const searchQuery = (params.get("q") || "").toLowerCase().trim();
+
   const filteredProducts = useMemo(() => {
     return fullCatalog.filter((p: CatalogProduct) => {
+      if (searchQuery) {
+        const fullText = `${p.name} ${p.description || ""} ${p.category || ""} ${p.material || ""}`.toLowerCase();
+        if (!fullText.includes(searchQuery)) return false;
+      }
       if (chip) {
         const fullText = `${p.name} ${p.description || ""} ${p.material || ""}`.toLowerCase();
         if (chip === "Bestseller" && p.tag !== "bestseller") return false;
@@ -149,7 +155,7 @@ const Shop = () => {
       if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
       return true;
     });
-  }, [chip, selectedColors, selectedTypes, selectedSizes, selectedMaterials, priceRange, fullCatalog]);
+  }, [searchQuery, chip, selectedColors, selectedTypes, selectedSizes, selectedMaterials, priceRange, fullCatalog]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 30;
@@ -363,17 +369,33 @@ const Shop = () => {
 
       {/* Toolbar */}
       <div className="container-luxe pt-8 sm:pt-10 flex flex-wrap items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={() => {
-            if (window.innerWidth < 1024) setDrawerOpen(true);
-            else updateParams({ filter: showFilter ? "false" : "true" });
-          }}
-          className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-ink hover:text-gold transition-colors"
-        >
-          <SlidersHorizontal size={14} strokeWidth={1.4} />
-          {showFilter ? "Ocultar filtros" : "Mostrar filtros"}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.innerWidth < 1024) setDrawerOpen(true);
+              else updateParams({ filter: showFilter ? "false" : "true" });
+            }}
+            className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-ink hover:text-gold transition-colors"
+          >
+            <SlidersHorizontal size={14} strokeWidth={1.4} />
+            {showFilter ? "Ocultar filtros" : "Mostrar filtros"}
+          </button>
+
+          {searchQuery ? (
+            <div className="flex items-center gap-2 bg-gold/15 border border-gold/40 px-3 py-1.5 rounded text-xs font-semibold text-ink">
+              <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
+              <button
+                type="button"
+                onClick={() => updateParams({ q: null })}
+                className="text-ink/60 hover:text-red-600 transition-colors ml-1"
+                aria-label="Limpiar búsqueda"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : null}
+        </div>
 
         <div className="flex items-center gap-4 sm:gap-6 order-3 sm:order-2 w-full sm:w-auto justify-between sm:justify-end">
           <p className="font-body text-[12px] text-ink/60">

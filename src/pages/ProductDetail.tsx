@@ -290,25 +290,23 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* Thumbnails grid */}
-          <div className="grid gap-3 mt-3" style={{ gridTemplateColumns: `repeat(${currentGallery.length}, minmax(0, 1fr))` }}>
-            {hasHeroImage
-              ? currentGallery.map((img, i) => (
-                  <button
-                    key={img}
-                    type="button"
-                    onClick={() => setThumb(i)}
-                    className={`aspect-square overflow-hidden border transition-all duration-200 ${thumb === i ? "border-ink ring-1 ring-ink" : "border-border hover:border-ink/50"}`}
-                  >
-                    <LazyImage src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
-                  </button>
-                ))
-              : Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="aspect-square border border-border bg-cream-2 flex items-center justify-center text-ink/25">
-                    <ImageOff size={20} strokeWidth={1.4} />
-                  </div>
-                ))}
-          </div>
+          {/* Thumbnails grid - only render if product has multiple images */}
+          {hasHeroImage && currentGallery.length > 1 && (
+            <div className="flex flex-wrap gap-3 mt-3">
+              {currentGallery.map((img, i) => (
+                <button
+                  key={`${img}-${i}`}
+                  type="button"
+                  onClick={() => setThumb(i)}
+                  className={`w-16 h-16 sm:w-20 sm:h-20 aspect-square overflow-hidden border transition-all duration-200 rounded-sm shrink-0 ${
+                    thumb === i ? "border-ink ring-2 ring-gold scale-105" : "border-border hover:border-ink/50 opacity-75 hover:opacity-100"
+                  }`}
+                >
+                  <LazyImage src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">
