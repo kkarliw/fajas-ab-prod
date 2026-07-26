@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { productMedia } from "@/data/catalog";
-import product1 from "@/assets/product-1.jpg";
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -55,5 +55,6 @@ export function getProductImageUrl(url?: string, slugOrName?: string): string {
     }
   }
 
-  return product1;
+  const noImageSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%239ca3af'%3ESin Imagen%3C/text%3E%3C/svg%3E";
+  return noImageSvg;
 }
