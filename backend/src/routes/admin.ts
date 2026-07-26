@@ -150,6 +150,21 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return sendSuccess(reply, formattedProducts);
   });
 
+const parsePriceInput = (raw: any): number => {
+  if (raw === null || raw === undefined) return 0;
+  let str = String(raw).trim().replace(/[^0-9.,]/g, "");
+  if ((str.match(/\./g) || []).length > 1) {
+    str = str.replace(/\./g, "");
+  } else if (str.includes(".") && str.includes(",")) {
+    str = str.replace(/\./g, "").replace(",", ".");
+  } else if (str.includes(",")) {
+    str = str.replace(",", ".");
+  }
+  const val = Number(str);
+  if (isNaN(val) || val <= 0) return 0;
+  return Math.min(val, 50000000);
+};
+
   app.post("/products", async (request, reply) => {
     try {
       const data = request.body as any;
@@ -168,6 +183,9 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         categoryId = cat.id;
       }
 
+      const pricePesos = parsePriceInput(data.price);
+      const priceCents = Math.round(pricePesos * 100);
+
       // Only persist real URLs — reject base64 data: URIs (too large for VARCHAR)
       const validImages = Array.isArray(data.images) 
         ? data.images.filter((img: any) => typeof img === "string" && !img.startsWith("data:"))
@@ -177,8 +195,8 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         data: {
           slug: data.slug || data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
           name: data.name,
-          basePriceCents: Math.round((data.price || 0) * 100),
-          compareAtPriceCents: data.originalPrice ? Math.round(data.originalPrice * 100) : null,
+          basePriceCents: priceCents,
+          compareAtPriceCents: data.originalPrice ? Math.round(parsePriceInput(data.originalPrice) * 100) : null,
           description: data.description || "",
           material: data.material || null,
           controlLevel: data.controlLevel || null,
@@ -192,7 +210,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
             create: [{
               sku: `SKU-${Date.now()}`,
               stock: data.isOutOfStock ? 0 : (data.stock ?? 10),
-              priceCents: Math.round((data.price || 0) * 100),
+              priceCents: priceCents,
               size: "U",
               colorName: "Base",
             }]
@@ -219,13 +237,16 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       : (data.image && typeof data.image === "string" && !data.image.startsWith("data:") ? [data.image] : []);
 
     try {
+      const pricePesos = parsePriceInput(data.price);
+      const priceCents = Math.round(pricePesos * 100);
+
       const updated = await prisma.product.update({
         where: { id },
         data: {
           name: data.name,
           slug: data.slug,
-          basePriceCents: data.price ? Math.round(data.price * 100) : undefined,
-          compareAtPriceCents: data.originalPrice ? Math.round(data.originalPrice * 100) : null,
+          basePriceCents: priceCents > 0 ? priceCents : undefined,
+          compareAtPriceCents: data.originalPrice ? Math.round(parsePriceInput(data.originalPrice) * 100) : null,
           description: data.description,
           material: data.material,
           controlLevel: data.controlLevel,
@@ -236,6 +257,14 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
           tag: data.tag || null,
         }
       });
+
+      // Synchronize all product variants priceCents to match product basePriceCents
+      if (priceCents > 0) {
+        await prisma.productVariant.updateMany({
+          where: { productId: id },
+          data: { priceCents: priceCents }
+        });
+      }
 
       // Update images
       if (validImages.length > 0) {
@@ -256,7 +285,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       if (data.isOutOfStock !== undefined) {
         await prisma.productVariant.updateMany({
           where: { productId: id },
-          data: { stock: data.isOutOfStock ? 0 : 10 }
+          data: { stock: data.isOutOfStock ? 0 : (data.stock ?? 10) }
         });
       }
 

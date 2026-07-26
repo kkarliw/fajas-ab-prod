@@ -55,15 +55,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     getCart(sessionId).then((res) => {
       if (res && res.items) {
         setCartId(res.id || null);
-        setItems(res.items.map((i: any) => ({
-          id: i.id,
-          slug: i.product?.slug || "",
-          name: i.product?.name || "",
-          price: (i.variant?.priceCents || i.product?.basePriceCents || 0) / 100,
-          image: getProductImageUrl(i.product?.images?.[0]?.url, i.product?.slug),
-          size: i.variant?.size || "",
-          quantity: i.quantity,
-        })));
+        setItems(res.items.map((i: any) => {
+          const basePrice = (i.product?.basePriceCents || 0) / 100;
+          const variantPrice = (i.variant?.priceCents || 0) / 100;
+          let price = basePrice;
+          if (basePrice > 0 && basePrice < 10000000) {
+            price = basePrice;
+          } else if (variantPrice > 0 && variantPrice < 10000000) {
+            price = variantPrice;
+          }
+
+          return {
+            id: i.id,
+            slug: i.product?.slug || "",
+            name: i.product?.name || "",
+            price: price,
+            image: getProductImageUrl(i.product?.images?.[0]?.url, i.product?.slug),
+            size: i.variant?.size || "",
+            quantity: i.quantity,
+          };
+        }));
       }
     }).catch(console.error);
   }, [sessionId]);
