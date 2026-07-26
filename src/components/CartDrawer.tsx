@@ -195,7 +195,7 @@ const CartDrawer = () => {
                             {formatCOP(item.price)}
                           </p>
 
-                          <div className="text-[11px] text-ink/75 font-body pt-2 flex items-baseline justify-between">
+                          <div className="text-[11px] text-ink/75 font-body pt-2 flex items-center justify-between">
                             <div className="space-y-0.5">
                               <p>Talla: <span className="font-bold text-ink">{item.size}</span></p>
                               {item.color && (
@@ -203,33 +203,38 @@ const CartDrawer = () => {
                               )}
                             </div>
                             <button
+                              type="button"
                               onClick={() => removeItem(item.id)}
-                              className="text-[10px] text-muted-foreground hover:text-ink underline transition-colors uppercase tracking-[0.15em] font-bold"
+                              className="inline-flex items-center gap-1 text-[11px] text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/60 px-2.5 py-1.5 rounded transition-all font-semibold touch-manipulation"
+                              aria-label={`Eliminar ${item.name} del carrito`}
                             >
-                              Eliminar
+                              <Trash2 size={12} strokeWidth={1.8} />
+                              <span>Eliminar</span>
                             </button>
                           </div>
                         </div>
 
                         {/* Qty Selector */}
                         <div className="mt-3 flex items-center justify-between">
-                          <div className="inline-flex items-center justify-between border border-border bg-background w-28 h-9 px-1">
+                          <div className="inline-flex items-center justify-between border border-border bg-background w-32 h-10 px-1 rounded">
                             <button
+                              type="button"
                               onClick={() => updateQty(item.id, item.quantity - 1)}
                               aria-label="Disminuir cantidad"
-                              className="w-7 h-7 flex items-center justify-center hover:bg-cream-2 transition-colors text-ink/65"
+                              className="w-9 h-9 flex items-center justify-center hover:bg-cream-2 active:bg-cream-3 transition-all text-ink rounded active:scale-95 touch-manipulation"
                             >
-                              {item.quantity === 1 ? <Trash2 size={13} strokeWidth={1.5} /> : <Minus size={13} strokeWidth={1.5} />}
+                              {item.quantity === 1 ? <Trash2 size={14} strokeWidth={1.5} className="text-red-600" /> : <Minus size={14} strokeWidth={1.5} />}
                             </button>
-                            <span className="text-xs font-semibold tabular-nums text-ink">
+                            <span className="text-sm font-bold tabular-nums text-ink px-2">
                               {item.quantity}
                             </span>
                             <button
+                              type="button"
                               onClick={() => updateQty(item.id, item.quantity + 1)}
                               aria-label="Aumentar cantidad"
-                              className="w-7 h-7 flex items-center justify-center hover:bg-cream-2 transition-colors text-ink/65"
+                              className="w-9 h-9 flex items-center justify-center hover:bg-cream-2 active:bg-cream-3 transition-all text-ink rounded active:scale-95 touch-manipulation"
                             >
-                              <Plus size={13} strokeWidth={1.5} />
+                              <Plus size={14} strokeWidth={1.5} />
                             </button>
                           </div>
                         </div>

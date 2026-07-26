@@ -40,6 +40,7 @@ const AdminProducts = () => {
     images: [] as string[],
     status: "published" as "published" | "draft" | "archived",
     isOutOfStock: false,
+    stock: 10,
     tag: "",
     controlLevel: "",
     uses: "",
@@ -100,6 +101,7 @@ const AdminProducts = () => {
       images: p.images ? p.images.map((img: any) => img.url) : (p.image ? [p.image] : []),
       status: p.status || "published",
       isOutOfStock: p.isOutOfStock || false,
+      stock: p.stock ?? (p.variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 10),
       tag: p.tag || "",
       controlLevel: p.controlLevel || "",
       uses: p.uses || "",
@@ -124,6 +126,7 @@ const AdminProducts = () => {
       images: [],
       status: "published",
       isOutOfStock: false,
+      stock: 10,
       tag: "",
       controlLevel: "",
       uses: "",
@@ -281,6 +284,7 @@ const AdminProducts = () => {
                 <th className="p-4">Categoría</th>
                 <th className="p-4">Precio</th>
                 <th className="p-4">Tallas</th>
+                <th className="p-4 text-center">Stock</th>
                 <th className="p-4 text-center">Estado</th>
                 <th className="p-4 text-right">Acciones</th>
               </tr>
@@ -321,6 +325,17 @@ const AdminProducts = () => {
                         </span>
                       ))}
                     </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    {product.isOutOfStock || (product.stock !== undefined && product.stock <= 0) ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-red-700 bg-red-100/90 border border-red-200 px-2 py-1 rounded">
+                        0 un. (Agotado)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/90 border border-emerald-200 px-2 py-1 rounded">
+                        {product.stock ?? (product.variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || "10")} un.
+                      </span>
+                    )}
                   </td>
                   <td className="p-4 text-center">
                     <div className="flex flex-col gap-1 items-center">
@@ -531,25 +546,46 @@ const AdminProducts = () => {
                     </select>
                   </div>
                   
-                  {/* Agotado Checkbox */}
-                  <div className="pt-2">
-                    <label className="flex items-center gap-3 cursor-pointer p-3 border border-border/60 rounded hover:bg-cream-2/20 transition-colors">
-                      <div className="relative flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={formData.isOutOfStock}
-                          onChange={(e) => setFormData({ ...formData, isOutOfStock: e.target.checked })}
-                          className="w-5 h-5 appearance-none border border-border rounded cursor-pointer bg-cream/5 checked:bg-gold checked:border-gold transition-all"
-                        />
-                        <svg className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-ink pointer-events-none transition-opacity ${formData.isOutOfStock ? 'opacity-100' : 'opacity-0'}`} viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1 5L4.5 8.5L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <span className="block text-sm font-semibold text-ink leading-none">Marcar como Agotado</span>
-                        <span className="block text-[11px] text-muted-foreground mt-1">Si está marcado, el producto aparecerá como agotado y no se podrá comprar.</span>
-                      </div>
-                    </label>
+                  {/* Stock & Agotado Controls */}
+                  <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">Unidades Disponibles (Stock)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Ej. 10"
+                        value={formData.stock}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setFormData({ 
+                            ...formData, 
+                            stock: val, 
+                            isOutOfStock: val <= 0 ? true : formData.isOutOfStock 
+                          });
+                        }}
+                        className="w-full h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-bold"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">Estado de Disponibilidad</label>
+                      <label className="flex items-center gap-3 cursor-pointer p-2.5 border border-border/60 rounded hover:bg-cream-2/20 transition-colors h-11">
+                        <div className="relative flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.isOutOfStock}
+                            onChange={(e) => setFormData({ ...formData, isOutOfStock: e.target.checked })}
+                            className="w-5 h-5 appearance-none border border-border rounded cursor-pointer bg-cream/5 checked:bg-red-600 checked:border-red-600 transition-all"
+                          />
+                          <svg className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white pointer-events-none transition-opacity ${formData.isOutOfStock ? 'opacity-100' : 'opacity-0'}`} viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 5L4.5 8.5L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <span className="block text-xs font-bold text-ink">Marcar como AGOTADO</span>
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
