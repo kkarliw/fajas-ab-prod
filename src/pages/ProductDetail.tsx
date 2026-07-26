@@ -47,73 +47,64 @@ const toCatalogProduct = (product: ProductDTO): CatalogProduct => {
 const ProductDetail = () => {
   const { slug } = useParams();
   const { addItem } = useCart();
-  const [product, setProduct] = useState<CatalogProduct | null>(null);
-  const [related, setRelated] = useState<CatalogProduct[]>([]);
   const [size, setSize] = useState<string>(defaultSizes[0]);
   const [activeTab, setActiveTab] = useState<"details" | "fit" | "shipping">("details");
   const [thumb, setThumb] = useState(0);
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
-  const [isLoading, setIsLoading] = useState(true);
   const [sizeCalcOpen, setSizeCalcOpen] = useState(false);
   const zoomRef = useRef<HTMLDivElement>(null);
   const lastTouchTime = useRef<number>(0);
 
-  useEffect(() => {
-    let mounted = true;
-    setIsLoading(true);
+  // 1. Fetch catalog with 10-min cache for instant product switching
+  const { data: dbProducts = [] } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: () => getProducts(),
+    staleTime: 1000 * 60 * 10,
+  });
 
-    if (!slug) return;
+  const fullCatalog: CatalogProduct[] = useMemo(() => {
+    return dbProducts.map(toCatalogProduct);
+  }, [dbProducts]);
 
-    void Promise.all([getProductBySlug(slug), getRelated(slug)]).then(([productData, relatedData]) => {
-      if (!mounted) return;
-      const mapped = toCatalogProduct(productData);
-      setProduct(mapped);
-      setRelated(relatedData.map(toCatalogProduct));
-      setSize(mapped.sizes[0] ?? defaultSizes[0]);
-      setThumb(0);
-      setIsLoading(false);
-    });
+  // Instant lookup from memory cache
+  const cachedProduct = useMemo(() => {
+    if (!slug) return null;
+    return fullCatalog.find((p) => p.slug === slug) || null;
+  }, [slug, fullCatalog]);
 
-    return () => {
-      mounted = false;
-    };
-  }, [slug]);
+  // 2. Fetch specific product & related with React Query (cached)
+  const { data: fetchedProductData, isLoading: isFetchingProduct } = useQuery({
+    queryKey: ["product", slug],
+    queryFn: () => (slug ? getProductBySlug(slug) : null),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: fetchedRelatedData = [] } = useQuery({
+    queryKey: ["related", slug],
+    queryFn: () => (slug ? getRelated(slug) : []),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const product: CatalogProduct | null = useMemo(() => {
+    if (fetchedProductData) return toCatalogProduct(fetchedProductData);
+    return cachedProduct;
+  }, [fetchedProductData, cachedProduct]);
+
+  const related: CatalogProduct[] = useMemo(() => {
+    if (fetchedRelatedData.length > 0) return fetchedRelatedData.map(toCatalogProduct);
+    if (!product) return [];
+    return fullCatalog.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4);
+  }, [fetchedRelatedData, fullCatalog, product]);
+
+  const isLoading = !product && isFetchingProduct;
 
   useEffect(() => {
     if (!product) return;
     setSize(product.sizes[0] ?? defaultSizes[0]);
     setThumb(0);
-  }, [product]);
-
-  const gallery = useMemo(() => {
-    if (!product) return [];
-    return (product.gallery?.length ? product.gallery : [product.image]);
-  }, [product]);
-
-  // Fetch all products to use for complements
-  const { data: dbProducts = [] } = useQuery({
-    queryKey: ["products", "all"],
-    queryFn: getProducts
-  });
-
-  const fullCatalog: CatalogProduct[] = useMemo(() => {
-    return dbProducts.map(p => ({
-      slug: p.slug,
-      name: p.name,
-      price: p.priceCents / 100,
-      originalPrice: p.originalPriceCents ? p.originalPriceCents / 100 : undefined,
-      image: p.images?.[0]?.url || "",
-      gallery: p.images?.map(i => i.url) || [],
-      tag: p.tag as any,
-      category: p.category as any,
-      isOutOfStock: p.isOutOfStock,
-      description: p.description,
-      bullets: [],
-      sizes: p.sizes || [],
-      material: p.material || "",
-      colors: p.colors || [],
-    }));
-  }, [dbProducts]);
+  }, [product?.slug]);
 
   const complements = useMemo(() => {
     if (!product || fullCatalog.length === 0) return [];
@@ -123,6 +114,12 @@ const ProductDetail = () => {
     }
     return fullCatalog.filter((p) => ["Fajas", "Brasieres"].includes(p.category) && p.slug !== product.slug).slice(0, 4);
   }, [product, fullCatalog]);
+
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    if (product.gallery && product.gallery.length > 0) return product.gallery;
+    return product.image ? [product.image] : [];
+  }, [product]);
 
   const hasHeroImage = Boolean(product && (gallery[0] ?? product.image));
 

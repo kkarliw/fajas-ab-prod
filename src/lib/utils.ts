@@ -28,12 +28,16 @@ const slugify = (s?: string): string => {
 };
 
 export function getProductImageUrl(url?: string, slugOrName?: string): string {
+  if (url && (url.includes("placeholder") || url.startsWith("/placeholder"))) {
+    url = undefined;
+  }
+
   if (url && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:"))) {
     return url;
   }
 
   if (url && url.startsWith("/uploads/")) {
-    const baseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:3001";
+    const baseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "https://fajas-ab-prod.onrender.com";
     return `${baseUrl}${url}`;
   }
 
