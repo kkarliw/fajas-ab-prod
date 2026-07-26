@@ -30,8 +30,8 @@ const AdminProducts = () => {
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
-    price: 0,
-    originalPrice: "",
+    price: "" as string | number,
+    originalPrice: "" as string | number,
     category: "Fajas",
     material: "",
     description: "",
@@ -116,7 +116,7 @@ const AdminProducts = () => {
     setFormData({
       name: "",
       slug: "",
-      price: 0,
+      price: "",
       originalPrice: "",
       category: "Fajas",
       material: "",
@@ -200,12 +200,18 @@ const AdminProducts = () => {
     
     const slug = formData.slug || formData.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+    const parseLocalPrice = (val: string | number) => {
+      if (!val) return 0;
+      const clean = String(val).replace(/\./g, '').replace(/,/g, '').replace(/\$/g, '').trim();
+      return Number(clean) || 0;
+    };
+
     const pData = {
       ...formData,
       id: currentProduct?.id,
       slug,
-      price: Number(formData.price),
-      originalPrice: formData.originalPrice ? Number(formData.originalPrice) : undefined,
+      price: parseLocalPrice(formData.price),
+      originalPrice: formData.originalPrice ? parseLocalPrice(formData.originalPrice) : undefined,
       sizes: sizesArray.length ? sizesArray : ["Única"],
       colors: colorsArray.length ? colorsArray : ["Cocoa"],
       isOutOfStock: formData.isOutOfStock,
@@ -486,9 +492,10 @@ const AdminProducts = () => {
                 <div className="space-y-1.5">
                   <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">Precio (COP)</label>
                   <input
-                    type="number"
+                    type="text"
+                    placeholder="Ej. 150.000"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="w-full h-10 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold"
                     required
                   />
@@ -498,8 +505,8 @@ const AdminProducts = () => {
                 <div className="space-y-1.5">
                   <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">Precio Comparación (Descuento)</label>
                   <input
-                    type="number"
-                    placeholder="Vacío si no hay descuento"
+                    type="text"
+                    placeholder="Vacío si no hay descuento. Ej. 200.000"
                     value={formData.originalPrice}
                     onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
                     className="w-full h-10 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold"
