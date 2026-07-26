@@ -31,7 +31,16 @@ export const orderService = {
         throw new Error(`Not enough stock for ${item.product.name} (Size: ${item.variant.size})`);
       }
 
-      const price = item.variant.priceCents || item.product.basePriceCents;
+      let price = item.variant.priceCents || item.product.basePriceCents;
+      
+      // SAFEGUARD: If the variant has the corrupted 2147483647 value, fall back to base price
+      if (price > 1000000000) { // Over 10 million COP
+        price = item.product.basePriceCents;
+      }
+      if (price > 1000000000) { // If basePrice is ALSO corrupted, fallback to 0 to prevent huge charges
+        price = 0;
+      }
+
       const total = price * item.quantity;
       subtotalCents += total;
 
