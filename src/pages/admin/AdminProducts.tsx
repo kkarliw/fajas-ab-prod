@@ -7,7 +7,8 @@ import {
   Trash2, 
   X, 
   FolderOpen,
-  AlertTriangle
+  AlertTriangle,
+  Copy
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { api } from "@/api";
@@ -109,6 +110,34 @@ const AdminProducts = () => {
       seoDescription: p.seoDescription || ""
     });
     setIsEditModalOpen(true);
+  };
+
+  const handleDuplicate = (p: any) => {
+    setCurrentProduct(null); // Force creation of a new product instead of updating
+    const duplicateName = `${p.name} - Copia`;
+    const duplicateSlug = `${p.slug || p.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-copia`;
+    setFormData({
+      name: duplicateName,
+      slug: duplicateSlug,
+      price: p.price ?? (p.basePriceCents ? p.basePriceCents / 100 : ""),
+      originalPrice: p.originalPrice ?? (p.compareAtPriceCents ? p.compareAtPriceCents / 100 : ""),
+      category: p.category || "Fajas",
+      material: p.material || "",
+      description: p.description || "",
+      sizes: Array.isArray(p.sizes) ? p.sizes.join(", ") : p.sizes || "",
+      colors: Array.isArray(p.colors) ? p.colors.join(", ") : p.colors || "",
+      images: p.images ? p.images.map((img: any) => img.url) : (p.image ? [p.image] : []),
+      status: "draft", // Save as draft by default
+      isOutOfStock: p.isOutOfStock || false,
+      stock: p.stock ?? (p.variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 10),
+      tag: p.tag || "",
+      controlLevel: p.controlLevel || "",
+      uses: p.uses || "",
+      seoTitle: p.seoTitle || "",
+      seoDescription: p.seoDescription || ""
+    });
+    setIsEditModalOpen(true);
+    toast({ title: "Producto duplicado", description: "Modifica la copia y guarda los cambios." });
   };
 
   const handleOpenAdd = () => {
@@ -366,6 +395,22 @@ const AdminProducts = () => {
                         title="Editar"
                       >
                         <Edit3 size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicate(product)}
+                        className="p-2 border border-border/50 text-ink/80 hover:bg-cream-2 hover:text-gold transition-all"
+                        title="Duplicar"
+                      >
+                        <Copy size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicate(product)}
+                        className="p-2 border border-border/50 text-ink/80 hover:bg-cream-2 hover:text-gold transition-all"
+                        title="Duplicar"
+                      >
+                        <Copy size={14} />
                       </button>
                       <button
                         type="button"

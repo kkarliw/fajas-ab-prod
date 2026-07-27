@@ -7,6 +7,7 @@ import { prisma } from "../lib/prisma.js";
 const addItemSchema = z.object({
   slug: z.string(),
   size: z.string(),
+  color: z.string().optional(),
   quantity: z.number().min(1).default(1),
   sessionId: z.string().optional(),
 });
@@ -60,7 +61,7 @@ export const cartRoutes: FastifyPluginAsync = async (app) => {
     const cart = await cartService.getOrCreateCart(userId ?? undefined, sessionId ?? undefined);
 
     try {
-      const item = await cartService.addItem(cart.id, payload.slug, payload.size, payload.quantity);
+      const item = await cartService.addItem(cart.id, payload.slug, payload.size, payload.color, payload.quantity);
       return sendSuccess(reply, item);
     } catch (err: any) {
       return reply.status(400).send({ ok: false, error: err.message });

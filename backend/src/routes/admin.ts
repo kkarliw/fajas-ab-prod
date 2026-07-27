@@ -235,13 +235,15 @@ const parsePriceInput = (raw: any): number => {
           status: data.status || "draft",
           tag: data.tag || null,
           variants: {
-            create: [{
-              sku: `SKU-${Date.now()}`,
-              stock: data.isOutOfStock ? 0 : (data.stock ?? 10),
-              priceCents: priceCents,
-              size: "U",
-              colorName: "Base",
-            }]
+            create: (data.sizes && data.sizes.length > 0 ? data.sizes : ["U"]).flatMap((s: string) => 
+              (data.colors && data.colors.length > 0 ? data.colors : ["Base"]).map((c: string) => ({
+                sku: `SKU-${Math.random().toString(36).substring(7).toUpperCase()}-${s}-${c}`,
+                stock: data.isOutOfStock ? 0 : (data.stock ?? 10),
+                priceCents: priceCents,
+                size: s,
+                colorName: c,
+              }))
+            )
           },
           images: validImages.length > 0 ? {
             create: validImages.map((url: string, index: number) => ({ url, isPrimary: index === 0 }))
@@ -315,6 +317,28 @@ const parsePriceInput = (raw: any): number => {
           where: { productId: id },
           data: { stock: data.isOutOfStock ? 0 : (data.stock ?? 10) }
         });
+      }
+
+      // Synchronize variants (create missing ones)
+      if (Array.isArray(data.sizes) && Array.isArray(data.colors) && data.sizes.length > 0 && data.colors.length > 0) {
+        const currentVariants = await prisma.productVariant.findMany({ where: { productId: id } });
+        for (const s of data.sizes) {
+          for (const c of data.colors) {
+            const exists = currentVariants.find((v: any) => v.size === s && v.colorName === c);
+            if (!exists) {
+              await prisma.productVariant.create({
+                data: {
+                  productId: id,
+                  size: s,
+                  colorName: c,
+                  sku: `SKU-${Math.random().toString(36).substring(7).toUpperCase()}-${s}-${c}`,
+                  stock: data.isOutOfStock ? 0 : (data.stock ?? 10),
+                  priceCents: priceCents > 0 ? priceCents : (currentVariants[0]?.priceCents ?? 0)
+                }
+              });
+            }
+          }
+        }
       }
 
       return sendSuccess(reply, updated);

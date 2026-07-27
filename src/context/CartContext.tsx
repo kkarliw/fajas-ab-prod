@@ -12,6 +12,7 @@ export type CartItem = {
   price: number;
   image: string;
   size: string;
+  color?: string;
   category?: string;
   quantity: number;
 };
@@ -87,14 +88,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     try {
       // Optimizacion: Para no trabar UI, podemos actualizar localmente primero
       // pero para evitar errores de desincronización, llamamos la API.
-      const res = await addItemToCart(item.slug, item.size, qty, sessionId);
+      const res = await addItemToCart(item.slug, item.size, item.color, qty, sessionId);
       
-      setCartId((prev) => prev || res.cartId);
+      if (!cartId && res.cartId) {
+        setCartId(res.cartId);
+      }
       
       setItems((prev) => {
-        const existing = prev.find((p) => p.slug === item.slug && p.size === item.size);
+        const existing = prev.find((p) => p.slug === item.slug && p.size === item.size && p.color === item.color);
         if (existing) {
-          return prev.map((p) => (p.slug === item.slug && p.size === item.size ? { ...p, quantity: p.quantity + qty } : p));
+          return prev.map((p) => (p.slug === item.slug && p.size === item.size && p.color === item.color ? { ...p, quantity: p.quantity + qty } : p));
         }
         return [...prev, { ...item, id: res.id, quantity: qty }];
       });

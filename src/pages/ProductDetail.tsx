@@ -49,6 +49,7 @@ const ProductDetail = () => {
   const { slug } = useParams();
   const { addItem } = useCart();
   const [size, setSize] = useState<string>(defaultSizes[0]);
+  const [color, setColor] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"details" | "fit" | "shipping">("details");
   const [thumb, setThumb] = useState(0);
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
@@ -101,9 +102,23 @@ const ProductDetail = () => {
 
   const isLoading = !product && isFetchingProduct;
 
+  // Ensure color and size are set when product loads
   useEffect(() => {
+    if (product) {
+      if (!size || !product.sizes.includes(size)) {
+        setSize(product.sizes[0]);
+      }
+      if (!color || !product.colors.includes(color)) {
+        setColor(product.colors[0]);
+      }
+    }
+  }, [product]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
     if (!product) return;
     setSize(product.sizes[0] ?? defaultSizes[0]);
+    setColor(product.colors[0] ?? "");
     setThumb(0);
   }, [product?.slug]);
 
@@ -377,9 +392,16 @@ const ProductDetail = () => {
             <p className="eyebrow text-ink/70">Color disponible</p>
             <div className="flex flex-wrap gap-2">
               {product.colors.map((c) => (
-                <span key={c} className="px-3 py-2 text-[11px] uppercase tracking-[0.16em] border border-border">
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  className={`px-3 py-2 text-[11px] uppercase tracking-[0.16em] border ${
+                    color === c ? "bg-ink text-ink-soft border-ink font-bold" : "border-border text-ink/80 hover:border-ink"
+                  }`}
+                >
                   {c}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -395,6 +417,7 @@ const ProductDetail = () => {
                 image: product.image,
                 category: product.category,
                 size,
+                color,
               })
             }
             className={`w-full h-12 text-[11px] uppercase tracking-[0.22em] font-bold transition-colors ${

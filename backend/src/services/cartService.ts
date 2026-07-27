@@ -39,16 +39,20 @@ export const cartService = {
     return cart;
   },
 
-  async addItem(cartId: string, slug: string, size: string, quantity: number) {
+  async addItem(cartId: string, slug: string, size: string, color: string | undefined, quantity: number) {
     // Look up product and variant
     const product = await prisma.product.findUnique({ where: { slug } });
     if (!product) throw new Error("Product not found");
 
     const variant = await prisma.productVariant.findFirst({
-      where: { productId: product.id, size }
+      where: { 
+        productId: product.id, 
+        size,
+        ...(color ? { colorName: color } : {})
+      }
     });
     
-    if (!variant) throw new Error("Variant not found for size " + size);
+    if (!variant) throw new Error(`Variant not found for size ${size}${color ? ` and color ${color}` : ''}`);
 
     const productId = product.id;
     const variantId = variant.id;

@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { api } from "@/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { adminDb, DbCampaign, DbCoupon, DbProduct } from "@/utils/adminDb";
 import { formatCOP } from "@/data/catalog";
@@ -607,12 +609,12 @@ const AdminSubscribers = () => {
 
               <div>
                 <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5 font-bold">Mensaje (Cuerpo del Email)</label>
-                <textarea
-                  placeholder="Escribe el mensaje detallado para tus clientes..."
+                <ReactQuill
+                  theme="snow"
                   value={campaignForm.content}
-                  onChange={(e) => setCampaignForm({ ...campaignForm, content: e.target.value })}
-                  className="w-full h-32 p-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold resize-none"
-                  required
+                  onChange={(val) => setCampaignForm({ ...campaignForm, content: val })}
+                  className="bg-background rounded-md text-sm border-none"
+                  style={{ minHeight: '150px' }}
                 />
               </div>
 

@@ -19,8 +19,8 @@ export async function getCart(sessionId?: string): Promise<{ id?: string, items:
   return client.get(`/api/v1/cart${query}`);
 }
 
-export async function addItemToCart(slug: string, size: string, quantity: number, sessionId?: string) {
-  return client.post("/api/v1/cart/items", { slug, size, quantity, sessionId });
+export async function addItemToCart(slug: string, size: string, color: string | undefined, quantity: number, sessionId?: string) {
+  return client.post("/api/v1/cart/items", { slug, size, color, quantity, sessionId });
 }
 
 export async function updateCartItem(itemId: string, quantity: number) {
