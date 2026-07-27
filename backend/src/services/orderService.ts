@@ -241,7 +241,7 @@ export const orderService = {
     try {
       const order = await prisma.order.findUnique({
         where: { reference },
-        include: { items: true }
+        include: { items: { include: { product: { include: { images: true } } } } }
       });
       // Only send email if the payment is approved. Mismatches become 'declined'.
       if (order && order.email && order.paymentStatus === 'approved') {
@@ -255,13 +255,19 @@ export const orderService = {
         const deptLine = address?.department || address?.state || '';
         const addressText = address ? [addressLine, cityLine, deptLine].filter(Boolean).join(", ") : "N/A";
 
-        const itemsHtml = order.items.map(item => `
-          <div class="item-row clearfix">
-            <span class="item-name">${item.nameSnapshot}</span><br>
-            <span class="item-meta">Talla: ${item.sizeSnapshot} | Color: ${item.colorSnapshot} | Cantidad: ${item.quantity}</span>
-            <span class="item-price">${formatPrice(item.totalCents)}</span>
+        const itemsHtml = order.items.map(item => {
+          const imgUrl = item.product?.images?.[0]?.url || "";
+          return `
+          <div class="item-row clearfix" style="display: flex; align-items: center; margin-bottom: 15px;">
+            ${imgUrl ? `<img src="${imgUrl}" alt="${item.nameSnapshot}" style="width: 60px; height: 80px; object-fit: cover; margin-right: 15px; border-radius: 4px; border: 1px solid #E5E5E5;">` : ''}
+            <div style="flex: 1;">
+              <span class="item-name" style="display: block; font-weight: 600; margin-bottom: 4px;">${item.nameSnapshot}</span>
+              <span class="item-meta" style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Talla: ${item.sizeSnapshot} | Color: ${item.colorSnapshot} | Cantidad: ${item.quantity}</span>
+              <span class="item-price" style="display: block; font-weight: 600;">${formatPrice(item.totalCents)}</span>
+            </div>
           </div>
-        `).join("");
+          `;
+        }).join("");
 
         const emailContentHtml = `
           <p class="text">Hola <strong>${order.customerName.split(' ')[0] || 'Cliente'}</strong>,</p>

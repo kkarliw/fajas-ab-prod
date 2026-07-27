@@ -127,6 +127,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
     credentials: "include",
     headers,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    cache: "no-store",
   });
 
   if (response.status === 401 && options.auth !== false && !options.retrying) {

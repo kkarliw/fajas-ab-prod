@@ -12,14 +12,17 @@ import NewsletterSection from "@/components/NewsletterSection";
 import ServiceStrip from "@/components/ServiceStrip";
 import Footer from "@/components/Footer";
 import PromoPopup from "@/components/PromoPopup";
+import { SEO } from "@/components/SEO";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-cream">
+      <SEO />
       <Ticker />
       <Navbar />
       <PromoBar />
       <main id="main">
+        <h1 className="sr-only">Fajas Colombianas Postquirúrgicas, Reductoras y Moldeadoras - FAJAS AB</h1>
         <HeroSection />
         <CategoriesSection />
         <ProductsSection />

@@ -93,16 +93,40 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       const updateData: any = {};
       if (status !== undefined) updateData.status = status;
       if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
-      if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
-      if (carrier !== undefined) updateData.carrier = carrier;
 
       const updatedOrder = await prisma.order.update({
         where: { id },
         data: updateData,
       });
 
+      let finalTrackingNumber = trackingNumber;
+      let finalCarrier = carrier;
+
+      if (trackingNumber !== undefined || carrier !== undefined) {
+        let shipment = await prisma.shipment.findFirst({ where: { orderId: id } });
+        if (shipment) {
+          await prisma.shipment.update({
+            where: { id: shipment.id },
+            data: { 
+              ...(trackingNumber !== undefined && { trackingNumber }),
+              ...(carrier !== undefined && { carrier })
+            }
+          });
+          if (trackingNumber === undefined) finalTrackingNumber = shipment.trackingNumber || undefined;
+          if (carrier === undefined) finalCarrier = shipment.carrier || undefined;
+        } else {
+          await prisma.shipment.create({
+            data: {
+              orderId: id,
+              trackingNumber: trackingNumber || null,
+              carrier: carrier || null
+            }
+          });
+        }
+      }
+
       if (status === "fulfilled" || status === "shipped" || trackingNumber) {
-        orderService.sendShippingNotification(id, trackingNumber || (updatedOrder as any).trackingNumber || undefined, carrier || (updatedOrder as any).carrier || undefined).catch(() => {});
+        orderService.sendShippingNotification(id, finalTrackingNumber, finalCarrier).catch(() => {});
       }
 
       return sendSuccess(reply, updatedOrder);

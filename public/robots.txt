@@ -15,4 +15,4 @@ Allow: /
 Disallow: /admin
 Disallow: /checkout/
 
-Sitemap: https://wheat-gerbil-544508.hostingersite.com/sitemap.xml
+Sitemap: https://www.fajasab.com/sitemap.xml

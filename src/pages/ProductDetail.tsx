@@ -15,6 +15,7 @@ import { formatCOP, type CatalogProduct } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
 import { getProductBySlug, getRelated, getProducts } from "@/api/products";
 import type { ProductDTO } from "@/types/dtos";
+import { SEO } from "@/components/SEO";
 
 const defaultSizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -207,8 +208,34 @@ const ProductDetail = () => {
 
   const currentGallery = gallery.length ? gallery : [product.image];
 
+  const jsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    name: product.name,
+    image: currentGallery,
+    description: product.description,
+    brand: {
+      "@type": "Brand",
+      name: "FAJAS AB"
+    },
+    offers: {
+      "@type": "Offer",
+      url: `https://www.fajasab.com/product/${product.slug}`,
+      priceCurrency: "COP",
+      price: product.price,
+      availability: product.isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+    }
+  };
+
   return (
     <div className="min-h-screen bg-cream">
+      <SEO 
+        title={`${product.name} | FAJAS AB`}
+        description={product.description}
+        image={currentGallery[0]}
+        url={`https://www.fajasab.com/product/${product.slug}`}
+        jsonLd={jsonLd}
+      />
       <Ticker />
       <Navbar />
       <PromoBar />

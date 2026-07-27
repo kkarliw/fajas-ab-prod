@@ -572,7 +572,7 @@ const Checkout = () => {
                       <p className="text-xs text-muted-foreground leading-relaxed">Cotizamos la tarifa exacta del flete a tu ciudad y país directamente por WhatsApp para coordinar tu envío.</p>
                     </div>
                     <a
-                      href="https://wa.me/573107086902?text=¡Hola!%20Me%20interesa%20hacer%20un%20pedido%20con%20envío%20internacional"
+                      href="https://wa.me/5730020344943?text=¡Hola!%20Me%20interesa%20hacer%20un%20pedido%20con%20envío%20internacional"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-2.5 rounded text-xs font-bold uppercase tracking-wider shrink-0 transition-colors shadow-sm"

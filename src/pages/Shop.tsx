@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import PromoBar from "@/components/PromoBar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import Skeleton from "@/components/ui/Skeleton";
+import { SEO } from "@/components/SEO";
 import { formatCOP, type CatalogProduct } from "@/data/catalog";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, SlidersHorizontal, ArrowRight, X, Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
 
@@ -334,6 +336,10 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-cream">
+      <SEO 
+        title="Catálogo de Fajas Colombianas y Postquirúrgicas | FAJAS AB"
+        description="Explora nuestro catálogo de fajas colombianas de alta compresión, cinturillas y brasieres postquirúrgicos. Moldea tu figura con FAJAS AB."
+      />
       <Ticker />
       <Navbar />
       <PromoBar />
