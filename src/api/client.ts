@@ -112,7 +112,7 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   // Send sessionId globally so backend knows who the cart belongs to, even for DELETE/PATCH requests
-  const sessionId = typeof window !== "undefined" ? localStorage.getItem("cart_session") : null;
+  const sessionId = typeof window !== "undefined" ? localStorage.getItem("ab_cart_session_v1") : null;
   if (sessionId) {
     headers["x-session-id"] = sessionId;
   }
