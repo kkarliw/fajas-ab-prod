@@ -1208,6 +1208,17 @@ export const colombianCitiesByDepartment: Record<string, string[]> = {
   ]
 };
 
+export const OTHER_CITY_OPTION = "Otra ciudad (Escribir libremente)";
+
+export const streetTypePrefixes = [
+  { label: "Calle", value: "Calle" },
+  { label: "Carrera", value: "Carrera" },
+  { label: "Avenida", value: "Avenida" },
+  { label: "Transversal", value: "Transversal" },
+  { label: "Diagonal", value: "Diagonal" },
+  { label: "Manzana / Conjunto", value: "Manzana" },
+] as const;
+
 export const contactSubjectOptions = [
   "Preguntas sobre mi pedido",
   "Cambios y devoluciones",
@@ -1215,4 +1226,4 @@ export const contactSubjectOptions = [
   "Ventas al por mayor",
   "Felicitaciones / Quejas",
   "Otro"
-];
+] as const;
