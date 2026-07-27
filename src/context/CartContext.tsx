@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode, useCallback } from "react";
 import { getCart, addItemToCart, updateCartItem, removeCartItem } from "../api/cart";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
 import { getProductImageUrl } from "../lib/utils";
@@ -105,12 +106,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [sessionId]);
 
-  const removeItem = useCallback(async (id: string) => {
+  const removeItem = useCallback(async (id: string, itemName?: string) => {
     try {
       await removeCartItem(id);
       setItems((prev) => prev.filter((p) => p.id !== id));
+      toast.success(itemName ? `${itemName} eliminado del carrito` : "Producto eliminado del carrito", {
+        position: "top-center",
+        duration: 3000,
+        style: { background: '#1a1510', color: '#fff', border: '1px solid #d4af7a' }
+      });
     } catch (err) {
       console.error("Error removing from cart", err);
+      toast.error("No se pudo eliminar el producto", {
+        position: "top-center"
+      });
     }
   }, []);
 
@@ -147,7 +156,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     openCart,
     closeCart,
     addItem,
-    removeItem,
+    removeItem: (id) => {
+      const item = items.find((i) => i.id === id);
+      removeItem(id, item?.name);
+    },
     updateQty,
     clear,
     subtotal,

@@ -111,6 +111,12 @@ const request = async <T>(path: string, options: RequestOptions = {}): Promise<T
     headers["Content-Type"] = "application/json";
   }
 
+  // Send sessionId globally so backend knows who the cart belongs to, even for DELETE/PATCH requests
+  const sessionId = typeof window !== "undefined" ? localStorage.getItem("cart_session") : null;
+  if (sessionId) {
+    headers["x-session-id"] = sessionId;
+  }
+
   const token = options.auth === false ? null : getAccessToken();
   if (token) {
     headers.Authorization = `Bearer ${token}`;

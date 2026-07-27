@@ -4,6 +4,7 @@ import { authenticateAdmin } from "../middleware/authenticateAdmin.js";
 import { prisma } from "../lib/prisma.js";
 import { sendSuccess } from "../utils/response.js";
 import { z } from "zod";
+import { orderService } from "../services/orderService.js";
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
   // All admin routes require authentication and admin role
@@ -85,26 +86,29 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.patch("/orders/:id/status", async (request, reply) => {
-    const { id } = request.params as { id: string };
-    const { status, paymentStatus, trackingNumber, carrier } = request.body as { status?: string; paymentStatus?: string; trackingNumber?: string; carrier?: string };
+    try {
+      const { id } = request.params as { id: string };
+      const { status, paymentStatus, trackingNumber, carrier } = request.body as { status?: string; paymentStatus?: string; trackingNumber?: string; carrier?: string };
 
-    const updateData: any = {};
-    if (status !== undefined) updateData.status = status;
-    if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
-    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
-    if (carrier !== undefined) updateData.carrier = carrier;
+      const updateData: any = {};
+      if (status !== undefined) updateData.status = status;
+      if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
+      if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
+      if (carrier !== undefined) updateData.carrier = carrier;
 
-    const updatedOrder = await prisma.order.update({
-      where: { id },
-      data: updateData,
-    });
+      const updatedOrder = await prisma.order.update({
+        where: { id },
+        data: updateData,
+      });
 
-    if (status === "fulfilled" || status === "shipped" || trackingNumber) {
-      const { orderService } = await import("../services/orderService.js");
-      orderService.sendShippingNotification(id, trackingNumber || (updatedOrder as any).trackingNumber || undefined, carrier || (updatedOrder as any).carrier || undefined).catch(() => {});
+      if (status === "fulfilled" || status === "shipped" || trackingNumber) {
+        orderService.sendShippingNotification(id, trackingNumber || (updatedOrder as any).trackingNumber || undefined, carrier || (updatedOrder as any).carrier || undefined).catch(() => {});
+      }
+
+      return sendSuccess(reply, updatedOrder);
+    } catch (err: any) {
+      return reply.status(500).send({ ok: false, error: err?.message || "Error al actualizar la orden" });
     }
-
-    return sendSuccess(reply, updatedOrder);
   });
 
   // --- PRODUCTS ---
