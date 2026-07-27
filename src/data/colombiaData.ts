@@ -1207,3 +1207,12 @@ export const colombianCitiesByDepartment: Record<string, string[]> = {
     "N/A"
   ]
 };
+
+export const contactSubjectOptions = [
+  "Preguntas sobre mi pedido",
+  "Cambios y devoluciones",
+  "Información de envíos",
+  "Ventas al por mayor",
+  "Felicitaciones / Quejas",
+  "Otro"
+];
