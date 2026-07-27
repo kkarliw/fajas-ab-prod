@@ -174,11 +174,11 @@ const HeroSection = () => {
               {!isMobile && (
                 <video
                   ref={videoPcRef}
-                  src="/videos/Hero%20pc.mp4"
+                  src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.mp4"
                   muted
                   loop
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               )}
@@ -186,11 +186,11 @@ const HeroSection = () => {
               {isMobile && (
                 <video
                   ref={videoMobileRef}
-                  src="/videos/Hero%20responsive.mp4"
+                  src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.mp4"
                   muted
                   loop
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               )}
