@@ -113,7 +113,6 @@ const HeroSection = () => {
   }, [current, getSlideDuration]);
 
   const s = slides[current];
-  const shouldLoadVideo = current >= 1; // Only load video resources when user is near slide 2
 
   return (
     <section
@@ -168,35 +167,31 @@ const HeroSection = () => {
           }`}
           style={{ willChange: "opacity" }}
         >
-          {shouldLoadVideo && (
-            <>
-              {/* PC video */}
-              {!isMobile && (
-                <video
-                  ref={videoPcRef}
-                  src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.mp4"
-                  poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.jpg"
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-              {/* Mobile video */}
-              {isMobile && (
-                <video
-                  ref={videoMobileRef}
-                  src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.mp4"
-                  poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.jpg"
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-            </>
+          {/* PC video */}
+          {!isMobile && (
+            <video
+              ref={videoPcRef}
+              src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.mp4"
+              poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.jpg"
+              muted
+              loop
+              playsInline
+              preload="none"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+          {/* Mobile video */}
+          {isMobile && (
+            <video
+              ref={videoMobileRef}
+              src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.mp4"
+              poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.jpg"
+              muted
+              loop
+              playsInline
+              preload="none"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/70 pointer-events-none" />
         </div>
