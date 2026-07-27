@@ -83,7 +83,7 @@ const HeroSection = () => {
   const getSlideDuration = useCallback((slideIndex: number) => {
     const slide = slides[slideIndex];
     if (slide.isVideo) {
-      return isMobile ? 8000 : 5000;
+      return isMobile ? 15000 : 12000; // Increased duration so video doesn't cut off too quickly
     }
     return 6000; // standard image slide duration
   }, [isMobile]);
@@ -175,6 +175,7 @@ const HeroSection = () => {
                 <video
                   ref={videoPcRef}
                   src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.mp4"
+                  poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.jpg"
                   muted
                   loop
                   playsInline
@@ -187,6 +188,7 @@ const HeroSection = () => {
                 <video
                   ref={videoMobileRef}
                   src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.mp4"
+                  poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.jpg"
                   muted
                   loop
                   playsInline
