@@ -39,12 +39,12 @@ const ProductCard = ({ product }: { product: CatalogProduct }) => {
           </div>
         )}
         {product.isOutOfStock ? (
-          <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] font-body font-medium bg-red-600/90 text-white z-10">
+          <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-1.5 py-0.5 sm:px-2.5 sm:py-1 text-[8px] sm:text-[10px] uppercase tracking-[0.18em] font-body font-medium bg-red-600/90 text-white z-10">
             Agotado
           </span>
         ) : product.tag ? (
           <span
-            className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] font-body font-medium z-10 ${
+            className={`absolute top-2 left-2 sm:top-3 sm:left-3 px-1.5 py-0.5 sm:px-2.5 sm:py-1 text-[8px] sm:text-[10px] uppercase tracking-[0.18em] font-body font-medium z-10 ${
               tagStyles[product.tag] ?? "bg-ink text-ink-soft"
             }`}
           >
@@ -58,16 +58,16 @@ const ProductCard = ({ product }: { product: CatalogProduct }) => {
             e.preventDefault();
             setWished((v) => !v);
           }}
-          className="absolute top-3 right-3 w-8 h-8 inline-flex items-center justify-center bg-cream/90 hover:bg-cream transition-colors z-10"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 w-6 h-6 sm:w-8 sm:h-8 inline-flex items-center justify-center bg-cream/90 hover:bg-cream transition-colors z-10"
         >
           <Heart
-            size={14}
+            size={12}
             strokeWidth={1.4}
-            className={wished ? "fill-gold text-gold" : "text-ink"}
+            className={`sm:w-3.5 sm:h-3.5 ${wished ? "fill-gold text-gold" : "text-ink"}`}
           />
         </button>
-        <div className="quick-cta absolute inset-x-3 bottom-3 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-          <span className={`block w-full text-center py-2.5 text-[11px] uppercase tracking-[0.2em] font-body shadow-sm ${product.isOutOfStock ? 'bg-red-600/90 text-white' : 'bg-cream/95 text-ink'}`}>
+        <div className="quick-cta absolute inset-x-2 bottom-2 sm:inset-x-3 sm:bottom-3 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+          <span className={`block w-full text-center py-1.5 sm:py-2.5 text-[9px] sm:text-[11px] uppercase tracking-[0.2em] font-body shadow-sm ${product.isOutOfStock ? 'bg-red-600/90 text-white' : 'bg-cream/95 text-ink'}`}>
             {product.isOutOfStock ? 'Agotado' : 'Ver producto'}
           </span>
         </div>

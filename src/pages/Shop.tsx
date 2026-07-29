@@ -473,7 +473,7 @@ const Shop = () => {
 
         <div>
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-12 ${
+            className={`grid grid-cols-2 gap-x-2 gap-y-6 sm:gap-x-6 sm:gap-y-12 ${
               cols === 2
                 ? "lg:grid-cols-2"
                 : cols === 3
