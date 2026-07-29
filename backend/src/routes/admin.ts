@@ -652,7 +652,7 @@ const parsePriceInput = (raw: any): number => {
               });
               if (prod) {
                 const primaryImg = prod.images.find(img => img.isPrimary) || prod.images[0];
-                const assetBaseUrl = "https://wheat-gerbil-544508.hostingersite.com";
+                const assetBaseUrl = "https://www.fajasab.com";
                 let imgUrl = primaryImg?.url || "";
                 if (imgUrl.startsWith("@/assets/")) {
                   imgUrl = imgUrl.replace("@/assets/", "/assets/");

@@ -1,6 +1,6 @@
 export function getBaseEmailTemplate(title: string, contentHtml: string): string {
-  const frontendUrl = process.env.FRONTEND_URL || "https://wheat-gerbil-544508.hostingersite.com";
-  const assetBaseUrl = "https://wheat-gerbil-544508.hostingersite.com";
+  const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
+  const assetBaseUrl = "https://www.fajasab.com";
 
   return `
 <!DOCTYPE html>
