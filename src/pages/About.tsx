@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, Award, Heart, Sparkles } from "lucide-react";
@@ -38,7 +39,11 @@ const pillars = [
   },
 ];
 
-const About = () => (
+const About = () => {
+  const [heroVideoLoaded, setHeroVideoLoaded] = useState(false);
+  const [secondVideoLoaded, setSecondVideoLoaded] = useState(false);
+
+  return (
   <div className="min-h-screen bg-cream">
     <Ticker />
     <Navbar />
@@ -48,14 +53,19 @@ const About = () => (
     <section className="relative h-[80dvh] min-h-[500px] flex items-center justify-center overflow-hidden bg-ink text-ink-soft">
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
+        <img 
+          src={groupPhoto4} 
+          alt="Campaña Fajas AB"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${heroVideoLoaded ? 'opacity-0' : 'opacity-30 filter brightness-90'}`}
+        />
         <video 
           src="/videos/736A9821.MP4" 
-          poster={groupPhoto4}
           autoPlay 
           loop 
           muted 
           playsInline 
-          className="absolute min-w-[100dvh] min-h-[100vw] top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover -rotate-90 origin-center opacity-30 filter brightness-90"
+          onCanPlay={() => setHeroVideoLoaded(true)}
+          className={`absolute min-w-[100dvh] min-h-[100vw] top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover -rotate-90 origin-center filter brightness-90 transition-opacity duration-1000 ${heroVideoLoaded ? 'opacity-30' : 'opacity-0'}`}
         />
       </div>
       
@@ -150,14 +160,19 @@ const About = () => (
     {/* Cinematic Full-Width Video Banner */}
     <section className="relative h-[65dvh] min-h-[450px] flex items-center justify-center overflow-hidden bg-ink text-ink-soft">
       <div className="absolute inset-0">
+        <img 
+          src={groupPhoto5} 
+          alt="Campaña Fajas AB"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${secondVideoLoaded ? 'opacity-0' : 'opacity-45'}`}
+        />
         <video 
           src="/videos/736A9821.MP4" 
-          poster={groupPhoto5}
           autoPlay 
           loop 
           muted 
           playsInline 
-          className="absolute min-w-[100dvh] min-h-[100vw] top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover -rotate-90 origin-center opacity-45"
+          onCanPlay={() => setSecondVideoLoaded(true)}
+          className={`absolute min-w-[100dvh] min-h-[100vw] top-[62%] left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover -rotate-90 origin-center transition-opacity duration-1000 ${secondVideoLoaded ? 'opacity-45' : 'opacity-0'}`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30" />
       </div>
@@ -333,6 +348,7 @@ const About = () => (
 
     <Footer />
   </div>
-);
+  );
+};
 
 export default About;
