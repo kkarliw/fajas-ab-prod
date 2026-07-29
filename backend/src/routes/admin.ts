@@ -645,38 +645,43 @@ const parsePriceInput = (raw: any): number => {
             if (parsed.title) title = parsed.title;
             if (parsed.content) messageContent = parsed.content;
 
-            if (parsed.attachedProductSlug) {
-              const prod = await prisma.product.findUnique({
-                where: { slug: parsed.attachedProductSlug },
+            if (parsed.attachedProductSlugs && Array.isArray(parsed.attachedProductSlugs) && parsed.attachedProductSlugs.length > 0) {
+              const prods = await prisma.product.findMany({
+                where: { slug: { in: parsed.attachedProductSlugs } },
                 include: { images: true }
               });
-              if (prod) {
-                const primaryImg = prod.images.find(img => img.isPrimary) || prod.images[0];
-                const assetBaseUrl = "https://www.fajasab.com";
-                let imgUrl = primaryImg?.url || "";
-                if (imgUrl.startsWith("@/assets/")) {
-                  imgUrl = imgUrl.replace("@/assets/", "/assets/");
-                }
-                if (!imgUrl || imgUrl.includes("placeholder")) {
-                  imgUrl = `${assetBaseUrl}/assets/hero-luxe-1.jpg`;
-                } else if (!imgUrl.startsWith("http")) {
-                  imgUrl = `${assetBaseUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
-                }
-                imgUrl = encodeURI(imgUrl);
-                const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((prod.basePriceCents || 0) / 100);
+              
+              if (prods.length > 0) {
+                const prodsHtml = prods.map(prod => {
+                  const primaryImg = prod.images.find(img => img.isPrimary) || prod.images[0];
+                  const assetBaseUrl = "https://www.fajasab.com";
+                  let imgUrl = primaryImg?.url || "";
+                  if (imgUrl.startsWith("@/assets/")) {
+                    imgUrl = imgUrl.replace("@/assets/", "/assets/");
+                  }
+                  if (!imgUrl || imgUrl.includes("placeholder")) {
+                    imgUrl = `${assetBaseUrl}/assets/hero-luxe-1.jpg`;
+                  } else if (!imgUrl.startsWith("http")) {
+                    imgUrl = `${assetBaseUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
+                  }
+                  imgUrl = encodeURI(imgUrl);
+                  const priceFormatted = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format((prod.basePriceCents || 0) / 100);
 
+                  return `
+                    <div style="margin-bottom: 20px; border: 1px solid #EAE6DF; background-color: #FFFFFF; padding: 24px; text-align: center;">
+                      ${imgUrl ? `<img src="${imgUrl}" alt="${prod.name}" style="max-width: 220px; width: 100%; height: auto; margin: 0 auto 16px auto; display: block; border: 1px solid #EEEEEE;" />` : ""}
+                      <span style="font-size: 9px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: #C4A46A; display: block; margin-bottom: 6px;">PRODUCTO DESTACADO</span>
+                      <h3 style="font-family: 'Jost', sans-serif; font-size: 19px; font-weight: 600; color: #1C1A17; margin: 0 0 6px 0;">${prod.name}</h3>
+                      <p style="font-size: 16px; font-weight: 700; color: #1C1A17; margin: 0 0 18px 0;">${priceFormatted}</p>
+                      <a href="${frontendUrl}/product/${prod.slug}" class="btn" style="display: inline-block; padding: 13px 30px; background-color: #1C1A17; color: #FFFFFF !important; text-decoration: none; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; border: 1px solid #1C1A17;">Ver Producto</a>
+                    </div>
+                  `;
+                }).join("");
+                
                 attachedProductHtml = `
-                  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border: 1px solid #EAE6DF; margin-top: 24px;">
-                    <tr>
-                      <td style="padding: 24px; text-align: center;">
-                        ${imgUrl ? `<img src="${imgUrl}" alt="${prod.name}" style="max-width: 220px; width: 100%; height: auto; margin: 0 auto 16px auto; display: block; border: 1px solid #EEEEEE;" />` : ""}
-                        <span style="font-size: 9px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: #C4A46A; display: block; margin-bottom: 6px;">PRODUCTO DESTACADO</span>
-                        <h3 style="font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 600; color: #1C1A17; margin: 0 0 6px 0;">${prod.name}</h3>
-                        <p style="font-size: 16px; font-weight: 700; color: #1C1A17; margin: 0 0 18px 0;">${priceFormatted}</p>
-                        <a href="${frontendUrl}/product/${prod.slug}" class="btn" style="display: inline-block; padding: 13px 30px; background-color: #1C1A17; color: #FFFFFF !important; text-decoration: none; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; border: 1px solid #1C1A17;">Ver Producto</a>
-                      </td>
-                    </tr>
-                  </table>
+                  <div style="margin-top: 24px;">
+                    ${prodsHtml}
+                  </div>
                 `;
               }
             }
@@ -704,7 +709,7 @@ const parsePriceInput = (raw: any): number => {
         }
 
         const campaignHtmlBody = `
-          <h2 style="font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 600; color: #1C1A17; margin-top: 0; margin-bottom: 16px; letter-spacing: 0.02em;">${title}</h2>
+          <h2 style="font-family: 'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 22px; font-weight: 600; color: #1C1A17; margin-top: 0; margin-bottom: 16px; letter-spacing: 0.02em;">${title}</h2>
           <div class="text" style="white-space: pre-wrap; font-size: 15px; color: #333333; line-height: 1.7;">${messageContent}</div>
           ${attachedProductHtml}
           ${attachedCouponHtml}

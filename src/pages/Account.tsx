@@ -200,11 +200,11 @@ export default function Account() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background/50">
+    <div className="min-h-screen flex flex-col bg-background/50 overflow-x-hidden w-full max-w-[100vw]">
       <Navbar />
 
       {/* Premium Hero Section */}
-      <div className="bg-foreground text-background py-16 relative overflow-hidden">
+      <div className="bg-foreground text-background py-16 relative overflow-hidden w-full">
         <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-gold/10 rounded-full blur-[100px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
         <div className="absolute bottom-0 left-0 w-[30vw] h-[30vw] bg-background/10 rounded-full blur-[80px] pointer-events-none -translate-x-1/4 translate-y-1/4" />
         
@@ -212,13 +212,15 @@ export default function Account() {
           <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center text-3xl sm:text-4xl font-display font-medium text-foreground shadow-2xl shadow-gold/20 shrink-0">
             {getInitials(user.name)}
           </div>
-          <div className="text-center sm:text-left mt-2">
-            <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
+          <div className="text-center sm:text-left mt-2 max-w-full overflow-hidden">
+            <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight mb-2 truncate">
               Hola, {user.name}
             </h1>
-            <p className="text-background/70 text-sm tracking-wide">
-              {user.email} • Miembro desde {new Date(user.createdAt).getFullYear()}
-            </p>
+            <div className="text-background/70 text-sm tracking-wide flex flex-col sm:flex-row items-center sm:items-start sm:gap-2">
+              <span className="truncate max-w-full w-full block">{user.email}</span>
+              <span className="hidden sm:inline shrink-0">•</span>
+              <span className="shrink-0 text-xs sm:text-sm mt-1 sm:mt-0 opacity-80">Miembro desde {new Date(user.createdAt).getFullYear()}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -227,11 +229,11 @@ export default function Account() {
         <div className="grid lg:grid-cols-[240px_1fr] gap-10 lg:gap-16">
           
           {/* Navigation Sidebar */}
-          <nav aria-label="Secciones de cuenta" className="sticky top-24">
+          <nav aria-label="Secciones de cuenta" className="sticky top-24 z-10 bg-background/50 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none pt-2 lg:pt-0">
             <div
               role="tablist"
-              aria-orientation="vertical"
-              className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              aria-orientation="horizontal"
+              className="grid grid-cols-3 lg:flex lg:flex-col gap-2 pb-4 lg:pb-0"
             >
               {tabs.map((t, i) => {
                 const Icon = t.icon;
@@ -247,7 +249,7 @@ export default function Account() {
                     tabIndex={selected ? 0 : -1}
                     onClick={() => setActive(t.key)}
                     onKeyDown={(e) => onTabKeyDown(e, i)}
-                    className={`relative flex items-center gap-3 px-5 py-4 text-[12px] tracking-[0.15em] uppercase font-semibold whitespace-nowrap transition-colors rounded-xl outline-none group ${
+                    className={`relative flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1.5 lg:gap-3 p-3 lg:px-5 lg:py-4 text-[9px] sm:text-[11px] lg:text-[12px] tracking-widest uppercase font-semibold whitespace-nowrap transition-colors rounded-xl outline-none group ${
                       selected ? "text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-black/5"
                     }`}
                   >
@@ -258,8 +260,8 @@ export default function Account() {
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                       />
                     )}
-                    <Icon size={16} className={selected ? "text-gold-dark" : "opacity-70"} />
-                    {t.label}
+                    <Icon size={18} className={selected ? "text-gold-dark" : "opacity-70"} />
+                    <span className="truncate max-w-full">{t.label}</span>
                   </button>
                 );
               })}
@@ -439,14 +441,32 @@ export default function Account() {
                                       <p className="font-medium text-foreground">{addressStr}</p>
                                       <p className="text-muted-foreground mt-0.5 mb-2">Estado del pago: <span className="font-bold text-green-700 capitalize">{o.paymentStatus === 'approved' ? 'Aprobado' : o.paymentStatus}</span></p>
                                       
-                                      {(o.shipments?.[0]?.trackingNumber || o.trackingNumber) && (
-                                        <div className="mt-2 p-2 bg-gold/10 rounded-lg border border-gold/20">
-                                          <p className="uppercase tracking-[0.15em] text-[9px] font-bold text-gold-dark mb-0.5">Guía de rastreo</p>
-                                          <p className="font-mono font-bold text-sm text-foreground break-all">
-                                            {o.shipments?.[0]?.carrier || o.carrier || "Servientrega"}: {o.shipments?.[0]?.trackingNumber || o.trackingNumber}
-                                          </p>
-                                        </div>
-                                      )}
+                                      {(o.shipments?.[0]?.trackingNumber || o.trackingNumber) && (() => {
+                                        const carrierStr = o.shipments?.[0]?.carrier || o.carrier || "Servientrega";
+                                        const trackNum = o.shipments?.[0]?.trackingNumber || o.trackingNumber;
+                                        const cNorm = carrierStr.toLowerCase();
+                                        let tUrl = "";
+                                        if (cNorm.includes("servientrega")) tUrl = `https://www.servientrega.com/wps/portal/Colombia/transaccional/rastreo-envio?id=${trackNum}`;
+                                        else if (cNorm.includes("interrapidisimo") || cNorm.includes("inter rapidisimo")) tUrl = `https://www.interrapidisimo.com/sigue-tu-envio/?guia=${trackNum}`;
+                                        else if (cNorm.includes("coordinadora")) tUrl = `https://www.coordinadora.com/portafolio-de-servicios/servicios-linea/rastrear-guias/?guia=${trackNum}`;
+                                        else if (cNorm.includes("envia") || cNorm.includes("envía")) tUrl = `https://envia.co/rastreo?guia=${trackNum}`;
+                                        else if (cNorm.includes("tcc")) tUrl = `https://tcc.com.co/rastreo-de-guias/?guia=${trackNum}`;
+
+                                        return (
+                                          <div className="mt-2 p-3 bg-gold/10 rounded-lg border border-gold/20 flex flex-col items-start gap-1">
+                                            <p className="uppercase tracking-[0.15em] text-[9px] font-bold text-gold-dark">Guía de rastreo</p>
+                                            <p className="font-mono font-bold text-sm text-foreground break-all">
+                                              {carrierStr}: {trackNum}
+                                            </p>
+                                            {tUrl && (
+                                              <a href={tUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase bg-foreground text-background px-3 py-1.5 rounded-md hover:bg-gold transition-colors">
+                                                <ExternalLink size={12} />
+                                                Rastrear paquete
+                                              </a>
+                                            )}
+                                          </div>
+                                        );
+                                      })()}
                                     </div>
                                   </div>
 

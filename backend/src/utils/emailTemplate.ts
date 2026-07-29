@@ -11,15 +11,17 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
   <title>${title}</title>
   <!--[if mso]>
   <style type="text/css">
-    body, table, td, a { font-family: Georgia, Arial, sans-serif !important; }
+    body, table, td, a { font-family: 'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif !important; }
   </style>
   <![endif]-->
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap');
+
     body {
       margin: 0;
       padding: 0;
       background-color: #FFFFFF;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       color: #1C1A17;
       -webkit-font-smoothing: antialiased;
     }
@@ -60,7 +62,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       border-bottom: 2px solid #C4A46A;
     }
     .brand-title {
-      font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+      font-family: 'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 22px;
       font-weight: 700;
       color: #1C1A17;
@@ -107,7 +109,7 @@ export function getBaseEmailTemplate(title: string, contentHtml: string): string
       margin: 20px 0;
     }
     .order-title {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: 'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 16px;
       font-weight: 600;
       color: #1C1A17;

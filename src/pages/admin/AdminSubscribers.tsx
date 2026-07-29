@@ -39,7 +39,7 @@ type EmailPreviewProps = {
   title: string;
   content: string;
   couponCode?: string;
-  attachedProductSlug?: string;
+  attachedProductSlugs?: string[];
   coupons: DbCoupon[];
   products: DbProduct[];
 };
@@ -50,11 +50,11 @@ const EmailPreview = ({
   title, 
   content, 
   couponCode, 
-  attachedProductSlug, 
+  attachedProductSlugs = [], 
   coupons, 
   products 
 }: EmailPreviewProps) => {
-  const product = products.find(p => p.slug === attachedProductSlug);
+  const selectedProducts = products.filter(p => attachedProductSlugs.includes(p.slug));
   const coupon = coupons.find(c => c.code === couponCode);
 
   return (
@@ -90,22 +90,29 @@ const EmailPreview = ({
         {/* Email Content */}
         <div className="w-full space-y-4 text-left">
           <h2 className="font-display text-[20px] font-semibold text-ink leading-snug">{title || "Título del Email"}</h2>
-          <p className="text-[13px] text-ink/80 leading-relaxed whitespace-pre-wrap">{content || "Escribe el cuerpo del mensaje para previsualizarlo aquí..."}</p>
+          <div 
+            className="text-[13px] text-ink/80 leading-relaxed whitespace-pre-wrap email-content-preview" 
+            dangerouslySetInnerHTML={{ __html: content || "Escribe el cuerpo del mensaje para previsualizarlo aquí..." }} 
+          />
         </div>
 
-        {/* Selected Product Attachment */}
-        {product && (
-          <div className="w-full mt-6 border border-border bg-white rounded-lg p-4 shadow-sm flex flex-col sm:flex-row gap-4 items-center">
-            <img src={product.image} alt={product.name} className="w-20 h-20 object-cover rounded-md border border-border/40" />
-            <div className="flex-1 text-center sm:text-left space-y-1">
-              <span className="text-[9px] uppercase tracking-wider bg-[#C4A46A]/10 text-[#C4A46A] px-1.5 py-0.5 rounded font-semibold">{product.category}</span>
-              <h4 className="font-display text-[14px] font-bold text-ink leading-tight">{product.name}</h4>
-              {product.material && <p className="text-[11px] text-muted-foreground">{product.material}</p>}
-              <p className="font-display text-[13px] font-bold text-[#8A3A2A]">{formatCOP(product.price)}</p>
-            </div>
-            <div className="w-full sm:w-auto h-9 px-4 bg-[#1A1A18] text-white rounded text-[11px] uppercase tracking-widest font-semibold flex items-center justify-center transition-colors select-none">
-              Comprar
-            </div>
+        {/* Selected Products Attachment */}
+        {selectedProducts.length > 0 && (
+          <div className="w-full mt-6 space-y-4">
+            {selectedProducts.map(product => (
+              <div key={product.id} className="border border-border bg-white rounded-lg p-4 shadow-sm flex flex-col sm:flex-row gap-4 items-center">
+                <img src={product.image} alt={product.name} className="w-20 h-20 object-cover rounded-md border border-border/40" />
+                <div className="flex-1 text-center sm:text-left space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider bg-[#C4A46A]/10 text-[#C4A46A] px-1.5 py-0.5 rounded font-semibold">{product.category}</span>
+                  <h4 className="font-display text-[14px] font-bold text-ink leading-tight">{product.name}</h4>
+                  {product.material && <p className="text-[11px] text-muted-foreground">{product.material}</p>}
+                  <p className="font-display text-[13px] font-bold text-[#8A3A2A]">{formatCOP(product.price)}</p>
+                </div>
+                <div className="w-full sm:w-auto h-9 px-4 bg-[#1A1A18] text-white rounded text-[11px] uppercase tracking-widest font-semibold flex items-center justify-center transition-colors select-none">
+                  Comprar
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -190,7 +197,7 @@ const AdminSubscribers = () => {
     title: "",
     content: "",
     couponCode: "",
-    attachedProductSlug: ""
+    attachedProductSlugs: [] as string[]
   });
 
   const deleteMutation = useMutation({
@@ -221,7 +228,7 @@ const AdminSubscribers = () => {
         title: "",
         content: "",
         couponCode: "",
-        attachedProductSlug: ""
+        attachedProductSlugs: []
       });
     },
     onError: (err: any) => {
@@ -641,23 +648,34 @@ const AdminSubscribers = () => {
                   </p>
                 </div>
 
-                <div>
-                  <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5 font-bold">
+                <div className="flex-1">
+                  <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5 font-bold flex items-center gap-1">
                     <ShoppingBag size={12} className="text-[#C4A46A]" />
-                    <span>Adjuntar Producto (Opcional)</span>
+                    Adjuntar Productos (Opcional)
                   </label>
-                  <select
-                    value={campaignForm.attachedProductSlug}
-                    onChange={(e) => setCampaignForm({ ...campaignForm, attachedProductSlug: e.target.value })}
-                    className="w-full h-10 px-3 bg-background border border-border rounded-md text-xs outline-none focus:border-gold"
-                  >
-                    <option value="">Ninguno</option>
-                    {products.map((prod) => (
-                      <option key={prod.id} value={prod.slug}>
-                        {prod.name} ({formatCOP(prod.price)})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="max-h-32 overflow-y-auto border border-border rounded-md bg-background p-2 space-y-1">
+                    {products.length === 0 ? (
+                      <p className="text-xs text-muted-foreground p-2 text-center">No hay productos disponibles</p>
+                    ) : (
+                      products.map((prod) => (
+                        <label key={prod.id} className="flex items-center gap-2 p-1.5 hover:bg-muted/50 rounded cursor-pointer text-xs">
+                          <input 
+                            type="checkbox" 
+                            checked={campaignForm.attachedProductSlugs.includes(prod.slug)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCampaignForm({ ...campaignForm, attachedProductSlugs: [...campaignForm.attachedProductSlugs, prod.slug] });
+                              } else {
+                                setCampaignForm({ ...campaignForm, attachedProductSlugs: campaignForm.attachedProductSlugs.filter(s => s !== prod.slug) });
+                              }
+                            }}
+                            className="accent-gold"
+                          />
+                          <span className="truncate">{prod.name} - {formatCOP(prod.price)}</span>
+                        </label>
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -683,7 +701,7 @@ const AdminSubscribers = () => {
                 title={campaignForm.title}
                 content={campaignForm.content}
                 couponCode={campaignForm.couponCode}
-                attachedProductSlug={campaignForm.attachedProductSlug}
+                attachedProductSlugs={campaignForm.attachedProductSlugs}
                 coupons={coupons}
                 products={products}
               />
