@@ -407,22 +407,22 @@ const Shop = () => {
       </section>
 
       {/* Toolbar */}
-      <div className="container-luxe pt-8 sm:pt-10 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="container-luxe pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start gap-4">
           <button
             type="button"
             onClick={() => {
               if (window.innerWidth < 1024) setDrawerOpen(true);
               else updateParams({ filter: showFilter ? "false" : "true" });
             }}
-            className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.15em] text-ink bg-ink/5 px-4 py-2.5 rounded hover:bg-ink/10 transition-colors"
+            className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-ink bg-white border border-black/10 shadow-sm rounded-full px-6 py-2.5 hover:border-black/30 transition-colors"
           >
-            <SlidersHorizontal size={16} strokeWidth={1.8} />
-            {showFilter ? "Ocultar filtros" : "Filtrar"}
+            <SlidersHorizontal size={14} strokeWidth={2} />
+            {showFilter ? "Ocultar" : "Filtrar"}
           </button>
 
-          {searchQuery ? (
-            <div className="flex items-center gap-2 bg-gold/15 border border-gold/40 px-3 py-1.5 rounded text-xs font-semibold text-ink">
+          {searchQuery && (
+            <div className="flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full text-xs font-semibold text-ink">
               <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
               <button
                 type="button"
@@ -433,14 +433,11 @@ const Shop = () => {
                 <X size={14} />
               </button>
             </div>
-          ) : null}
+          )}
         </div>
 
-        <div className="flex items-center gap-4 sm:gap-6 order-3 sm:order-2 w-full sm:w-auto justify-between sm:justify-end">
-          <p className="font-body text-[12px] text-ink/60">
-            {products.length} de {fullCatalog.length}
-          </p>
-          <div className="hidden sm:flex items-center gap-1 border border-hairline">
+        <div className="flex items-center gap-6 sm:gap-8 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="hidden sm:flex items-center gap-4">
             {([
               { n: 2, Icon: Grid2x2 },
               { n: 3, Icon: Grid3x3 },
@@ -451,14 +448,18 @@ const Shop = () => {
                 onClick={() => setCols(n)}
                 aria-label={`Ver ${n} columnas`}
                 aria-pressed={cols === n}
-                className={`w-9 h-9 inline-flex items-center justify-center transition-colors ${
-                  cols === n ? "bg-ink text-ink-soft" : "text-ink/60 hover:text-ink"
+                className={`transition-colors ${
+                  cols === n ? "text-ink" : "text-ink/30 hover:text-ink/70"
                 }`}
               >
-                <Icon size={14} strokeWidth={1.4} />
+                <Icon size={18} strokeWidth={2} />
               </button>
             ))}
           </div>
+
+          <button className="inline-flex items-center gap-2 text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-6 py-2.5 hover:border-black/30 transition-colors">
+            Ordenar <ChevronDown size={14} strokeWidth={2} />
+          </button>
         </div>
       </div>
 
