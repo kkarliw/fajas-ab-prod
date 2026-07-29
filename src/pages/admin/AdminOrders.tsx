@@ -107,8 +107,8 @@ const AdminOrders = () => {
         total: o.totalCents ? o.totalCents / 100 : (o.total || 0),
         paymentStatus: o.paymentStatus || "pending",
         shippingStatus: o.status || "pending",
-        trackingCode: o.trackingNumber || "", 
-        carrier: o.carrier || "Servientrega",
+        trackingCode: o.shipments?.[0]?.trackingNumber || o.trackingNumber || "", 
+        carrier: o.shipments?.[0]?.carrier || o.carrier || "Servientrega",
         items: o.items?.map((i: any) => ({
           name: i.nameSnapshot || i.name || "Producto",
           quantity: i.quantity || 1,

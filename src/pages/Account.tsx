@@ -428,16 +428,25 @@ export default function Account() {
                                 >
                                   {/* Address & Customer details */}
                                   <div className="grid sm:grid-cols-2 gap-4 mb-6 p-4 bg-white rounded-xl border border-black/5 text-xs">
-                                    <div>
+                                    <div className="break-words overflow-hidden">
                                       <p className="uppercase tracking-[0.15em] text-[10px] font-bold text-muted-foreground mb-1">Cliente</p>
                                       <p className="font-medium text-foreground">{o.customerName || user.name}</p>
-                                      <p className="text-muted-foreground">{o.email || user.email}</p>
+                                      <p className="text-muted-foreground break-all">{o.email || user.email}</p>
                                       {o.phone && <p className="text-muted-foreground">Tel: {o.phone}</p>}
                                     </div>
-                                    <div>
+                                    <div className="break-words overflow-hidden">
                                       <p className="uppercase tracking-[0.15em] text-[10px] font-bold text-muted-foreground mb-1">Dirección de Envío</p>
                                       <p className="font-medium text-foreground">{addressStr}</p>
-                                      <p className="text-muted-foreground mt-0.5">Estado del pago: <span className="font-bold text-green-700 capitalize">{o.paymentStatus === 'approved' ? 'Aprobado' : o.paymentStatus}</span></p>
+                                      <p className="text-muted-foreground mt-0.5 mb-2">Estado del pago: <span className="font-bold text-green-700 capitalize">{o.paymentStatus === 'approved' ? 'Aprobado' : o.paymentStatus}</span></p>
+                                      
+                                      {(o.shipments?.[0]?.trackingNumber || o.trackingNumber) && (
+                                        <div className="mt-2 p-2 bg-gold/10 rounded-lg border border-gold/20">
+                                          <p className="uppercase tracking-[0.15em] text-[9px] font-bold text-gold-dark mb-0.5">Guía de rastreo</p>
+                                          <p className="font-mono font-bold text-sm text-foreground break-all">
+                                            {o.shipments?.[0]?.carrier || o.carrier || "Servientrega"}: {o.shipments?.[0]?.trackingNumber || o.trackingNumber}
+                                          </p>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
 

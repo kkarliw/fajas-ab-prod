@@ -144,7 +144,7 @@ export const orderService = {
         ]
       },
       orderBy: { createdAt: 'desc' },
-      include: { items: true }
+      include: { items: true, shipments: true }
     });
   },
 
@@ -152,7 +152,7 @@ export const orderService = {
     const isReference = idOrRef.startsWith('ORD-');
     const order = await prisma.order.findFirst({
       where: isReference ? { reference: idOrRef } : { id: idOrRef },
-      include: { items: { include: { product: { include: { images: true } } } }, payments: true }
+      include: { items: { include: { product: { include: { images: true } } } }, payments: true, shipments: true }
     });
     
     if (!order) return null;

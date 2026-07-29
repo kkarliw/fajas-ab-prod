@@ -80,7 +80,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
   app.get("/orders", async (request, reply) => {
     const orders = await prisma.order.findMany({
       orderBy: { createdAt: "desc" },
-      include: { user: true, items: true },
+      include: { user: true, items: true, shipments: true },
     });
     return sendSuccess(reply, orders);
   });
