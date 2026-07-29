@@ -449,5 +449,37 @@ export const orderService = {
         }
       });
     });
+  },
+
+  async sendDeliveredNotification(orderId: string) {
+    try {
+      const order = await prisma.order.findUnique({
+        where: { id: orderId }
+      });
+
+      if (!order || !order.email) return;
+
+      const { sendTransactionalEmail } = await import("./emailService.js");
+      const { getBaseEmailTemplate } = await import("../utils/emailTemplate.js");
+      const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
+
+      const emailContentHtml = `
+        <p class="text">Hola <strong>${order.customerName.split(' ')[0] || 'Cliente'}</strong>,</p>
+        <p class="text">¡Tu pedido <strong>#${order.reference}</strong> ha sido <strong>entregado con éxito</strong>!</p>
+        <p class="text">Esperamos que disfrutes al máximo tu nueva faja y te sientas increíble. Si tienes alguna duda o comentario sobre tu compra, no dudes en contactarnos.</p>
+        
+        <p class="text" style="text-align: center; margin-top: 24px;">
+          <a href="${frontendUrl}/account" style="color: #1C1A17; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em;">Ver Detalles de mi Cuenta</a>
+        </p>
+      `;
+
+      await sendTransactionalEmail({
+        to: order.email,
+        subject: `¡Tu pedido #${order.reference} ha sido entregado! - FAJAS AB`,
+        html: getBaseEmailTemplate("Pedido Entregado", emailContentHtml)
+      });
+    } catch (err) {
+      console.error("Failed to send delivered email:", err);
+    }
   }
 };

@@ -125,7 +125,9 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         }
       }
 
-      if (status === "fulfilled" || status === "shipped" || trackingNumber) {
+      if (status === "fulfilled" || status === "delivered") {
+        orderService.sendDeliveredNotification(id).catch(() => {});
+      } else if (status === "shipped" || trackingNumber) {
         orderService.sendShippingNotification(id, finalTrackingNumber, finalCarrier).catch(() => {});
       }
 
