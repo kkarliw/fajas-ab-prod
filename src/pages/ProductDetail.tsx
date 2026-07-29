@@ -223,12 +223,16 @@ const ProductDetail = () => {
 
   const currentGallery = gallery.length ? gallery : [product.image];
 
+  const seoDescription = product.description.length > 150 
+    ? product.description.substring(0, 147) + "..." 
+    : product.description;
+
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "Product",
     name: product.name,
     image: currentGallery,
-    description: product.description,
+    description: seoDescription,
     brand: {
       "@type": "Brand",
       name: "FAJAS AB"
@@ -239,6 +243,7 @@ const ProductDetail = () => {
       priceCurrency: "COP",
       price: product.price,
       availability: product.isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition"
     }
   };
 
@@ -246,7 +251,7 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-cream">
       <SEO 
         title={`${product.name} | FAJAS AB`}
-        description={product.description}
+        description={seoDescription}
         image={currentGallery[0]}
         url={`https://www.fajasab.com/product/${product.slug}`}
         jsonLd={jsonLd}

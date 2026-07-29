@@ -17,7 +17,22 @@ import { SEO } from "@/components/SEO";
 const Index = () => {
   return (
     <div className="min-h-screen bg-cream">
-      <SEO />
+      <SEO 
+        title="FAJAS AB | Fajas Colombianas de Alta Compresión"
+        description="Descubre la colección de FAJAS AB: fajas colombianas de alta compresión, brasieres postquirúrgicos, cinturillas y shorts moldeadores. Envíos a toda Colombia."
+        url="https://www.fajasab.com/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "FAJAS AB",
+          "url": "https://www.fajasab.com/",
+          "logo": "https://www.fajasab.com/assets/fajas-ab-logo.png",
+          "sameAs": [
+            "https://www.instagram.com/fajas.ab/",
+            "https://www.facebook.com/fajas.ab/"
+          ]
+        }}
+      />
       <Ticker />
       <Navbar />
       <PromoBar />

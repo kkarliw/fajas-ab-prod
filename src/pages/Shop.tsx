@@ -334,11 +334,40 @@ const Shop = () => {
     </div>
   );
 
+  const title = chip 
+    ? `Comprar ${chip} | FAJAS AB`
+    : "Catálogo Completo | FAJAS AB";
+
+  const description = chip
+    ? `Explora nuestra colección de ${chip.toLowerCase()}. Fajas colombianas de alta compresión y calidad garantizada.`
+    : "Explora todo nuestro catálogo de fajas colombianas de alta compresión, brasieres postquirúrgicos y cinturillas.";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "https://www.fajasab.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": chip || "Colección",
+        "item": chip ? `https://www.fajasab.com/shop?cat=${chip}` : "https://www.fajasab.com/shop"
+      }
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream flex flex-col">
       <SEO 
-        title="Catálogo de Fajas Colombianas y Postquirúrgicas | FAJAS AB"
-        description="Explora nuestro catálogo de fajas colombianas de alta compresión, cinturillas y brasieres postquirúrgicos. Moldea tu figura con FAJAS AB."
+        title={title}
+        description={description}
+        url={chip ? `https://www.fajasab.com/shop?cat=${chip}` : "https://www.fajasab.com/shop"}
+        jsonLd={jsonLd}
       />
       <Ticker />
       <Navbar />
@@ -440,7 +469,7 @@ const Shop = () => {
 
         <div>
           <div
-            className={`grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-12 ${
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-12 ${
               cols === 2
                 ? "lg:grid-cols-2"
                 : cols === 3
