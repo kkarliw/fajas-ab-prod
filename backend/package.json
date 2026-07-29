@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
+    "db:clean": "tsx --env-file=.env scripts/cleanTestDb.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {
