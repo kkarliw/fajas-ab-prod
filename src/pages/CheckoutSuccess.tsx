@@ -87,11 +87,21 @@ const CheckoutSuccess = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const orderStatus = fullOrder?.status || "pending";
+  const stepIndex = 
+    (orderStatus === "delivered" || orderStatus === "fulfilled") ? 3 :
+    orderStatus === "shipped" ? 2 :
+    orderStatus === "processing" ? 1 : 
+    0;
+
+  const progressWidths = ["15%", "50%", "85%", "100%"];
+  const currentProgressWidth = progressWidths[stepIndex];
+
   const steps = [
-    { label: "Pago confirmado", active: true },
-    { label: "Preparando pedido", active: false },
-    { label: "Enviado", active: false },
-    { label: "Entregado", active: false },
+    { label: "Pago confirmado", active: stepIndex >= 0 },
+    { label: "Preparando pedido", active: stepIndex >= 1 },
+    { label: "Enviado", active: stepIndex >= 2 },
+    { label: "Entregado", active: stepIndex >= 3 },
   ];
 
   return (
@@ -108,10 +118,10 @@ const CheckoutSuccess = () => {
             <Check size={40} strokeWidth={2} />
           </div>
           <p className="text-[10px] sm:text-xs font-semibold tracking-[0.3em] uppercase text-muted-foreground mb-4">
-            Pago Aprobado
+            {stepIndex === 0 ? "Pago Aprobado" : stepIndex === 1 ? "Pedido en Preparación" : stepIndex === 2 ? "Pedido Enviado" : "Pedido Entregado"}
           </p>
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-ink mb-6">
-            Tu pedido está en camino
+            {stepIndex >= 3 ? "Tu pedido ha sido entregado" : "Tu pedido está en camino"}
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed print:hidden">
             Te notificaremos por correo a <span className="font-medium text-ink">{fullOrder?.email || "tu cuenta"}</span> cuando el pedido sea despachado.
@@ -122,7 +132,7 @@ const CheckoutSuccess = () => {
         <div className="max-w-4xl mx-auto mb-16 sm:mb-24 print:hidden">
           <div className="relative">
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[1px] bg-border" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[15%] h-[2px] bg-green-500 transition-all duration-1000" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-green-500 transition-all duration-1000" style={{ width: currentProgressWidth }} />
             <div className="relative flex justify-between">
               {steps.map((step, idx) => (
                 <div key={idx} className="flex flex-col items-center gap-4 bg-cream px-2 sm:px-4">
