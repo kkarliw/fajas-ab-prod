@@ -21,7 +21,7 @@ const colAbout = [
 ];
 
 const Footer = () => {
-  const [waLink, setWaLink] = useState("https://api.whatsapp.com/message/XKQGMZT677DBG1?autoload=1&app_absent=0&utm_source=ig");
+  const [waLink, setWaLink] = useState("https://wa.me/573002034943");
 
   const { data: settings } = useQuery({
     queryKey: ["storeSettings"],

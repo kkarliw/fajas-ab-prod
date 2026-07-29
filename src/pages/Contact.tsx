@@ -67,8 +67,8 @@ const Contact = () => {
       <section className="container-luxe py-20 grid lg:grid-cols-[1fr_1.4fr] gap-16">
         <aside className="space-y-8">
           {[
-            { icon: Mail, title: "Email", value: "hola@abcollection.co", href: "mailto:hola@abcollection.co" },
-            { icon: Phone, title: "WhatsApp", value: "+57 300 203 4943", href: "https://api.whatsapp.com/message/XKQGMZT677DBG1?autoload=1&app_absent=0&utm_source=ig" },
+            { icon: Mail, title: "Email", value: "fajasabcol@gmail.com", href: "mailto:fajasabcol@gmail.com" },
+            { icon: Phone, title: "WhatsApp", value: "+57 300 203 4943", href: "https://wa.me/573002034943" },
             { 
               icon: MapPin, 
               title: "Ubicación", 

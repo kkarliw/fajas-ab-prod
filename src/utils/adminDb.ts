@@ -213,7 +213,7 @@ const MOCK_COUPONS: DbCoupon[] = [
 const DEFAULT_SETTINGS: DbStoreSettings = {
   standardShippingFee: 15000,
   expressShippingFee: 25000,
-  contactPhone: "+573167890123",
+  contactPhone: "+573002034943",
   contactEmail: "contacto@fajasab.com",
   promoBarText: "ENVÍO GRATIS EN COMPRAS MAYORES A $200.000 COP"
 };

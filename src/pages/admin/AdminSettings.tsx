@@ -24,7 +24,7 @@ const AdminSettings = () => {
     standardShippingFee: 15000,
     expressShippingFee: 25000,
     freeShippingThreshold: 200000,
-    contactPhone: "+573167890123",
+    contactPhone: "+573002034943",
     contactEmail: "contacto@fajasab.com",
     promoBarText: "ENVÍO GRATIS EN COMPRAS MAYORES A $200.000",
     promoPopup: {
@@ -208,7 +208,7 @@ const AdminSettings = () => {
               <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Teléfono de Soporte (WhatsApp)</label>
               <input
                 type="text"
-                placeholder="+573167890123"
+                placeholder="+573002034943"
                 value={settings.contactPhone}
                 onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value })}
                 className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold"
