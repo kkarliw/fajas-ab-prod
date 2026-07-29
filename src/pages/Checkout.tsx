@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/api";
+import { SEO } from "@/components/SEO";
 import { colombianDepartments, colombianCitiesByDepartment, streetTypePrefixes, OTHER_CITY_OPTION } from "@/data/colombiaData";
 
 type FormState = {
@@ -87,11 +88,21 @@ const Checkout = () => {
   });
 
   const selectedDept = watch("department");
+  const isInternational = selectedDept?.includes("Internacional");
   const selectedCity = watch("city");
   const [customCityMode, setCustomCityMode] = useState(false);
   const prevDeptRef = useRef(selectedDept);
   const availableCities = selectedDept ? colombianCitiesByDepartment[selectedDept] || [] : [];
   const citiesWithOptions = availableCities.length ? [...availableCities, OTHER_CITY_OPTION] : [];
+
+  const whatsappMessage = useMemo(() => {
+    let msg = `¡Hola! Me interesa hacer un pedido con envío internacional.\n\n*Mi Carrito:*\n`;
+    items.forEach(it => {
+      msg += `- ${it.quantity}x ${it.name} (Talla: ${it.size}${it.color ? `, Color: ${it.color}` : ''})\n`;
+    });
+    msg += `\n*Total (sin envío):* ${formatCOP(subtotal)}\n\nQuisiera cotizar el envío a mi país, por favor.`;
+    return encodeURIComponent(msg);
+  }, [items, subtotal]);
 
   // Reset city when department changes (but not on first render / saved address load)
   useEffect(() => {
@@ -380,7 +391,12 @@ const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
+      <SEO 
+        title="Finalizar Compra | FAJAS AB"
+        description="Completa tu pedido de forma segura. Ingresa tus datos de envío y procesa tu pago a través de Wompi."
+        url="https://www.fajasab.com/checkout"
+      />
       <Navbar />
 
       <main className="flex-1">
@@ -565,14 +581,14 @@ const Checkout = () => {
                   )}
                 </div>
 
-                {selectedDept?.includes("Internacional") && (
+                {isInternational && (
                   <div className="bg-[#FAF8F5] border border-gold/40 p-4 rounded flex flex-col sm:flex-row items-center justify-between gap-4 my-2">
                     <div className="space-y-1 text-center sm:text-left">
                       <span className="text-xs font-bold text-ink uppercase tracking-wider block">✈️ Envíos Internacionales (EE.UU., España, Latam, Otros)</span>
                       <p className="text-xs text-muted-foreground leading-relaxed">Cotizamos la tarifa exacta del flete a tu ciudad y país directamente por WhatsApp para coordinar tu envío.</p>
                     </div>
                     <a
-                      href="https://wa.me/5730020344943?text=¡Hola!%20Me%20interesa%20hacer%20un%20pedido%20con%20envío%20internacional"
+                      href={`https://wa.me/573002034943?text=${whatsappMessage}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-2.5 rounded text-xs font-bold uppercase tracking-wider shrink-0 transition-colors shadow-sm"
@@ -683,15 +699,26 @@ const Checkout = () => {
                 </div>
               </fieldset>
 
-              <button
-                type="submit"
-                disabled={submitting || !isValid}
-                className="w-full bg-gold text-ink py-4 text-[11px] tracking-[0.25em] uppercase font-semibold hover:bg-gold/85 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
-                aria-busy={submitting}
-              >
-                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
-                {submitting ? "Procesando..." : `Pagar ${formatCOP(total)}`}
-              </button>
+              {isInternational ? (
+                <a
+                  href={`https://wa.me/573002034943?text=${whatsappMessage}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#25D366] text-white py-4 text-[11px] tracking-[0.25em] uppercase font-bold hover:bg-[#20bd5a] transition-colors inline-flex items-center justify-center gap-2 shadow-sm rounded-none"
+                >
+                  <MessageCircle size={16} /> Coordinar Pago y Envío por WhatsApp
+                </a>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={submitting || !isValid}
+                  className="w-full bg-gold text-ink py-4 text-[11px] tracking-[0.25em] uppercase font-semibold hover:bg-gold/85 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                  aria-busy={submitting}
+                >
+                  {submitting ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} />}
+                  {submitting ? "Procesando..." : `Pagar ${formatCOP(total)}`}
+                </button>
+              )}
 
               <p className="text-[11px] text-muted-foreground text-center inline-flex items-center justify-center gap-1.5 w-full">
                 <ShieldCheck size={12} /> Pago 100% seguro · Encriptación SSL
