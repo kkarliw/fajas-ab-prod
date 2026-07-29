@@ -478,6 +478,16 @@ const Shop = () => {
                 ))}
               </div>
 
+              {/* Mobile Only Filter Button (With Text) */}
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="lg:hidden inline-flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap"
+              >
+                <SlidersHorizontal size={14} strokeWidth={2} />
+                Filtrar
+              </button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="inline-flex items-center justify-center gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap focus:outline-none">
