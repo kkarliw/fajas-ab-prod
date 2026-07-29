@@ -50,6 +50,7 @@ const About = () => (
       <div className="absolute inset-0 z-0">
         <video 
           src="/videos/736A9821.MP4" 
+          poster={groupPhoto4}
           autoPlay 
           loop 
           muted 
@@ -151,6 +152,7 @@ const About = () => (
       <div className="absolute inset-0">
         <video 
           src="/videos/736A9821.MP4" 
+          poster={groupPhoto5}
           autoPlay 
           loop 
           muted 
