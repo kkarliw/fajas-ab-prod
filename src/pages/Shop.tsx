@@ -11,6 +11,7 @@ import Skeleton from "@/components/ui/Skeleton";
 import { SEO } from "@/components/SEO";
 import { formatCOP, type CatalogProduct } from "@/data/catalog";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, SlidersHorizontal, ArrowRight, X, Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
+import shopHeroImg from "@/assets/Fajas AB/fotos grupales/_A9A4288.jpg";
 
 const chips = ["Bestseller", "Postquirúrgico", "Uso Diario", "Alta Compresión", "Fajas", "Brasieres", "Cinturillas", "Shorts", "Accesorios"];
 const colorPalette: Record<string, string> = {
@@ -374,14 +375,17 @@ const Shop = () => {
       <PromoBar />
 
       {/* Hero banner */}
-      <section className="relative bg-ink text-ink-soft overflow-hidden">
-        <div className="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_top,_rgba(196,164,106,0.25),transparent_60%)]" />
-        <div className="container-luxe py-20 lg:py-28 relative text-center">
-          <p className="eyebrow text-gold-light/80 mb-5">FAJAS AB</p>
-          <h1 className="font-display text-[44px] md:text-[56px] leading-[1] text-ink-soft">
+      <section className="relative text-cream overflow-hidden">
+        <div className="absolute inset-0">
+          <img src={shopHeroImg} alt="FAJAS AB Collection" className="w-full h-full object-cover object-[center_30%]" />
+          <div className="absolute inset-0 bg-ink/75" />
+        </div>
+        <div className="container-luxe py-20 lg:py-28 relative text-center z-10">
+          <p className="eyebrow text-gold-light/90 mb-5 text-shadow-sm">FAJAS AB</p>
+          <h1 className="font-display text-[44px] md:text-[56px] leading-[1] text-white text-shadow-md">
             Toda la <span className="italic text-gold">colección</span>
           </h1>
-          <p className="mt-5 max-w-xl mx-auto font-body text-[14px] text-ink-soft/70">
+          <p className="mt-5 max-w-xl mx-auto font-body text-[14px] text-cream/90 text-shadow-sm">
             Diseñadas para moldear, estilizar y realzar tu figura natural.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-2">
@@ -391,8 +395,8 @@ const Shop = () => {
                 onClick={() => setChip((prev) => (prev === c ? null : c))}
                 className={`px-4 py-2 text-[11px] uppercase tracking-[0.2em] border transition-colors ${
                   chip === c
-                    ? "bg-gold-light text-ink border-gold-light"
-                    : "border-ink-soft/30 text-ink-soft/85 hover:border-ink-soft"
+                    ? "bg-gold-light text-ink border-gold-light shadow-sm"
+                    : "border-cream/30 text-cream hover:border-cream bg-ink/20 backdrop-blur-sm"
                 }`}
               >
                 {c}
