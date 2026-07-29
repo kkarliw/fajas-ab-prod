@@ -7,34 +7,10 @@ import img1 from "@/assets/Fajas AB/fotos grupales/_A9A4285.jpg";
 import img2 from "@/assets/Fajas AB/fotos grupales/_A9A4288.jpg";
 import img3 from "@/assets/Fajas AB/fotos grupales/_A9A4477.jpg";
 
-const DEFAULT_REVIEWS = [
-  {
-    quote: "La calidad es incomparable. Llevo 6 meses usándola a diario y sigue como nueva. Moldea sin incomodar, es como una segunda piel.",
-    author: "MARÍA CAMILA R.",
-    meta: "Bogotá · ★★★★★",
-    image: img1,
-    source: "store",
-  },
-  {
-    quote: "Por fin una faja que no se enrolla ni aprieta de más. Diseño impecable y la atención de AB fue excepcional.",
-    author: "VALENTINA T.",
-    meta: "Medellín · ★★★★★",
-    image: img2,
-    source: "store",
-  },
-  {
-    quote: "La uso después de mi cirugía y la diferencia se siente desde el primer día. Cómoda, firme y con un acabado de lujo.",
-    author: "SARA M.",
-    meta: "Cali · ★★★★★",
-    image: img3,
-    source: "store",
-  },
-];
-
 const imagePositions = ["center 18%", "center 22%", "center 12%"] as const;
 
 const Reviews = () => {
-  const [reviewsList, setReviewsList] = useState<any[]>(DEFAULT_REVIEWS);
+  const [reviewsList, setReviewsList] = useState<any[]>([]);
   const [i, setI] = useState(0);
 
   useEffect(() => {
@@ -50,10 +26,10 @@ const Reviews = () => {
         }));
         
         if (mapped.length > 0) {
-          setReviewsList([...DEFAULT_REVIEWS, ...mapped]);
+          setReviewsList(mapped);
         }
       } catch {
-        // fallback to default
+        // Handle error silently
       }
     };
     
@@ -66,6 +42,10 @@ const Reviews = () => {
     }, 7000);
     return () => clearInterval(t);
   }, [reviewsList]);
+
+  if (reviewsList.length === 0) {
+    return null;
+  }
 
   const r = reviewsList[i];
 
