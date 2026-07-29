@@ -110,9 +110,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [sessionId]);
 
   const removeItem = useCallback(async (id: string, itemName?: string) => {
+    // Optimistic update
+    const prevItems = [...items];
+    setItems((prev) => prev.filter((p) => p.id !== id));
+    
     try {
       await removeCartItem(id);
-      setItems((prev) => prev.filter((p) => p.id !== id));
       toast.success(itemName ? `${itemName} eliminado del carrito` : "Producto eliminado del carrito", {
         position: "top-center",
         duration: 3000,
@@ -120,23 +123,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     } catch (err) {
       console.error("Error removing from cart", err);
+      // Revert on failure
+      setItems(prevItems);
       toast.error("No se pudo eliminar el producto", {
         position: "top-center"
       });
     }
-  }, []);
+  }, [items]);
 
   const updateQty = useCallback(async (id: string, qty: number) => {
     if (qty <= 0) return removeItem(id);
+    
+    // Optimistic update
+    const prevItems = [...items];
+    setItems((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: qty } : p))
+    );
+    
     try {
       await updateCartItem(id, qty);
-      setItems((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, quantity: qty } : p))
-      );
     } catch (err) {
       console.error("Error updating cart", err);
+      // Revert on failure
+      setItems(prevItems);
     }
-  }, [removeItem]);
+  }, [items, removeItem]);
 
   const clear = useCallback(() => {
     setItems([]);

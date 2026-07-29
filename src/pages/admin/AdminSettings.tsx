@@ -158,11 +158,10 @@ const AdminSettings = () => {
             <div>
               <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Costo Envío Estándar ($ COP)</label>
               <input
-                type="number"
-                value={settings.standardShippingFee}
-                onChange={(e) => setSettings({ ...settings, standardShippingFee: parseInt(e.target.value) || 0 })}
+                type="text"
+                value={settings.standardShippingFee || ""}
+                onChange={(e) => setSettings({ ...settings, standardShippingFee: parseInt(e.target.value.replace(/\D/g, "")) || 0 })}
                 className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold"
-                min={0}
                 required
               />
               <p className="text-[10px] text-muted-foreground mt-1">Costo de envío terrestre nacional regular.</p>
@@ -171,11 +170,10 @@ const AdminSettings = () => {
             <div>
               <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Costo Envío Express ($ COP)</label>
               <input
-                type="number"
-                value={settings.expressShippingFee}
-                onChange={(e) => setSettings({ ...settings, expressShippingFee: parseInt(e.target.value) || 0 })}
+                type="text"
+                value={settings.expressShippingFee || ""}
+                onChange={(e) => setSettings({ ...settings, expressShippingFee: parseInt(e.target.value.replace(/\D/g, "")) || 0 })}
                 className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold"
-                min={0}
                 required
               />
               <p className="text-[10px] text-muted-foreground mt-1">Costo para entregas urgentes o prioritarias.</p>
@@ -184,11 +182,10 @@ const AdminSettings = () => {
             <div>
               <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Envío Gratis a partir de ($ COP)</label>
               <input
-                type="number"
+                type="text"
                 value={settings.freeShippingThreshold ?? ""}
-                onChange={(e) => setSettings({ ...settings, freeShippingThreshold: e.target.value ? parseInt(e.target.value) : undefined })}
+                onChange={(e) => setSettings({ ...settings, freeShippingThreshold: e.target.value ? parseInt(e.target.value.replace(/\D/g, "")) : undefined })}
                 className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold"
-                min={0}
                 placeholder="Ej. 200000 (Dejar en blanco si no aplica)"
               />
               <p className="text-[10px] text-muted-foreground mt-1">Si el subtotal supera este monto, el envío será gratis.</p>

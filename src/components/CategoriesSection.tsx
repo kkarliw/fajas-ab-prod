@@ -56,66 +56,43 @@ const CategoriesSection = () => {
       </div>
 
       {/* Carousel rail */}
-      <div className="relative pb-16 lg:pb-24">
-        <motion.div
+      <div className="relative pb-16 lg:pb-24 container-luxe">
+        <div
           ref={railRef}
-          className="flex gap-4 md:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 scrollbar-none"
-          style={{
-            paddingLeft: sidePadding,
-            paddingRight: sidePadding,
-            x: translateX,
-          }}
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5 pb-2"
         >
           {cats.map((c) => (
             <Link
               key={c.name}
               to={`/shop?cat=${encodeURIComponent(c.query)}`}
-              className="relative shrink-0 snap-start group block"
-              style={{ width: "min(78vw, 300px)" }}
+              className="group block relative overflow-hidden bg-[#F0E0D0]/30 transition-all duration-500 rounded-none w-full shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]"
             >
-              {/* Card image */}
-              <div className="relative aspect-[3/4] overflow-hidden bg-[#f5f0eb]">
+              {/* Aspect ratio container specific to fajas layout */}
+              <div className="relative aspect-[3/4] w-full overflow-hidden">
                 <img
                   src={c.image}
                   alt={c.name}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-[1.06]"
-                  style={{ objectPosition: c.objectPos ?? "center top" }}
+                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
                 />
-                {/* Subtle bottom gradient always visible */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                {/* Sub label bottom-left */}
-                <div className="absolute bottom-14 left-4">
-                  <span className="text-[10px] uppercase tracking-[0.22em] text-white/80 font-body">{c.sub}</span>
+                
+                {/* Overlay gradient - more subtle, focused on bottom */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1C1A17]/80 via-[#1C1A17]/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                
+                {/* Content */}
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex flex-col items-center text-center transform transition-transform duration-500 group-hover:-translate-y-2">
+                  <h3 className="font-display text-[18px] md:text-[24px] text-white tracking-widest uppercase mb-2 drop-shadow-sm">
+                    {c.name}
+                  </h3>
+                  <div className="overflow-hidden h-[0px] group-hover:h-[24px] transition-all duration-500 ease-out">
+                    <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] font-semibold text-gold-light opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                      Explorar <ArrowRight size={10} />
+                    </span>
+                  </div>
                 </div>
-              </div>
-              {/* CTA bar */}
-              <div className="absolute left-3 right-3 bottom-3">
-                <span className="block w-full bg-white text-ink text-center py-3 nav-label tracking-[0.2em] transition-all duration-300 group-hover:bg-ink group-hover:text-white">
-                  {c.cta}
-                </span>
               </div>
             </Link>
           ))}
-        </motion.div>
-
-        {/* Prev/Next arrows */}
-        <button
-          type="button"
-          aria-label="Anterior categoría"
-          onClick={() => scroll("prev")}
-          className="hidden md:inline-flex absolute left-4 top-[45%] -translate-y-1/2 w-11 h-11 rounded-full bg-white/95 hover:bg-white items-center justify-center shadow-[0_2px_12px_rgba(0,0,0,0.10)] transition-transform hover:scale-105 z-10"
-        >
-          <ArrowLeft size={16} strokeWidth={1.6} />
-        </button>
-        <button
-          type="button"
-          aria-label="Siguiente categoría"
-          onClick={() => scroll("next")}
-          className="hidden md:inline-flex absolute right-4 top-[45%] -translate-y-1/2 w-11 h-11 rounded-full bg-white/95 hover:bg-white items-center justify-center shadow-[0_2px_12px_rgba(0,0,0,0.10)] transition-transform hover:scale-105 z-10"
-        >
-          <ArrowRight size={16} strokeWidth={1.6} />
-        </button>
+        </div>
       </div>
     </section>
   );
