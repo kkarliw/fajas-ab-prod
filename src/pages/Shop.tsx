@@ -406,72 +406,8 @@ const Shop = () => {
         </div>
       </section>
 
-      {/* Toolbar */}
-      <div className="container-luxe pt-4 sm:pt-6 pb-2 flex items-center justify-between gap-4">
-        {/* Left side */}
-        <div className="flex items-center gap-4">
-          <p className="font-body text-[12px] sm:text-[13px] text-ink/60 whitespace-nowrap">
-            {products.length} de {fullCatalog.length}
-          </p>
-
-          {searchQuery && (
-            <div className="hidden sm:flex items-center gap-2 bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full text-[11px] font-semibold text-ink">
-              <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
-              <button
-                type="button"
-                onClick={() => updateParams({ q: null })}
-                className="text-ink/60 hover:text-red-600 transition-colors ml-1"
-                aria-label="Limpiar búsqueda"
-              >
-                <X size={12} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Right side */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          <div className="hidden lg:flex items-center gap-3 mr-2">
-            {([
-              { n: 2, Icon: Grid2x2 },
-              { n: 3, Icon: Grid3x3 },
-              { n: 4, Icon: LayoutGrid },
-            ] as const).map(({ n, Icon }) => (
-              <button
-                key={n}
-                onClick={() => setCols(n)}
-                aria-label={`Ver ${n} columnas`}
-                aria-pressed={cols === n}
-                className={`transition-colors ${
-                  cols === n ? "text-ink" : "text-ink/30 hover:text-ink/70"
-                }`}
-              >
-                <Icon size={16} strokeWidth={2} />
-              </button>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (window.innerWidth < 1024) setDrawerOpen(true);
-              else updateParams({ filter: showFilter ? "false" : "true" });
-            }}
-            className="inline-flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold uppercase tracking-widest text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors"
-          >
-            <SlidersHorizontal size={14} strokeWidth={2} />
-            <span className="hidden sm:inline-block">{showFilter ? "Ocultar" : "Filtrar"}</span>
-          </button>
-
-          <button className="inline-flex items-center justify-center gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap">
-            Ordenar <ChevronDown size={14} strokeWidth={2} />
-          </button>
-        </div>
-      </div>
-
-
       {/* Body */}
-      <section className={`container-luxe py-10 grid gap-8 lg:gap-10 ${showFilter ? "lg:grid-cols-[240px_1fr]" : "lg:grid-cols-1"}`}>
+      <section className={`container-luxe py-8 sm:py-10 grid gap-8 lg:gap-10 ${showFilter ? "lg:grid-cols-[240px_1fr]" : "lg:grid-cols-1"}`}>
         {showFilter && (
           <aside className="hidden lg:block sticky top-24 self-start">
             {FiltersUI}
@@ -479,6 +415,65 @@ const Shop = () => {
         )}
 
         <div>
+          {/* Toolbar (Now aligned with products) */}
+          <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
+            {/* Left side */}
+            <div className="flex items-center gap-4">
+              <p className="font-body text-[12px] sm:text-[13px] text-ink/60 whitespace-nowrap">
+                {products.length} de {fullCatalog.length}
+              </p>
+
+              {searchQuery && (
+                <div className="hidden sm:flex items-center gap-2 bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full text-[11px] font-semibold text-ink">
+                  <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => updateParams({ q: null })}
+                    className="text-ink/60 hover:text-red-600 transition-colors ml-1"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Right side */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="hidden lg:flex items-center gap-3 mr-2">
+                {([
+                  { n: 2, Icon: Grid2x2 },
+                  { n: 3, Icon: Grid3x3 },
+                  { n: 4, Icon: LayoutGrid },
+                ] as const).map(({ n, Icon }) => (
+                  <button
+                    key={n}
+                    onClick={() => setCols(n)}
+                    aria-label={`Ver ${n} columnas`}
+                    aria-pressed={cols === n}
+                    className={`transition-colors ${
+                      cols === n ? "text-ink" : "text-ink/30 hover:text-ink/70"
+                    }`}
+                  >
+                    <Icon size={16} strokeWidth={2} />
+                  </button>
+                ))}
+              </div>
+
+              {/* Mobile Only Filter Button */}
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="lg:hidden inline-flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold uppercase tracking-widest text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 py-2 hover:border-black/30 transition-colors"
+              >
+                <SlidersHorizontal size={14} strokeWidth={2} />
+              </button>
+
+              <button className="inline-flex items-center justify-center gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap">
+                Ordenar <ChevronDown size={14} strokeWidth={2} />
+              </button>
+            </div>
+          </div>
           <div
             className={`grid grid-cols-2 gap-x-2 gap-y-6 sm:gap-x-6 sm:gap-y-12 ${
               cols === 2
