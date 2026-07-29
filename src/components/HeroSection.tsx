@@ -225,13 +225,13 @@ const HeroSection = () => {
           <div className="mt-9 flex flex-row items-center justify-center gap-3 sm:gap-4 pointer-events-auto">
             <Link
               to="/shop"
-              className="bg-white text-[#1a1510] uppercase tracking-[0.22em] text-[10px] sm:text-[11px] font-medium px-6 sm:px-10 py-3.5 sm:py-4 inline-flex items-center gap-1.5 sm:gap-2 hover:bg-[#d4af7a] hover:text-white transition-all duration-300"
+              className="bg-white text-[#1a1510] uppercase tracking-[0.22em] text-[11px] sm:text-[12px] font-bold px-6 sm:px-10 py-4 inline-flex items-center gap-1.5 sm:gap-2 hover:bg-[#d4af7a] hover:text-white transition-all duration-300"
             >
               Ver colección →
             </Link>
             <Link
               to="/shop?cat=Fajas"
-              className="border border-white/50 text-white uppercase tracking-[0.22em] text-[10px] sm:text-[11px] font-medium px-5 sm:px-8 py-3.5 sm:py-4 inline-flex items-center gap-1.5 sm:gap-2 hover:border-white hover:bg-white/10 transition-all duration-300"
+              className="border border-white/50 text-white uppercase tracking-[0.22em] text-[11px] sm:text-[12px] font-bold px-5 sm:px-8 py-4 inline-flex items-center gap-1.5 sm:gap-2 hover:border-white hover:bg-white/10 transition-all duration-300"
             >
               Fajas
             </Link>

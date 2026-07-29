@@ -350,39 +350,51 @@ const Navbar = () => {
       </AnimatePresence>
 
       {/* Mobile drawer */}
-      {open && (
-        <nav
-          aria-label="Móvil"
-          className="lg:hidden border-t border-hairline bg-cream max-h-[calc(100vh-4rem)] overflow-y-auto"
-        >
-          <div className="container-luxe py-6 grid gap-4">
-            {primaryLinks.map((l) => (
-              <div key={l.label}>
-                <NavLink to={l.to} className="nav-label text-ink block py-1.5">
-                  {l.label}
-                </NavLink>
-                {l.children && (
-                  <div className="pl-4 mt-1 grid gap-2 border-l border-hairline">
-                    {l.children.map((s) => (
-                      <Link
-                        key={s.to}
-                        to={s.to}
-                        className="font-body text-[13px] text-ink/65 hover:text-ink"
-                      >
-                        {s.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            aria-label="Móvil"
+            className="lg:hidden border-t border-hairline bg-cream overflow-hidden"
+          >
+            <div className="container-luxe py-6 flex flex-col gap-2 max-h-[calc(100vh-5rem)] overflow-y-auto">
+              {primaryLinks.map((l) => (
+                <div key={l.label} className="border-b border-hairline/50 pb-2">
+                  <NavLink 
+                    to={l.to} 
+                    className="nav-label text-ink block py-3 text-[14px] font-bold"
+                    onClick={() => setOpen(false)}
+                  >
+                    {l.label}
+                  </NavLink>
+                  {l.children && (
+                    <div className="pl-4 mt-1 flex flex-col gap-1 border-l-2 border-gold/30">
+                      {l.children.map((s) => (
+                        <Link
+                          key={s.to}
+                          to={s.to}
+                          className="font-body text-[14px] text-ink/75 hover:text-ink py-2.5 px-2 active:bg-gold/10 rounded"
+                          onClick={() => setOpen(false)}
+                        >
+                          {s.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div className="flex flex-col gap-2 mt-2">
+                <Link to="/account" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Mi cuenta</Link>
+                <Link to="/faq" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Preguntas Frecuentes</Link>
+                <Link to="/pqr" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Radicar PQR</Link>
               </div>
-            ))}
-            <div className="h-px bg-hairline my-3" />
-            <Link to="/account" className="nav-label text-ink/70">Mi cuenta</Link>
-            <Link to="/faq" className="nav-label text-ink/70">FAQ</Link>
-            <Link to="/pqr" className="nav-label text-ink/70">PQR</Link>
-          </div>
-        </nav>
-      )}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

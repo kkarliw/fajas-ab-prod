@@ -382,10 +382,10 @@ const Shop = () => {
               if (window.innerWidth < 1024) setDrawerOpen(true);
               else updateParams({ filter: showFilter ? "false" : "true" });
             }}
-            className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-ink hover:text-gold transition-colors"
+            className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.15em] text-ink bg-ink/5 px-4 py-2.5 rounded hover:bg-ink/10 transition-colors"
           >
-            <SlidersHorizontal size={14} strokeWidth={1.4} />
-            {showFilter ? "Ocultar filtros" : "Mostrar filtros"}
+            <SlidersHorizontal size={16} strokeWidth={1.8} />
+            {showFilter ? "Ocultar filtros" : "Filtrar"}
           </button>
 
           {searchQuery ? (
