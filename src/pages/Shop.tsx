@@ -407,22 +407,15 @@ const Shop = () => {
       </section>
 
       {/* Toolbar */}
-      <div className="container-luxe pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start gap-4">
-          <button
-            type="button"
-            onClick={() => {
-              if (window.innerWidth < 1024) setDrawerOpen(true);
-              else updateParams({ filter: showFilter ? "false" : "true" });
-            }}
-            className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-ink bg-white border border-black/10 shadow-sm rounded-full px-6 py-2.5 hover:border-black/30 transition-colors"
-          >
-            <SlidersHorizontal size={14} strokeWidth={2} />
-            {showFilter ? "Ocultar" : "Filtrar"}
-          </button>
+      <div className="container-luxe pt-4 sm:pt-6 pb-2 flex items-center justify-between gap-4">
+        {/* Left side */}
+        <div className="flex items-center gap-4">
+          <p className="font-body text-[12px] sm:text-[13px] text-ink/60 whitespace-nowrap">
+            {products.length} de {fullCatalog.length}
+          </p>
 
           {searchQuery && (
-            <div className="flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full text-xs font-semibold text-ink">
+            <div className="hidden sm:flex items-center gap-2 bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full text-[11px] font-semibold text-ink">
               <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
               <button
                 type="button"
@@ -430,14 +423,15 @@ const Shop = () => {
                 className="text-ink/60 hover:text-red-600 transition-colors ml-1"
                 aria-label="Limpiar búsqueda"
               >
-                <X size={14} />
+                <X size={12} />
               </button>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-6 sm:gap-8 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="hidden sm:flex items-center gap-4">
+        {/* Right side */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden lg:flex items-center gap-3 mr-2">
             {([
               { n: 2, Icon: Grid2x2 },
               { n: 3, Icon: Grid3x3 },
@@ -452,12 +446,24 @@ const Shop = () => {
                   cols === n ? "text-ink" : "text-ink/30 hover:text-ink/70"
                 }`}
               >
-                <Icon size={18} strokeWidth={2} />
+                <Icon size={16} strokeWidth={2} />
               </button>
             ))}
           </div>
 
-          <button className="inline-flex items-center gap-2 text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-6 py-2.5 hover:border-black/30 transition-colors">
+          <button
+            type="button"
+            onClick={() => {
+              if (window.innerWidth < 1024) setDrawerOpen(true);
+              else updateParams({ filter: showFilter ? "false" : "true" });
+            }}
+            className="inline-flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold uppercase tracking-widest text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors"
+          >
+            <SlidersHorizontal size={14} strokeWidth={2} />
+            <span className="hidden sm:inline-block">{showFilter ? "Ocultar" : "Filtrar"}</span>
+          </button>
+
+          <button className="inline-flex items-center justify-center gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap">
             Ordenar <ChevronDown size={14} strokeWidth={2} />
           </button>
         </div>
