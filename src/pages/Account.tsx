@@ -1,7 +1,7 @@
 import { useState, KeyboardEvent, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Package, MapPin, LogOut, Loader2, CheckCircle2, Clock, XCircle, ChevronRight, ChevronDown, ExternalLink, Edit3, Mail, FileText } from "lucide-react";
+import { User, Package, MapPin, LogOut, Loader2, CheckCircle2, Clock, XCircle, ChevronRight, ChevronDown, ExternalLink, Edit3, Mail, FileText, Truck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { api } from "@/api";
@@ -180,8 +180,10 @@ export default function Account() {
   const getStatusDetails = (status: string) => {
     const map: Record<string, { label: string; icon: typeof CheckCircle2; color: string; bg: string }> = {
       pending: { label: "Pendiente", icon: Clock, color: "text-amber-700", bg: "bg-amber-100" },
-      processing: { label: "Procesando", icon: Loader2, color: "text-blue-700", bg: "bg-blue-100" },
+      processing: { label: "Procesando", icon: Package, color: "text-blue-700", bg: "bg-blue-100" },
+      shipped: { label: "Enviado", icon: Truck, color: "text-blue-700", bg: "bg-blue-100" },
       fulfilled: { label: "Entregado", icon: CheckCircle2, color: "text-green-700", bg: "bg-green-100" },
+      delivered: { label: "Entregado", icon: CheckCircle2, color: "text-green-700", bg: "bg-green-100" },
       cancelled: { label: "Cancelado", icon: XCircle, color: "text-red-700", bg: "bg-red-100" }
     };
     return map[status] || map.pending;
