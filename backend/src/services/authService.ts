@@ -84,7 +84,7 @@ export const authService = {
   async register(input: RegisterInput) {
     const existingUser = await prisma.user.findUnique({ where: { email: input.email } });
     if (existingUser) {
-      throw new AppError("Email already exists", 409);
+      throw new AppError("Este correo electrónico ya se encuentra registrado.", 409);
     }
 
     const passwordHash = await bcrypt.hash(input.password, 12);
@@ -190,7 +190,7 @@ export const authService = {
     const validPassword = user ? await bcrypt.compare(input.password, user.passwordHash) : false;
     if (!user || !validPassword) {
       console.warn(`[Login Failed] email: "${normalizedEmail}", userFound: ${!!user}, validPass: ${validPassword}`);
-      throw new AppError("Invalid credentials", 401);
+      throw new AppError("Correo electrónico o contraseña incorrectos.", 401);
     }
 
     if (!user.emailVerifiedAt) {
@@ -217,18 +217,18 @@ export const authService = {
   async refresh(request: FastifyRequest) {
     const refreshToken = request.cookies?.refreshToken;
     if (!refreshToken) {
-      throw new AppError("Missing refresh token", 401);
+      throw new AppError("Sesión expirada. Por favor, inicia sesión nuevamente.", 401);
     }
 
     let payload: JwtPayload;
     try {
       payload = jwt.verify(refreshToken, env.JWT_SECRET) as JwtPayload;
     } catch {
-      throw new AppError("Invalid refresh token", 401);
+      throw new AppError("Sesión expirada. Por favor, inicia sesión nuevamente.", 401);
     }
 
     if (payload.tokenType !== "refresh") {
-      throw new AppError("Invalid refresh token", 401);
+      throw new AppError("Sesión expirada. Por favor, inicia sesión nuevamente.", 401);
     }
 
     const { accessToken } = issueTokens(payload.sub, payload.role);
@@ -239,7 +239,7 @@ export const authService = {
   async me(request: FastifyRequest) {
     const payload = request.user as JwtPayload | undefined;
     if (!payload?.sub) {
-      throw new AppError("Unauthorized", 401);
+      throw new AppError("No autorizado", 401);
     }
 
     const user = await prisma.user.findUnique({
@@ -257,7 +257,7 @@ export const authService = {
   async updateMe(request: FastifyRequest, input: UpdateMeInput) {
     const payload = request.user as JwtPayload | undefined;
     if (!payload?.sub) {
-      throw new AppError("Unauthorized", 401);
+      throw new AppError("No autorizado", 401);
     }
 
     const user = await prisma.user.update({
