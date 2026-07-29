@@ -468,6 +468,12 @@ export const orderService = {
         <p class="text">¡Tu pedido <strong>#${order.reference}</strong> ha sido <strong>entregado con éxito</strong>!</p>
         <p class="text">Esperamos que disfrutes al máximo tu nueva faja y te sientas increíble. Si tienes alguna duda o comentario sobre tu compra, no dudes en contactarnos.</p>
         
+        <div style="background-color: #FAF8F5; border: 1px dashed #C4A46A; padding: 20px; border-radius: 4px; margin: 24px 0; text-align: center;">
+          <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600; color: #1C1A17;">¿Qué te pareció tu Faja AB?</p>
+          <p style="margin: 0 0 16px 0; font-size: 13px; color: #555555;">Nos encantaría conocer tu experiencia. Tu opinión nos ayuda a mejorar y a que más mujeres encuentren su faja ideal.</p>
+          <a href="${frontendUrl}/testimonios/nuevo" style="display: inline-block; padding: 10px 24px; background-color: #C4A46A; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; border-radius: 2px;">Dejar un Testimonio</a>
+        </div>
+
         <p class="text" style="text-align: center; margin-top: 24px;">
           <a href="${frontendUrl}/account" style="color: #1C1A17; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em;">Ver Detalles de mi Cuenta</a>
         </p>
