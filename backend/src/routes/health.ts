@@ -31,22 +31,19 @@ export const healthRoutes: FastifyPluginAsync = async (app) => {
     await prisma.testimonial.createMany({
       data: [
         {
-          author: "Laura M.",
-          initials: "LM",
+          name: "Laura M.",
           content: "Me encanta la textura de la faja, no se nota debajo de la ropa y moldea hermoso mi figura.",
           rating: 5,
           status: "approved"
         },
         {
-          author: "Sofía G.",
-          initials: "SG",
+          name: "Sofía G.",
           content: "Después de mi cirugía, esta faja ha sido mi mejor aliada. Muy cómoda y el nivel de compresión es perfecto.",
           rating: 5,
           status: "approved"
         },
         {
-          author: "Camila R.",
-          initials: "CR",
+          name: "Camila R.",
           content: "Excelente atención al cliente y el envío fue rapidísimo. La faja superó mis expectativas totalmente.",
           rating: 5,
           status: "approved"
