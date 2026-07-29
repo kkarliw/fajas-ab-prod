@@ -10,7 +10,14 @@ import ProductCard from "@/components/ProductCard";
 import Skeleton from "@/components/ui/Skeleton";
 import { SEO } from "@/components/SEO";
 import { formatCOP, type CatalogProduct } from "@/data/catalog";
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, SlidersHorizontal, ArrowRight, X, Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, SlidersHorizontal, ArrowRight, X, Grid2x2, Grid3x3, LayoutGrid, Check } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import shopHeroImg from "@/assets/Fajas AB/fotos grupales/_A9A4288.jpg";
 
 const chips = ["Bestseller", "Postquirúrgico", "Uso Diario", "Alta Compresión", "Fajas", "Brasieres", "Cinturillas", "Shorts", "Accesorios"];
@@ -81,6 +88,7 @@ const Shop = () => {
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 400000]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sortOption, setSortOption] = useState("destacados");
 
   const updateParams = (entries: Record<string, string | null>) => {
     const next = new URLSearchParams(params);
@@ -160,19 +168,29 @@ const Shop = () => {
     });
   }, [searchQuery, chip, selectedColors, selectedTypes, selectedSizes, selectedMaterials, priceRange, fullCatalog]);
 
+  const sortedProducts = useMemo(() => {
+    const sorted = [...filteredProducts];
+    if (sortOption === "precio_asc") {
+      sorted.sort((a, b) => a.price - b.price);
+    } else if (sortOption === "precio_desc") {
+      sorted.sort((a, b) => b.price - a.price);
+    }
+    return sorted;
+  }, [filteredProducts, sortOption]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 30;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filteredProducts]);
+  }, [sortedProducts]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
 
   const products = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredProducts, currentPage]);
+    return sortedProducts.slice(start, start + ITEMS_PER_PAGE);
+  }, [sortedProducts, currentPage]);
 
   const FiltersUI = (
     <div>
@@ -420,7 +438,7 @@ const Shop = () => {
             {/* Left side */}
             <div className="flex items-center gap-4">
               <p className="font-body text-[12px] sm:text-[13px] text-ink/60 whitespace-nowrap">
-                {products.length} de {fullCatalog.length}
+                {products.length} de {sortedProducts.length}
               </p>
 
               {searchQuery && (
@@ -460,18 +478,26 @@ const Shop = () => {
                 ))}
               </div>
 
-              {/* Mobile Only Filter Button */}
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-                className="lg:hidden inline-flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold uppercase tracking-widest text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 py-2 hover:border-black/30 transition-colors"
-              >
-                <SlidersHorizontal size={14} strokeWidth={2} />
-              </button>
-
-              <button className="inline-flex items-center justify-center gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap">
-                Ordenar <ChevronDown size={14} strokeWidth={2} />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center justify-center gap-2 text-[12px] sm:text-[13px] font-medium text-ink bg-white border border-black/10 shadow-sm rounded-full px-4 sm:px-6 py-2 sm:py-2.5 hover:border-black/30 transition-colors whitespace-nowrap focus:outline-none">
+                    Ordenar <ChevronDown size={14} strokeWidth={2} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px] bg-white border-black/10 shadow-lg rounded-xl font-body">
+                  <DropdownMenuRadioGroup value={sortOption} onValueChange={setSortOption}>
+                    <DropdownMenuRadioItem value="destacados" className="py-2.5 cursor-pointer text-[13px]">
+                      Destacados
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="precio_asc" className="py-2.5 cursor-pointer text-[13px]">
+                      Precio: Menor a Mayor
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="precio_desc" className="py-2.5 cursor-pointer text-[13px]">
+                      Precio: Mayor a Menor
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           <div
