@@ -114,7 +114,14 @@ export const uploadRoutes: FastifyPluginAsync = async (app) => {
         const { Readable } = await import("stream");
         await pipeline(Readable.from(buffer), createWriteStream(destPath));
 
-        const backendBase = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL || "https://fajas-ab-prod.onrender.com";
+        let backendBase = "https://fajas-ab-prod.onrender.com";
+        if (process.env.NODE_ENV === "development") {
+          const port = process.env.PORT || 3001;
+          const host = process.env.HOST || "localhost";
+          backendBase = `http://${host}:${port}`;
+        } else if (process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL) {
+          backendBase = process.env.RENDER_EXTERNAL_URL || process.env.BACKEND_URL || backendBase;
+        }
         const url = `${backendBase.replace(/\/$/, "")}/uploads/${uniqueName}`;
         return sendSuccess(reply, { url }, 201);
       } catch (err: any) {

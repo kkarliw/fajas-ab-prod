@@ -335,12 +335,12 @@ const AdminSettings = () => {
                           src={
                             settings.promoPopup.imageUrl.startsWith("http") || settings.promoPopup.imageUrl.startsWith("data")
                               ? settings.promoPopup.imageUrl
-                              : `https://fajas-ab-prod.onrender.com${settings.promoPopup.imageUrl.startsWith("/") ? "" : "/"}${settings.promoPopup.imageUrl}`
+                              : `${import.meta.env.VITE_API_URL || ""}${settings.promoPopup.imageUrl.startsWith("/") ? "" : "/"}${settings.promoPopup.imageUrl}`
                           }
                           alt="Pop-up"
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/assets/hero-luxe-1.jpg";
+                            (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22200%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23cccccc%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23666666%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%3EImagen%20Rota%3C%2Ftext%3E%3C%2Fsvg%3E";
                           }}
                         />
                         <button
@@ -403,12 +403,11 @@ const AdminSettings = () => {
                           src={
                             settings.promoPopup.imageUrl.startsWith("http") || settings.promoPopup.imageUrl.startsWith("data")
                               ? settings.promoPopup.imageUrl
-                              : `https://fajas-ab-prod.onrender.com${settings.promoPopup.imageUrl.startsWith("/") ? "" : "/"}${settings.promoPopup.imageUrl}`
+                              : `${import.meta.env.VITE_API_URL || ""}${settings.promoPopup.imageUrl.startsWith("/") ? "" : "/"}${settings.promoPopup.imageUrl}`
                           }
                           alt="Preview"
                           className="absolute inset-0 w-full h-full object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/assets/hero-luxe-1.jpg";
                           }}
                         />
                       ) : (
