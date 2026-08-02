@@ -67,6 +67,7 @@ const AdminProducts = () => {
     mutationFn: (data: any) => api.admin.createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({ title: "Producto Creado", description: "El producto ha sido añadido al catálogo." });
       setIsEditModalOpen(false);
     },
@@ -77,6 +78,7 @@ const AdminProducts = () => {
     mutationFn: (data: any) => api.admin.updateProduct(data.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({ title: "Producto Guardado", description: "El producto ha sido actualizado con éxito." });
       setIsEditModalOpen(false);
     },
@@ -87,6 +89,7 @@ const AdminProducts = () => {
     mutationFn: (id: string) => api.admin.deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({ title: "Producto Archivado", description: "El producto ha sido enviado al archivo." });
       setIsDeleteModalOpen(false);
     },

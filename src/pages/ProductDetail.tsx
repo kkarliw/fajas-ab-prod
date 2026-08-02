@@ -61,7 +61,7 @@ const ProductDetail = () => {
   const { data: dbProducts = [] } = useQuery({
     queryKey: ["products", "all"],
     queryFn: () => getProducts(),
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 10,
   });
 
   const fullCatalog: CatalogProduct[] = useMemo(() => {

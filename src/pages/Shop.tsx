@@ -113,7 +113,7 @@ const Shop = () => {
     queryFn: async () => {
       return await getProducts();
     },
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 10,
   });
 
   const fullCatalog: CatalogProduct[] = useMemo(() => {

@@ -14,55 +14,67 @@ export async function getProducts(filters: GetProductsFilters = {}): Promise<Pro
   if (filters.tag) searchParams.set("tag", filters.tag);
 
   const query = searchParams.toString();
+  const endpoint = `/api/v1/products${query ? `?${query}` : ""}`;
   
-  if (!query) {
-    try {
-      const staticRes = await fetch("/catalog.json");
-      if (staticRes.ok) {
-        const staticData = await staticRes.json();
-        // Fire background request to wake up Render server quietly
-        client.get<ProductDTO[]>('/api/v1/products').catch(() => {});
-        return staticData;
-      }
-    } catch (e) {
-      // fallback to standard API
+  try {
+    const data = await client.get<ProductDTO[]>(endpoint);
+    if (Array.isArray(data)) {
+      return data;
     }
+  } catch (e) {
+    // If backend is unavailable or sleeping, fallback to static catalog
   }
 
-  return await client.get<ProductDTO[]>(`/api/v1/products${query ? `?${query}` : ""}`);
+  try {
+    const staticRes = await fetch("/catalog.json");
+    if (staticRes.ok) {
+      return await staticRes.json();
+    }
+  } catch (e) {
+    // fallback failed
+  }
+
+  return [];
 }
 
 export async function getProductBySlug(slug: string): Promise<ProductDTO> {
+  try {
+    const product = await client.get<ProductDTO>(`/api/v1/products/${encodeURIComponent(slug)}`);
+    if (product) return product;
+  } catch (e) {
+    // Fallback to static catalog.json
+  }
+
   try {
     const staticRes = await fetch("/catalog.json");
     if (staticRes.ok) {
       const staticData: ProductDTO[] = await staticRes.json();
       const product = staticData.find(p => p.slug === slug);
-      if (product) {
-        client.get<ProductDTO>(`/api/v1/products/${encodeURIComponent(slug)}`).catch(() => {});
-        return product;
-      }
+      if (product) return product;
     }
-  } catch (e) {
-    // fallback
-  }
-  return await client.get<ProductDTO>(`/api/v1/products/${encodeURIComponent(slug)}`);
+  } catch (e) {}
+
+  throw new Error("Producto no encontrado");
 }
 
 export async function getRelated(slug: string): Promise<ProductDTO[]> {
+  try {
+    const related = await client.get<ProductDTO[]>(`/api/v1/products/${encodeURIComponent(slug)}/related`);
+    if (Array.isArray(related)) return related;
+  } catch (e) {
+    // Fallback to static catalog.json
+  }
+
   try {
     const staticRes = await fetch("/catalog.json");
     if (staticRes.ok) {
       const staticData: ProductDTO[] = await staticRes.json();
       const product = staticData.find(p => p.slug === slug);
       if (product && product.category) {
-        const related = staticData.filter(p => p.category === product.category && p.slug !== slug).slice(0, 4);
-        client.get<ProductDTO[]>(`/api/v1/products/${encodeURIComponent(slug)}/related`).catch(() => {});
-        return related;
+        return staticData.filter(p => p.category === product.category && p.slug !== slug).slice(0, 4);
       }
     }
-  } catch (e) {
-    // fallback
-  }
-  return await client.get<ProductDTO[]>(`/api/v1/products/${encodeURIComponent(slug)}/related`);
+  } catch (e) {}
+
+  return [];
 }
