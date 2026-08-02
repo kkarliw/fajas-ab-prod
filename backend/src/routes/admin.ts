@@ -5,6 +5,7 @@ import { prisma } from "../lib/prisma.js";
 import { sendSuccess } from "../utils/response.js";
 import { z } from "zod";
 import { orderService } from "../services/orderService.js";
+import { invalidateProductCache } from "../services/productService.js";
 import sanitizeHtml from "sanitize-html";
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
@@ -266,6 +267,7 @@ const parsePriceInput = (raw: any): number => {
           } : undefined
         }
       });
+      invalidateProductCache();
       return sendSuccess(reply, newProduct, 201);
     } catch (err: any) {
       request.log.error(err);
@@ -356,7 +358,7 @@ const parsePriceInput = (raw: any): number => {
           }
         }
       }
-
+      invalidateProductCache();
       return sendSuccess(reply, updated);
     } catch (err: any) {
       request.log.error(err);
@@ -372,6 +374,7 @@ const parsePriceInput = (raw: any): number => {
         where: { id },
         data: { status: status as any },
       });
+      invalidateProductCache();
       return sendSuccess(reply, updated);
     } catch (err: any) {
       return reply.status(500).send({ ok: false, error: err?.message || "Error al cambiar el estado." });
@@ -385,6 +388,7 @@ const parsePriceInput = (raw: any): number => {
         where: { id },
         data: { status: "archived" }
       });
+      invalidateProductCache();
       return sendSuccess(reply, updated);
     } catch (err: any) {
       return reply.status(500).send({ ok: false, error: err?.message || "Error al archivar el producto." });
