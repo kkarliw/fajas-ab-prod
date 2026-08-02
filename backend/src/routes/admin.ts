@@ -218,14 +218,9 @@ const parsePriceInput = (raw: any): number => {
         return reply.status(400).send({ ok: false, error: "El campo 'name' es requerido." });
       }
 
-      // Get or create category
-      let categoryId = data.categoryId;
+      const categoryId = data.categoryId;
       if (!categoryId) {
-        const cat = await prisma.category.findFirst();
-        if (!cat) {
-          return reply.status(400).send({ ok: false, error: "No hay categorías en la base de datos. Crea una categoría primero." });
-        }
-        categoryId = cat.id;
+        return reply.status(400).send({ ok: false, error: "El campo 'categoryId' es requerido." });
       }
 
       const pricePesos = parsePriceInput(data.price);
@@ -303,6 +298,7 @@ const parsePriceInput = (raw: any): number => {
           seoDescription: data.seoDescription,
           status: data.status,
           tag: data.tag || null,
+          categoryId: data.categoryId || undefined,
         }
       });
 

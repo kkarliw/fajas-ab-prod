@@ -15,8 +15,6 @@ import { api } from "@/api";
 import { formatCOP } from "@/data/catalog";
 import { toast } from "@/hooks/use-toast";
 
-const categories = ["Brasieres", "Fajas", "Cinturillas", "Shorts", "Accesorios"];
-
 const AdminProducts = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -33,7 +31,7 @@ const AdminProducts = () => {
     slug: "",
     price: "" as string | number,
     originalPrice: "" as string | number,
-    category: "Fajas",
+    categoryId: "",
     material: "",
     description: "",
     sizes: "",
@@ -53,6 +51,14 @@ const AdminProducts = () => {
     queryKey: ["adminProducts"],
     queryFn: async () => {
       const res = await api.admin.getAdminProducts();
+      return Array.isArray(res) ? res : res.data || [];
+    }
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["adminCategories"],
+    queryFn: async () => {
+      const res = await api.admin.getCategories();
       return Array.isArray(res) ? res : res.data || [];
     }
   });
@@ -94,7 +100,7 @@ const AdminProducts = () => {
       slug: p.slug,
       price: p.price,
       originalPrice: p.originalPrice ? String(p.originalPrice) : "",
-      category: p.category,
+      categoryId: p.categoryId || (categories.length > 0 ? categories[0].id : ""),
       material: p.material || "",
       description: p.description || "",
       sizes: Array.isArray(p.sizes) ? p.sizes.join(", ") : p.sizes || "",
@@ -121,7 +127,7 @@ const AdminProducts = () => {
       slug: duplicateSlug,
       price: p.price ?? (p.basePriceCents ? p.basePriceCents / 100 : ""),
       originalPrice: p.originalPrice ?? (p.compareAtPriceCents ? p.compareAtPriceCents / 100 : ""),
-      category: p.category || "Fajas",
+      categoryId: p.categoryId || (categories.length > 0 ? categories[0].id : ""),
       material: p.material || "",
       description: p.description || "",
       sizes: Array.isArray(p.sizes) ? p.sizes.join(", ") : p.sizes || "",
@@ -147,7 +153,7 @@ const AdminProducts = () => {
       slug: "",
       price: "",
       originalPrice: "",
-      category: "Fajas",
+      categoryId: categories.length > 0 ? categories[0].id : "",
       material: "",
       description: "",
       sizes: "XS, S, M, L, XL",
@@ -292,8 +298,8 @@ const AdminProducts = () => {
           >
             <option value="all">Todas las Categorías</option>
             <option value="archived">Archivados</option>
-            {categories.map(c => (
-              <option key={c} value={c}>{c}</option>
+            {categories.map((c: any) => (
+              <option key={c.id} value={c.name}>{c.name}</option>
             ))}
           </select>
 
@@ -562,33 +568,23 @@ const AdminProducts = () => {
                 {/* Status, Out of Stock, Category */}
                 <div className="space-y-1.5 sm:col-span-2">
                   <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">
-                    Estado, Categoría y Etiqueta
+                    Categoría y Etiqueta
                   </label>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                      className="w-full sm:w-1/3 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
+                      value={formData.categoryId}
+                      onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                      className="w-full sm:w-1/2 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
                     >
-                      <option value="draft">Borrador</option>
-                      <option value="published">Publicado</option>
-                      <option value="archived">Archivado</option>
-                    </select>
-
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full sm:w-1/3 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
-                    >
-                      {categories.map(c => (
-                        <option key={c} value={c}>{c}</option>
+                      {categories.map((c: any) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </select>
 
                     <select
                       value={formData.tag}
                       onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
-                      className="w-full sm:w-1/3 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
+                      className="w-full sm:w-1/2 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
                     >
                       <option value="">Sin etiqueta</option>
                       <option value="bestseller">Bestseller</option>
