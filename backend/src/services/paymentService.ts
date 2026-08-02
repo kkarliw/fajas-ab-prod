@@ -2,8 +2,8 @@ import crypto from 'crypto';
 
 export const paymentService = {
   getPaymentUrl(reference: string, amountCents: number, currency = 'COP') {
-    const publicKey = process.env.WOMPI_PUBLIC_KEY || "pub_prod_R5wDypwYpfISMzlyXLCvWY9o9AXuknc6";
-    const integritySecret = process.env.WOMPI_INTEGRITY_SECRET || "prod_integrity_HzWj1T1BmjvwxnUrdIa0QpzMZrYwIEz3";
+    const publicKey = "pub_prod_R5wDypwYpfISMzlyXLCvWY9o9AXuknc6";
+    const integritySecret = "prod_integrity_HzWj1T1BmjvwxnUrdIa0QpzMZrYwIEz3";
 
     // Generate integrity signature required by Wompi Widget
     // Formula: SHA256(reference + amountInCents + currency + integritySecret)
@@ -42,7 +42,7 @@ export const paymentService = {
     }
     
     // Add timestamp and events secret
-    const eventsSecret = process.env.WOMPI_EVENTS_SECRET || "prod_events_UmxlufToHtAYjG55mqLOZOF3RFQYW8R5";
+    const eventsSecret = "prod_events_UmxlufToHtAYjG55mqLOZOF3RFQYW8R5";
     stringToSign += `${timestamp}${eventsSecret}`;
     
     const hash = crypto.createHash('sha256').update(stringToSign).digest('hex');
