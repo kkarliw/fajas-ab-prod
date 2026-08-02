@@ -283,7 +283,8 @@ const parsePriceInput = (raw: any): number => {
       const pricePesos = parsePriceInput(data.price);
       const priceCents = Math.round(pricePesos * 100);
 
-      const updated = await prisma.product.update({
+      // 1. Update the product record itself
+      await prisma.product.update({
         where: { id },
         data: {
           name: data.name,
@@ -302,7 +303,7 @@ const parsePriceInput = (raw: any): number => {
         }
       });
 
-      // Synchronize all product variants priceCents to match product basePriceCents
+      // 2. Synchronize all product variants priceCents to match product basePriceCents
       if (priceCents > 0) {
         await prisma.productVariant.updateMany({
           where: { productId: id },
@@ -310,9 +311,8 @@ const parsePriceInput = (raw: any): number => {
         });
       }
 
-      // Update images
+      // 3. Update images
       if (validImages.length > 0) {
-        // Simple approach: delete existing and recreate
         await prisma.productImage.deleteMany({ where: { productId: id } });
         await prisma.productImage.createMany({
           data: validImages.map((url: string, index: number) => ({
@@ -322,22 +322,35 @@ const parsePriceInput = (raw: any): number => {
           }))
         });
       } else if (data.images && data.images.length === 0) {
-        // User explicitly removed all images
         await prisma.productImage.deleteMany({ where: { productId: id } });
       }
 
-      if (data.isOutOfStock !== undefined) {
-        await prisma.productVariant.updateMany({
-          where: { productId: id },
-          data: { stock: data.isOutOfStock ? 0 : (data.stock ?? 10) }
-        });
-      }
-
-      // Synchronize variants (create missing ones)
-      if (Array.isArray(data.sizes) && Array.isArray(data.colors) && data.sizes.length > 0 && data.colors.length > 0) {
-        const currentVariants = await prisma.productVariant.findMany({ where: { productId: id } });
-        for (const s of data.sizes) {
-          for (const c of data.colors) {
+      // 4. Ensure variants exist — create missing size/color combos FIRST
+      const sizesArr = Array.isArray(data.sizes) && data.sizes.length > 0 ? data.sizes : ["Única"];
+      const colorsArr = Array.isArray(data.colors) && data.colors.length > 0 ? data.colors : ["Cocoa"];
+      
+      const currentVariants = await prisma.productVariant.findMany({ where: { productId: id } });
+      
+      // If zero variants exist, we must create at least one so stock works
+      if (currentVariants.length === 0) {
+        for (const s of sizesArr) {
+          for (const c of colorsArr) {
+            await prisma.productVariant.create({
+              data: {
+                productId: id,
+                size: s,
+                colorName: c,
+                sku: `SKU-${Math.random().toString(36).substring(7).toUpperCase()}-${s}-${c}`,
+                stock: data.isOutOfStock ? 0 : (data.stock ?? 10),
+                priceCents: priceCents > 0 ? priceCents : 0
+              }
+            });
+          }
+        }
+      } else {
+        // Create any missing combos
+        for (const s of sizesArr) {
+          for (const c of colorsArr) {
             const exists = currentVariants.find((v: any) => v.size === s && v.colorName === c);
             if (!exists) {
               await prisma.productVariant.create({
@@ -354,8 +367,55 @@ const parsePriceInput = (raw: any): number => {
           }
         }
       }
+
+      // 5. Update stock on ALL variants (runs after variants exist)
+      if (data.isOutOfStock !== undefined) {
+        const newStock = data.isOutOfStock ? 0 : (data.stock ?? 10);
+        await prisma.productVariant.updateMany({
+          where: { productId: id },
+          data: { stock: newStock }
+        });
+      }
+
+      // 6. Invalidate cache so the public shop/landing sees changes immediately
       invalidateProductCache();
-      return sendSuccess(reply, updated);
+
+      // 7. Re-fetch and return the full product with relations
+      const refreshed = await prisma.product.findUnique({
+        where: { id },
+        include: { category: true, variants: true, images: true }
+      });
+
+      if (!refreshed) {
+        return reply.status(404).send({ ok: false, error: "Producto no encontrado después de actualizar." });
+      }
+
+      const totalStock = refreshed.variants.reduce((sum, v) => sum + v.stock, 0);
+      const result = {
+        id: refreshed.id,
+        name: refreshed.name,
+        slug: refreshed.slug,
+        price: refreshed.basePriceCents / 100,
+        originalPrice: refreshed.compareAtPriceCents ? refreshed.compareAtPriceCents / 100 : undefined,
+        category: refreshed.category.name,
+        categoryId: refreshed.categoryId,
+        description: refreshed.description,
+        material: refreshed.material,
+        controlLevel: refreshed.controlLevel,
+        uses: refreshed.uses,
+        seoTitle: refreshed.seoTitle,
+        seoDescription: refreshed.seoDescription,
+        sizes: Array.from(new Set(refreshed.variants.map(v => v.size).filter(Boolean))),
+        colors: Array.from(new Set(refreshed.variants.map(v => v.colorName).filter(Boolean))),
+        stock: totalStock,
+        isOutOfStock: totalStock === 0,
+        image: refreshed.images.find(img => img.isPrimary)?.url || refreshed.images[0]?.url || "",
+        images: refreshed.images.map(img => ({ url: img.url, isPrimary: img.isPrimary })),
+        status: refreshed.status,
+        tag: refreshed.tag,
+      };
+
+      return sendSuccess(reply, result);
     } catch (err: any) {
       request.log.error(err);
       return reply.status(500).send({ ok: false, error: err?.message || "Error al actualizar el producto." });
