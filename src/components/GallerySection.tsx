@@ -1,9 +1,9 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import product1 from "@/assets/product-1.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product4 from "@/assets/product-4.jpg";
+import product1 from "@/assets/Fajas AB/fotos grupales/_A9A4285.jpg";
+import product2 from "@/assets/Fajas AB/fotos grupales/_A9A4288.jpg";
+import product3 from "@/assets/Fajas AB/fotos grupales/_A9A4461.jpg";
+import product4 from "@/assets/Fajas AB/fotos grupales/_A9A4562.jpg";
 
 const gallery = [
   { image: product1, label: "Control suave" },

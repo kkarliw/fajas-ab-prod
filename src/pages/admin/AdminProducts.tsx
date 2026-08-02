@@ -262,8 +262,8 @@ const AdminProducts = () => {
 
   const filtered = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.slug.toLowerCase().includes(search.toLowerCase());
-    const matchesCat = categoryFilter === "all" || p.category === categoryFilter;
-    const isNotArchived = p.status !== "archived";
+    const matchesCat = categoryFilter === "all" || categoryFilter === "archived" || p.category === categoryFilter;
+    const isNotArchived = categoryFilter === "archived" ? p.status === "archived" : p.status !== "archived";
     return matchesSearch && matchesCat && isNotArchived;
   });
 
@@ -291,6 +291,7 @@ const AdminProducts = () => {
             className="h-10 px-4 bg-background border border-border rounded-md text-sm outline-none focus-visible:border-gold"
           >
             <option value="all">Todas las Categorías</option>
+            <option value="archived">Archivados</option>
             {categories.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}

@@ -1,13 +1,13 @@
-import product1 from "@/assets/product-1.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product4 from "@/assets/product-4.jpg";
-import catFajas from "@/assets/cat-fajas.jpg";
-import catCinturillas from "@/assets/coll-cinturillas.jpg";
-import catShorts from "@/assets/coll-shorts.jpg";
-import catPostop from "@/assets/coll-postop.jpg";
-import heroLuxe1 from "@/assets/hero-luxe-1.jpg";
-import heroLuxe2 from "@/assets/hero-luxe-2.jpg";
+const product1 = "";
+const product2 = "";
+const product3 = "";
+const product4 = "";
+const catFajas = "";
+const catCinturillas = "";
+const catShorts = "";
+const catPostop = "";
+const heroLuxe1 = "";
+const heroLuxe2 = "";
 
 // Product media - using direct imports without imagetools for faster build
 // Brasier ref emy
