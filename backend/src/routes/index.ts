@@ -40,7 +40,6 @@ export const routes: FastifyPluginAsync = async (app) => {
   await app.register(subscribersRoutes, { prefix: "/subscribers" });
   await app.register(publicSettingsRoutes, { prefix: "/settings" });
   await app.register(addressesRoutes, { prefix: "/addresses" });
-  await app.register(healthRoutes);
   
   // Register admin settings route with admin authentication
   await app.register(async (adminApp) => {
