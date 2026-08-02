@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { api } from "@/api";
+import { useQuery } from "@tanstack/react-query";
 
 const luxuryStyles = `
   @keyframes gradient-shift {
@@ -36,6 +37,14 @@ const luxuryStyles = `
 `;
 
 const NewsletterSection = () => {
+  const { data: settings } = useQuery({
+    queryKey: ["storeSettings"],
+    queryFn: async () => {
+      const data = await api.settings.getStoreSettings();
+      return data;
+    },
+  });
+
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -133,11 +142,17 @@ const NewsletterSection = () => {
             className="max-w-md mx-auto text-center py-7 px-5 bg-white/[0.02] border border-white/10 rounded-[1rem] space-y-4 backdrop-blur-md"
           >
             <p className="text-sm font-semibold text-white/95">¡Te damos la bienvenida al Club!</p>
-            <p className="text-xs text-white/60">Usa este cupón en el checkout para tu descuento:</p>
-            <div className="inline-block bg-white text-[#1a1510] border border-dashed border-[#d4af7a] px-7 py-3 text-sm font-mono font-bold tracking-wider select-all rounded-md">
-              BIENVENIDA10
-            </div>
-            <p className="text-[10px] text-white/40">El 10% de cortesía ha sido registrado para tu cuenta.</p>
+            {settings?.promoPopup?.showCoupon && settings?.promoPopup?.couponCode ? (
+              <>
+                <p className="text-xs text-white/60">Usa este cupón en el checkout para tu descuento:</p>
+                <div className="inline-block bg-white text-[#1a1510] border border-dashed border-[#d4af7a] px-7 py-3 text-sm font-mono font-bold tracking-wider select-all rounded-md">
+                  {settings.promoPopup.couponCode}
+                </div>
+                <p className="text-[10px] text-white/40">El cupón de cortesía ha sido registrado para tu cuenta.</p>
+              </>
+            ) : (
+              <p className="text-xs text-white/60">Estarás recibiendo nuestras novedades y ofertas exclusivas directamente en tu bandeja de entrada.</p>
+            )}
           </motion.div>
         )}
       </motion.div>

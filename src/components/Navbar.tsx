@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Search, User, Menu, X, ChevronDown } from "lucide-react";
+import { Search, User, Menu, X, ChevronDown, Truck } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { formatCOP, type CatalogProduct } from "@/data/catalog";
@@ -169,6 +169,13 @@ const Navbar = () => {
             >
               <Search size={18} strokeWidth={1.0} />
             </button>
+            <Link
+              to="/track"
+              aria-label="Rastrear pedido"
+              className="text-ink/80 hover:text-ink transition-colors hidden sm:inline-flex"
+            >
+              <Truck size={18} strokeWidth={1.0} />
+            </Link>
             <Link
               to="/account"
               aria-label="Mi cuenta"
@@ -387,6 +394,7 @@ const Navbar = () => {
                 </div>
               ))}
               <div className="flex flex-col gap-2 mt-2">
+                <Link to="/track" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Rastrear Pedido</Link>
                 <Link to="/account" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Mi cuenta</Link>
                 <Link to="/faq" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Preguntas Frecuentes</Link>
                 <Link to="/pqr" onClick={() => setOpen(false)} className="nav-label text-ink/70 py-3">Radicar PQR</Link>

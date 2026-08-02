@@ -86,7 +86,8 @@ export default function VerifyEmail() {
 
     try {
       await api.auth.verifyEmail(email!, fullCode);
-      navigate("/account");
+      const redirectTo = searchParams.get("redirect") || "/account";
+      navigate(redirectTo);
     } catch (err: any) {
       setErrorMsg(err.message || "Código inválido o expirado. Intenta nuevamente.");
       setLoading(false);

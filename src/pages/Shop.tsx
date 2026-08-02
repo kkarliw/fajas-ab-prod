@@ -156,11 +156,11 @@ const Shop = () => {
         else if (chip === "Postquirúrgico" && !fullText.includes("postquir") && !fullText.includes("cirug") && !fullText.includes("recupera")) return false;
         else if (chip === "Uso Diario" && !fullText.includes("diari") && !fullText.includes("confort") && !fullText.includes("diaria")) return false;
         else if (chip === "Alta Compresión" && !fullText.includes("alta") && !fullText.includes("powernet") && !fullText.includes("látex") && !fullText.includes("firme")) return false;
-        else if (["Brasieres", "Fajas", "Cinturillas", "Shorts", "Accesorios"].includes(chip) && p.category !== chip)
+        else if (["Brasieres", "Fajas", "Cinturillas", "Shorts", "Accesorios"].includes(chip) && p.category?.toLowerCase() !== chip.toLowerCase())
           return false;
       }
       if (selectedColors.length && !p.colors.some((c) => selectedColors.includes(c))) return false;
-      if (selectedTypes.length && !selectedTypes.includes(p.category)) return false;
+      if (selectedTypes.length && !selectedTypes.some((t) => t.toLowerCase() === p.category?.toLowerCase())) return false;
       if (selectedSizes.length && !p.sizes.some((s) => selectedSizes.includes(s))) return false;
       if (selectedMaterials.length && !selectedMaterials.includes(p.material)) return false;
       if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
@@ -292,9 +292,8 @@ const Shop = () => {
                     on ? prev.filter((x) => x !== s) : [...prev, s],
                   )
                 }
-                className={`min-w-10 h-10 px-3 text-[12px] uppercase tracking-[0.18em] border ${
-                  on ? "bg-ink text-ink-soft border-ink" : "border-hairline text-ink/80 hover:border-ink"
-                }`}
+                className={`min-w-10 h-10 px-3 text-[12px] uppercase tracking-[0.18em] border ${on ? "bg-ink text-ink-soft border-ink" : "border-hairline text-ink/80 hover:border-ink"
+                  }`}
               >
                 {s}
               </button>
@@ -353,7 +352,7 @@ const Shop = () => {
     </div>
   );
 
-  const title = chip 
+  const title = chip
     ? `Comprar ${chip} | FAJAS AB`
     : "Catálogo Completo | FAJAS AB";
 
@@ -382,7 +381,7 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-      <SEO 
+      <SEO
         title={title}
         description={description}
         url={chip ? `https://www.fajasab.com/shop?cat=${chip}` : "https://www.fajasab.com/shop"}
@@ -406,78 +405,58 @@ const Shop = () => {
           <p className="mt-5 max-w-xl mx-auto font-body text-[14px] text-cream/90 text-shadow-sm">
             Diseñadas para moldear, estilizar y realzar tu figura natural.
           </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-2">
-            {chips.map((c) => (
-              <button
-                key={c}
-                onClick={() => setChip((prev) => (prev === c ? null : c))}
-                className={`px-4 py-2 text-[11px] uppercase tracking-[0.2em] border transition-colors ${
-                  chip === c
-                    ? "bg-gold-light text-ink border-gold-light shadow-sm"
-                    : "border-cream/30 text-cream hover:border-cream bg-ink/20 backdrop-blur-sm"
-                }`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* Body */}
-      <section className={`container-luxe py-8 sm:py-10 grid gap-8 lg:gap-10 ${showFilter ? "lg:grid-cols-[240px_1fr]" : "lg:grid-cols-1"}`}>
+      <section className={`w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-10 grid gap-8 lg:gap-10 ${showFilter ? "lg:grid-cols-[240px_minmax(0,1fr)]" : "lg:grid-cols-1"}`}>
         {showFilter && (
           <aside className="hidden lg:block sticky top-24 self-start">
             {FiltersUI}
           </aside>
         )}
 
-        <div>
+        <div className="w-full min-w-0">
           {/* Toolbar (Now aligned with products) */}
-          <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8 w-full">
             {/* Left side */}
             <div className="flex items-center gap-4">
               <p className="font-body text-[12px] sm:text-[13px] text-ink/60 whitespace-nowrap">
                 {products.length} de {sortedProducts.length}
               </p>
 
-              {searchQuery && (
-                <div className="hidden sm:flex items-center gap-2 bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full text-[11px] font-semibold text-ink">
-                  <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
-                  <button
-                    type="button"
-                    onClick={() => updateParams({ q: null })}
-                    className="text-ink/60 hover:text-red-600 transition-colors ml-1"
-                    aria-label="Limpiar búsqueda"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {searchQuery && (
+                  <div className="flex items-center gap-2 bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full text-[11px] font-semibold text-ink">
+                    <span>Búsqueda: <strong>"{searchQuery}"</strong></span>
+                    <button
+                      type="button"
+                      onClick={() => updateParams({ q: null })}
+                      className="text-ink/60 hover:text-red-600 transition-colors ml-1"
+                      aria-label="Limpiar búsqueda"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                )}
+                {chip && (
+                  <div className="flex items-center gap-2 bg-ink text-white px-3 py-1.5 rounded-full text-[11px] font-semibold">
+                    <span>Colección: <strong>{chip}</strong></span>
+                    <button
+                      type="button"
+                      onClick={() => updateParams({ cat: null })}
+                      className="text-white/60 hover:text-white transition-colors ml-1"
+                      aria-label="Limpiar colección"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Right side */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <div className="hidden lg:flex items-center gap-3 mr-2">
-                {([
-                  { n: 2, Icon: Grid2x2 },
-                  { n: 3, Icon: Grid3x3 },
-                  { n: 4, Icon: LayoutGrid },
-                ] as const).map(({ n, Icon }) => (
-                  <button
-                    key={n}
-                    onClick={() => setCols(n)}
-                    aria-label={`Ver ${n} columnas`}
-                    aria-pressed={cols === n}
-                    className={`transition-colors ${
-                      cols === n ? "text-ink" : "text-ink/30 hover:text-ink/70"
-                    }`}
-                  >
-                    <Icon size={16} strokeWidth={2} />
-                  </button>
-                ))}
-              </div>
-
               {/* Mobile Only Filter Button (With Text) */}
               <button
                 type="button"
@@ -510,15 +489,7 @@ const Shop = () => {
               </DropdownMenu>
             </div>
           </div>
-          <div
-            className={`grid grid-cols-2 gap-x-2 gap-y-6 sm:gap-x-6 sm:gap-y-12 ${
-              cols === 2
-                ? "lg:grid-cols-2"
-                : cols === 3
-                ? "lg:grid-cols-3"
-                : "lg:grid-cols-3 xl:grid-cols-4"
-            }`}
-          >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-6 sm:gap-x-6 sm:gap-y-12 w-full">
             {products.map((p) => (
               <ProductCard key={p.slug} product={p} />
             ))}
@@ -559,11 +530,10 @@ const Shop = () => {
                       setCurrentPage(pageNum);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className={`w-9 h-9 inline-flex items-center justify-center text-[12px] ${
-                      isCurrent
-                        ? "bg-ink text-ink-soft font-semibold"
-                        : "border border-hairline text-ink/70 hover:border-ink"
-                    }`}
+                    className={`w-9 h-9 inline-flex items-center justify-center text-[12px] ${isCurrent
+                      ? "bg-ink text-ink-soft font-semibold"
+                      : "border border-hairline text-ink/70 hover:border-ink"
+                      }`}
                   >
                     {pageNum}
                   </button>

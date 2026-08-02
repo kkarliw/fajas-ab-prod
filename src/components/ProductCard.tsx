@@ -23,14 +23,17 @@ const tagLabels: Record<string, string> = {
 
 const ProductCard = ({ product }: { product: CatalogProduct }) => {
   const [wished, setWished] = useState(false);
+  const needsZoom = ["brasieres", "shorts", "accesorios", "cinturillas"].includes(product.category.toLowerCase());
+
   return (
-    <article className="product-card group relative">
-      <Link to={`/product/${product.slug}`} className="block relative overflow-hidden bg-cream-2 aspect-[3/4]">
+    <article className="product-card group relative w-full">
+      <Link to={`/product/${product.slug}`} className="block relative overflow-hidden bg-cream-2 aspect-[2/3]">
         {product.name ? (
           <LazyImage
             src={getProductImageUrl(product.gallery?.[0] ?? product.image, product.slug)}
             alt={product.name}
-            className={`product-image absolute inset-0 w-full h-full object-cover transition-all duration-500 ${product.isOutOfStock ? 'grayscale opacity-75' : ''}`}
+            className={`product-image absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ${needsZoom ? "scale-[1.15] group-hover:scale-[1.20]" : "group-hover:scale-105"
+              } ${product.isOutOfStock ? 'grayscale opacity-75' : ''}`}
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink/35 bg-cream-2">
@@ -44,9 +47,8 @@ const ProductCard = ({ product }: { product: CatalogProduct }) => {
           </span>
         ) : product.tag ? (
           <span
-            className={`absolute top-2 left-2 sm:top-3 sm:left-3 px-1.5 py-0.5 sm:px-2.5 sm:py-1 text-[8px] sm:text-[10px] uppercase tracking-[0.18em] font-body font-medium z-10 ${
-              tagStyles[product.tag] ?? "bg-ink text-ink-soft"
-            }`}
+            className={`absolute top-2 left-2 sm:top-3 sm:left-3 px-1.5 py-0.5 sm:px-2.5 sm:py-1 text-[8px] sm:text-[10px] uppercase tracking-[0.18em] font-body font-medium z-10 ${tagStyles[product.tag] ?? "bg-ink text-ink-soft"
+              }`}
           >
             {tagLabels[product.tag] ?? product.tag}
           </span>

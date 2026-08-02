@@ -87,9 +87,22 @@ export const orderService = {
 
     // 3. Create order, reserve stock, and delete cart in transaction
     const order = await prisma.$transaction(async (tx) => {
-      // Reserve stock
+      // Reserve stock with race-condition protection
       for (const item of cart.items) {
         if (!item.variantId) continue;
+
+        // Use raw query with FOR UPDATE to lock the row and prevent race conditions
+        const variants = await tx.$queryRaw<any[]>`SELECT stock, reservedStock FROM product_variants WHERE id = ${item.variantId} FOR UPDATE`;
+        const variant = variants[0];
+        
+        if (!variant) {
+          throw new Error("Variant not found");
+        }
+        
+        if (variant.stock - variant.reservedStock < item.quantity) {
+          throw new Error(`Lo sentimos, el producto ${item.product.name} se quedó sin stock justo ahora.`);
+        }
+
         await tx.productVariant.update({
           where: { id: item.variantId },
           data: { reservedStock: { increment: item.quantity } }
@@ -256,7 +269,14 @@ export const orderService = {
         const addressText = address ? [addressLine, cityLine, deptLine].filter(Boolean).join(", ") : "N/A";
 
         const itemsHtml = order.items.map(item => {
-          const imgUrl = item.product?.images?.[0]?.url || "";
+          let imgUrl = item.product?.images?.[0]?.url || "";
+          
+          // Fix relative URLs for email clients (they require absolute URLs)
+          if (imgUrl.startsWith('/')) {
+            const baseUrl = process.env.FRONTEND_URL || 'https://www.fajasab.com';
+            imgUrl = `${baseUrl.replace(/\/$/, '')}${imgUrl}`;
+          }
+          
           return `
           <div class="item-row clearfix" style="display: flex; align-items: center; margin-bottom: 15px;">
             ${imgUrl ? `<img src="${imgUrl}" alt="${item.nameSnapshot}" style="width: 60px; height: 80px; object-fit: cover; margin-right: 15px; border-radius: 4px; border: 1px solid #E5E5E5;">` : ''}
@@ -277,26 +297,26 @@ export const orderService = {
             <p class="order-title">Factura de Pedido #${order.reference}</p>
             ${itemsHtml}
             
-            <div class="totals clearfix" style="margin-top: 15px;">
-              <div class="totals-row clearfix">
-                <span class="totals-label">Subtotal</span>
-                <span class="totals-value">${formatPrice(order.subtotalCents)}</span>
-              </div>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 15px;">
+              <tr>
+                <td style="padding: 6px 0; font-size: 14px; color: #555555; text-align: left;">Subtotal</td>
+                <td style="padding: 6px 0; font-size: 14px; color: #1C1A17; text-align: right; font-weight: 600;">${formatPrice(order.subtotalCents)}</td>
+              </tr>
               ${order.discountCents > 0 ? `
-              <div class="totals-row clearfix" style="color: #2E7D32;">
-                <span class="totals-label">Descuento</span>
-                <span class="totals-value">-${formatPrice(order.discountCents)}</span>
-              </div>
+              <tr>
+                <td style="padding: 6px 0; font-size: 14px; color: #2E7D32; text-align: left;">Descuento</td>
+                <td style="padding: 6px 0; font-size: 14px; color: #2E7D32; text-align: right; font-weight: 600;">-${formatPrice(order.discountCents)}</td>
+              </tr>
               ` : ''}
-              <div class="totals-row clearfix">
-                <span class="totals-label">Envío</span>
-                <span class="totals-value">${formatPrice(order.shippingCents)}</span>
-              </div>
-              <div class="totals-row totals-grand clearfix">
-                <span class="totals-label" style="color: #1C1A17;">Total Pagado</span>
-                <span class="totals-value">${formatPrice(order.totalCents)}</span>
-              </div>
-            </div>
+              <tr>
+                <td style="padding: 6px 0; font-size: 14px; color: #555555; text-align: left;">Envío</td>
+                <td style="padding: 6px 0; font-size: 14px; color: #1C1A17; text-align: right; font-weight: 600;">${formatPrice(order.shippingCents)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0 0 0; font-size: 16px; color: #1C1A17; text-align: left; font-weight: 700; border-top: 1px solid #DDDDDD;">Total Pagado</td>
+                <td style="padding: 10px 0 0 0; font-size: 16px; color: #1C1A17; text-align: right; font-weight: 700; border-top: 1px solid #DDDDDD;">${formatPrice(order.totalCents)}</td>
+              </tr>
+            </table>
           </div>
           
           <div class="order-card" style="margin-top: 20px;">
@@ -305,10 +325,10 @@ export const orderService = {
           </div>
           
           <p class="text" style="text-align: center; margin-top: 25px;">
-            <a href="${process.env.FRONTEND_URL || 'https://www.fajasab.com'}/account" class="btn">Ver Estado de Mi Pedido</a>
+            <a href="${process.env.FRONTEND_URL || 'https://www.fajasab.com'}/track?reference=${order.reference}&email=${encodeURIComponent(order.email)}" class="btn">Rastrear Mi Pedido</a>
           </p>
         `;
-        const adminEmail = process.env.ADMIN_EMAIL || "amarantojimenezkari@gmail.com";
+        const adminEmail = process.env.ADMIN_EMAIL || "fajasabcol@gmail.com";
         const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
 
         const adminEmailContentHtml = `
@@ -399,7 +419,7 @@ export const orderService = {
         ${trackingInfo}
 
         <p class="text" style="text-align: center; margin-top: 24px;">
-          <a href="${frontendUrl}/account" style="color: #1C1A17; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em;">Ver Detalles en Mi Cuenta FAJAS AB</a>
+          <a href="${frontendUrl}/track?reference=${order.reference}&email=${encodeURIComponent(order.email)}" style="color: #1C1A17; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em;">Rastrear Mi Pedido en FAJAS AB</a>
         </p>
       `;
 

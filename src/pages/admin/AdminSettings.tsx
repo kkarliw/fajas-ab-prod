@@ -289,23 +289,44 @@ const AdminSettings = () => {
                       required
                     />
                   </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Código del Cupón a Mostrar</label>
-                    <select
-                      value={settings.promoPopup.couponCode}
-                      onChange={(e) => setSettings({ ...settings, promoPopup: { ...settings.promoPopup, couponCode: e.target.value } })}
-                      className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold font-mono"
-                      required
-                    >
-                      <option value="">-- Sin cupón o Seleccionar Cupón --</option>
-                      {activeCoupons.map((coupon: any) => (
-                        <option key={coupon.id} value={coupon.code}>
-                          {coupon.code} ({coupon.type === "percentage" ? `${coupon.discountValue}%` : `$${coupon.discountValue}`})
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-[10px] text-muted-foreground mt-1">El cupón seleccionado aparecerá cuando la persona deje su correo y le será enviado por email automáticamente.</p>
+                  <div className="sm:col-span-2 flex items-center justify-between py-3 border-t border-border/50 mt-2">
+                    <div>
+                      <h5 className="font-display text-sm font-bold uppercase tracking-wider text-ink">Entregar cupón de bienvenida</h5>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Si se activa, el usuario recibirá el cupón seleccionado en pantalla y por email.</p>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <span className="text-[11px] font-semibold uppercase">{settings.promoPopup.showCoupon ? 'Activado' : 'Desactivado'}</span>
+                      <div className="relative">
+                        <input 
+                          type="checkbox" 
+                          className="sr-only" 
+                          checked={settings.promoPopup.showCoupon || false}
+                          onChange={(e) => setSettings({ ...settings, promoPopup: { ...settings.promoPopup, showCoupon: e.target.checked } })}
+                        />
+                        <div className={`w-10 h-5 rounded-full transition-colors ${settings.promoPopup.showCoupon ? 'bg-gold' : 'bg-border'}`}></div>
+                        <div className={`absolute left-1 top-1 bg-white w-3 h-3 rounded-full transition-transform ${settings.promoPopup.showCoupon ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                      </div>
+                    </label>
                   </div>
+                  {settings.promoPopup.showCoupon && (
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5 font-semibold">Código del Cupón a Mostrar</label>
+                      <select
+                        value={settings.promoPopup.couponCode}
+                        onChange={(e) => setSettings({ ...settings, promoPopup: { ...settings.promoPopup, couponCode: e.target.value } })}
+                        className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm outline-none focus:border-gold font-mono"
+                        required
+                      >
+                        <option value="">-- Sin cupón o Seleccionar Cupón --</option>
+                        {activeCoupons.map((coupon: any) => (
+                          <option key={coupon.id} value={coupon.code}>
+                            {coupon.code} ({coupon.type === "percentage" ? `${coupon.value}%` : `$${coupon.value}`})
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] text-muted-foreground mt-1">El cupón seleccionado aparecerá cuando la persona deje su correo y le será enviado por email automáticamente.</p>
+                    </div>
+                  )}
                   <div className="sm:col-span-2 space-y-3">
                     <label className="block text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Imagen del Pop-up</label>
                     {settings.promoPopup.imageUrl ? (

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; padding: 0; }
+  .container-luxe { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; width: 100%; max-width: 1400px; margin: 0 auto; justify-items: center; } /* WAIT, DID I JUST GUESS justify-items: center?! */
+  .sidebar { background: red; height: 100px; width: 100%; }
+  .content { background: blue; width: 100%; min-width: 0; }
+  .inner-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  .item { background: green; height: 100px; }
+</style>
+</head>
+<body>
+<div class='container-luxe'>
+  <div class='sidebar'>Sidebar</div>
+  <div class='content'>
+    <div class='toolbar' style='display: flex; justify-content: space-between; background: yellow;'>
+      <span>2 de 2</span>
+      <span>Ordenar</span>
+    </div>
+    <div class='inner-grid'>
+      <div class='item'>Short</div>
+      <div class='item'>Short</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

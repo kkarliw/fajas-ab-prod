@@ -254,15 +254,21 @@ const Checkout = () => {
         throw new Error("El Widget de Wompi no ha cargado aún. Por favor intenta de nuevo en unos segundos.");
       }
 
-      // Abrir el Widget de Wompi con los datos generados por el backend
-      const checkout = new (window as any).WidgetCheckout({
+      const widgetConfig: any = {
         currency: paymentData.currency || "COP",
         amountInCents: paymentData.amountInCents,
         reference: paymentData.reference,
         publicKey: publicKey,
-        signature: { integrity: paymentData.integritySignature },
-        redirectUrl: `${window.location.origin}/checkout/success?ref=${encodeURIComponent(paymentData.reference)}`
-      });
+        signature: { integrity: paymentData.integritySignature }
+      };
+
+      // Wompi's WAF (CloudFront) blocks requests if redirectUrl contains localhost.
+      if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+        widgetConfig.redirectUrl = `${window.location.origin}/checkout/success?ref=${encodeURIComponent(paymentData.reference)}`;
+      }
+
+      // Abrir el Widget de Wompi con los datos generados por el backend
+      const checkout = new (window as any).WidgetCheckout(widgetConfig);
 
       checkout.open(async (result: any) => {
         const transaction = result?.transaction;

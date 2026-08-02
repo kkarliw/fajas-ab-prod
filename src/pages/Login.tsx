@@ -262,7 +262,9 @@ const Login = () => {
       } else {
         const { register } = await import("@/api/auth");
         await register({ name: form.name.trim(), email: form.email.trim(), password: form.password });
-        navigate(`/verify-email?email=${encodeURIComponent(form.email.trim())}`);
+        const redirectTo = searchParams.get("redirect");
+        const redirectParam = redirectTo ? `&redirect=${encodeURIComponent(redirectTo)}` : "";
+        navigate(`/verify-email?email=${encodeURIComponent(form.email.trim())}${redirectParam}`);
       }
     } catch (err: any) {
       const msg = err?.message || "Ocurrió un error. Intenta nuevamente.";

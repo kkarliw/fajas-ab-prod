@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import CartDrawer from "./components/CartDrawer.tsx";
+import { CookieBanner } from "./components/CookieBanner.tsx";
 
 import { CartProvider } from "./context/CartContext.tsx";
 import PrivateRoute from "./components/PrivateRoute.tsx";
@@ -27,9 +28,11 @@ const Login = lazy(() => import("./pages/Login.tsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Checkout = lazy(() => import("./pages/Checkout.tsx"));
+const CheckoutAuth = lazy(() => import("./pages/CheckoutAuth.tsx"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess.tsx"));
 const CheckoutError = lazy(() => import("./pages/CheckoutError.tsx"));
 const Account = lazy(() => import("./pages/Account.tsx"));
+const Track = lazy(() => import("./pages/Track.tsx"));
 const TestimonialCreate = lazy(() => import("./pages/TestimonialCreate.tsx"));
 
 // Admin pages
@@ -54,6 +57,7 @@ const App = () => (
         <CartProvider>
           <ScrollToTop />
           <CartDrawer />
+          <CookieBanner />
 
           <Suspense
             fallback = {
@@ -81,16 +85,12 @@ const App = () => (
               <Route path="/shipping" element={<ShippingReturns />} />
               <Route path="/login" element={<Login />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route
-                path="/checkout"
-                element={
-                  <PrivateRoute>
-                    <Checkout />
-                  </PrivateRoute>
-                }
-              />
+              <Route path="/checkout/auth" element={<CheckoutAuth />} />
+              <Route path="/checkout" element={<Checkout />} />
               <Route path="/checkout/success" element={<CheckoutSuccess />} />
               <Route path="/checkout/error" element={<CheckoutError />} />
+              <Route path="/track" element={<Track />} />
+              <Route path="/rastreo" element={<Track />} />
               <Route path="/testimonios/nuevo" element={<TestimonialCreate />} />
               <Route
                 path="/account"

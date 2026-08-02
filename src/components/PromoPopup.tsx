@@ -161,11 +161,17 @@ const PromoPopup = () => {
               ) : (
                 <motion.div className="text-center py-5 px-4 bg-cream-2 border border-gold-light/40 rounded-xl space-y-3">
                   <p className="text-sm font-semibold text-ink">¡Suscripción exitosa!</p>
-                  <p className="text-xs text-muted-foreground">Usa el siguiente cupón en tu checkout:</p>
-                  <div className="inline-block bg-background border border-dashed border-gold px-5 py-2 text-sm font-mono font-bold tracking-wider text-gold select-all rounded-md">
-                    {settings.promoPopup.couponCode}
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">Cópialo y aplícalo en el carrito.</p>
+                  {settings.promoPopup.showCoupon && settings.promoPopup.couponCode ? (
+                    <>
+                      <p className="text-xs text-muted-foreground">Usa el siguiente cupón en tu checkout:</p>
+                      <div className="inline-block bg-background border border-dashed border-gold px-5 py-2 text-sm font-mono font-bold tracking-wider text-gold select-all rounded-md">
+                        {settings.promoPopup.couponCode}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Cópialo y aplícalo en el carrito.</p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Estarás recibiendo nuestras novedades y ofertas exclusivas directamente en tu correo.</p>
+                  )}
                 </motion.div>
               )}
             </div>

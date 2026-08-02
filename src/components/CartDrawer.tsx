@@ -28,7 +28,15 @@ const CollapsiblePolicy = ({ title, children }: { title: string; children: React
   );
 };
 
+import { api } from "@/api";
+
 const CartDrawer = () => {
+  const { data: user } = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => api.auth.getMe(),
+    retry: false
+  });
+  const isAuthenticated = !!user;
   const { items, isOpen, closeCart, updateQty, removeItem, subtotal, count } = useCart();
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -332,7 +340,7 @@ const CartDrawer = () => {
             {items.length > 0 && (
               <footer className="border-t border-border px-5 sm:px-6 py-5 bg-background flex flex-col gap-3">
                 <Link
-                  to="/checkout"
+                  to={isAuthenticated ? "/checkout" : "/checkout/auth"}
                   onClick={closeCart}
                   className="block text-center bg-gold text-ink py-4 text-[11px] tracking-[0.25em] uppercase font-bold hover:bg-gold/90 transition-colors"
                 >

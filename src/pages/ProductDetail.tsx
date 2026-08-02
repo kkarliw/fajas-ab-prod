@@ -359,10 +359,12 @@ const ProductDetail = () => {
         <div className="space-y-6">
           <p className="eyebrow text-gold">{product.category}</p>
           <h1 className="font-display text-[36px] md:text-[48px] leading-[1.05]">{product.name}</h1>
-          <div className="flex items-center gap-2 text-[12px] text-ink/60">
-            <Check size={14} className="text-gold shrink-0" />
-            <span>{product.bullets.length} beneficios incluidos</span>
-          </div>
+          {product.bullets && product.bullets.length > 0 && (
+            <div className="flex items-center gap-2 text-[12px] text-ink/60">
+              <Check size={14} className="text-gold shrink-0" />
+              <span>{product.bullets.length} beneficios incluidos</span>
+            </div>
+          )}
           <p className="font-display text-[24px] text-ink">{formatCOP(product.price)}</p>
           {product.originalPrice && <p className="font-body text-[12px] text-ink/45 line-through">{formatCOP(product.originalPrice)}</p>}
 

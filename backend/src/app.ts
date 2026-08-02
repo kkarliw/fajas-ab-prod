@@ -24,6 +24,10 @@ export async function buildApp() {
       return reply.status(error.statusCode).send({ ok: false, error: error.message });
     }
 
+    if (error.name === "ZodError") {
+      return reply.status(400).send({ ok: false, error: error.message });
+    }
+
     const statusCode = error.statusCode || error.status || 500;
     const message = error.message || "Internal Server Error";
     app.log.error(error);

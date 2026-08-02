@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 export const paymentService = {
   getPaymentUrl(reference: string, amountCents: number, currency = 'COP') {
-    const publicKey = process.env.WOMPI_PUB_KEY || "pub_prod_R5wDypwYpfISMzlyXLCvWY9o9AXuknc6";
+    const publicKey = process.env.WOMPI_PUBLIC_KEY || "pub_prod_R5wDypwYpfISMzlyXLCvWY9o9AXuknc6";
     const integritySecret = process.env.WOMPI_INTEGRITY_SECRET || "prod_integrity_HzWj1T1BmjvwxnUrdIa0QpzMZrYwIEz3";
 
     // Generate integrity signature required by Wompi Widget

@@ -23,10 +23,12 @@ const confirmPaymentSchema = z.object({
 });
 
 export const ordersRoutes: FastifyPluginAsync = async (app) => {
-  app.post("/", async (request, reply) => {
-    const payload = createOrderSchema.parse(request.body);
-    
+  const checkoutRateLimit = { max: process.env.NODE_ENV !== "production" ? 100 : 10, timeWindow: "15 minutes" };
+
+  app.post("/", { config: { rateLimit: checkoutRateLimit } }, async (request, reply) => {
     try {
+      const payload = createOrderSchema.parse(request.body);
+      
       const order = await orderService.createOrderFromCart(
         payload.cartId,
         payload.email,
@@ -38,6 +40,7 @@ export const ordersRoutes: FastifyPluginAsync = async (app) => {
       );
       
       const paymentData = paymentService.getPaymentUrl(order.reference, order.totalCents);
+      console.log("PAYMENT DATA RETURNED TO FRONTEND:", paymentData);
       
       return sendSuccess(reply, { order, paymentUrl: paymentData }, 201);
     } catch (err: any) {
@@ -54,8 +57,8 @@ export const ordersRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    const payload = confirmPaymentSchema.parse(request.body);
     try {
+      const payload = confirmPaymentSchema.parse(request.body);
       await orderService.handlePaymentSuccess(payload.reference, payload.transactionId, payload.amountInCents);
       const order = await orderService.getOrderByIdOrReference(payload.reference);
       return sendSuccess(reply, { order });
@@ -65,8 +68,8 @@ export const ordersRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post("/decline-payment", async (request, reply) => {
-    const payload = confirmPaymentSchema.parse(request.body);
     try {
+      const payload = confirmPaymentSchema.parse(request.body);
       await orderService.handlePaymentFailure(payload.reference, payload.transactionId, payload.amountInCents);
       const order = await orderService.getOrderByIdOrReference(payload.reference);
       return sendSuccess(reply, { order });
@@ -101,7 +104,9 @@ export const ordersRoutes: FastifyPluginAsync = async (app) => {
     
     return sendSuccess(reply, order);
   });
-  app.get("/guest/:reference", async (request, reply) => {
+  const guestRateLimit = { max: process.env.NODE_ENV !== "production" ? 500 : 50, timeWindow: "15 minutes" };
+
+  app.get("/guest/:reference", { config: { rateLimit: guestRateLimit } }, async (request, reply) => {
     const { reference } = request.params as { reference: string };
     const { email } = request.query as { email?: string };
 

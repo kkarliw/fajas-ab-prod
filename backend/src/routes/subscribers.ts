@@ -43,28 +43,31 @@ export const subscribersRoutes: FastifyPluginAsync = async (app) => {
             });
 
             let couponHtml = "";
-            let promoCode = "BIENVENIDA10";
+            let promoCode = "";
 
             if (settingsBlock && settingsBlock.payloadJson) {
               const settings = settingsBlock.payloadJson as any;
-              if (settings?.promoPopup?.couponCode) {
+              if (settings?.promoPopup?.showCoupon && settings?.promoPopup?.couponCode) {
                 promoCode = settings.promoPopup.couponCode;
               }
             }
 
-            couponHtml = `
-              <div class="code-box">
-                <div class="code-value">${promoCode}</div>
-              </div>
-            `;
+            let messageHtml = `<p class="text">Como agradecimiento por suscribirte a nuestro boletín exclusivo, aquí tienes tu código de bienvenida especial para tu primera compra:</p>`;
+
+            if (promoCode) {
+              couponHtml = `
+                <div class="code-box">
+                  <div class="code-value">${promoCode}</div>
+                </div>
+              `;
+              messageHtml += `\n              ${couponHtml}\n              <p class="text">Ingresa este código durante el checkout para disfrutar de tu beneficio exclusivo.</p>`;
+            } else {
+              messageHtml = `<p class="text">Estarás recibiendo nuestras novedades y ofertas exclusivas directamente en tu bandeja de entrada.</p>`;
+            }
 
             const emailContentHtml = `
               <p class="text">¡Nos alegra darte la bienvenida a <strong>FAJAS AB</strong>!</p>
-              <p class="text">Como agradecimiento por suscribirte a nuestro boletín exclusivo, aquí tienes tu código de bienvenida especial para tu primera compra:</p>
-              
-              ${couponHtml}
-              
-              <p class="text">Ingresa este código durante el checkout para disfrutar de tu beneficio exclusivo.</p>
+              ${messageHtml}
               
               <p class="text" style="text-align: center; margin-top: 25px;">
                 <a href="${frontendUrl}/shop" class="btn">Explorar Colecciones en FAJAS AB</a>

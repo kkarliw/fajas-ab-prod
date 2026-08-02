@@ -139,7 +139,9 @@ const HeroSection = () => {
                   src={slide.imgLeft}
                   alt="Modelos FAJAS AB"
                   loading={isFirstSlide ? "eager" : "lazy"}
-                  fetchPriority={isFirstSlide ? "high" : "low"}
+                  fetchpriority={isFirstSlide ? "high" : "low"}
+                  width="800"
+                  height="1200"
                   className="absolute inset-0 w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
@@ -151,7 +153,9 @@ const HeroSection = () => {
                   src={slide.imgRight}
                   alt="Modelos FAJAS AB"
                   loading={isFirstSlide ? "eager" : "lazy"}
-                  fetchPriority={isFirstSlide ? "high" : "low"}
+                  fetchpriority={isFirstSlide ? "high" : "low"}
+                  width="800"
+                  height="1200"
                   className="absolute inset-0 w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/60 pointer-events-none" />
@@ -172,7 +176,7 @@ const HeroSection = () => {
             <video
               ref={videoPcRef}
               src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.mp4"
-              poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.jpg"
+              poster="https://res.cloudinary.com/v75tv7wk/video/upload/w_1200,f_auto,q_auto/v1/fajasab-hero/f0qk0yqswjkndcr6xlcz.jpg"
               muted
               loop
               playsInline
@@ -185,7 +189,7 @@ const HeroSection = () => {
             <video
               ref={videoMobileRef}
               src="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.mp4"
-              poster="https://res.cloudinary.com/v75tv7wk/video/upload/f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.jpg"
+              poster="https://res.cloudinary.com/v75tv7wk/video/upload/w_800,f_auto,q_auto/v1/fajasab-hero/fe0l5bi8qaltt15oxfgw.jpg"
               muted
               loop
               playsInline

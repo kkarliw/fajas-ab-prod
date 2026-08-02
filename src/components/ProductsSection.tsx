@@ -105,7 +105,7 @@ const ProductsSection = () => {
             ))}
           </div>
         </header>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-6 sm:gap-x-5 lg:gap-x-6 sm:gap-y-10 lg:gap-y-14 mt-12 min-h-[400px]">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-10 mt-12 min-h-[400px] w-full">
           {isLoading ? (
             <div className="col-span-full flex items-center justify-center">
               <span className="text-ink/50 uppercase tracking-widest text-xs">Cargando...</span>

@@ -5,6 +5,7 @@ export type PromoPopupSettings = {
   title: string;
   description: string;
   couponCode: string;
+  showCoupon?: boolean;
   imageUrl?: string;
 };
 

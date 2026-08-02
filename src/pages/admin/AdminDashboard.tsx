@@ -45,8 +45,8 @@ const AdminDashboard = () => {
   // Compute metrics from real backend stats
   const totalSales = stats?.totalRevenue || 0;
   const pendingOrdersCount = stats?.statusCounts?.pending || 0;
-  const activePqrsCount = 0; // We don't have PQR backend yet
-  const subsCount = 0; // We don't have subs backend yet
+  const activePqrsCount = stats?.activePqrsCount || 0;
+  const subsCount = stats?.subsCount || 0;
   const recentOrders = stats?.recentOrders || [];
 
   const getPaymentStatusBadge = (status: string) => {
@@ -66,22 +66,42 @@ const AdminDashboard = () => {
     switch (status) {
       case "delivered":
         return <CheckCircle size={14} className="text-[#4E8B70]" />;
-      case "shipped":
+      case "fulfilled":
         return <TrendingUp size={14} className="text-blue-500" />;
+      case "unfulfilled":
       case "pending":
         return <Clock size={14} className="text-[#C4A46A]" />;
       case "cancelled":
+      case "returned":
         return <XCircle size={14} className="text-[#8A3A2A]" />;
+      default:
+        return <Clock size={14} className="text-muted-foreground" />;
     }
   };
 
   const getShippingStatusText = (status: string): string => {
     switch (status) {
       case "delivered": return "Entregado";
-      case "shipped": return "Enviado";
+      case "fulfilled": return "Enviado";
+      case "unfulfilled":
       case "pending": return "Pendiente";
-      case "cancelled": return "Cancelado";
+      case "cancelled":
+      case "returned": return "Cancelado";
+      default: return status || "Pendiente";
     }
+  };
+
+  const getShortRef = (o: any) => {
+    if (o.reference && o.reference.startsWith("ORD-")) {
+      const parts = o.reference.split("-");
+      const lastPart = parts[parts.length - 1];
+      return `#AB-${lastPart.toUpperCase()}`;
+    }
+    if (o.reference && o.reference.length <= 10) {
+      return o.reference.startsWith("#") ? o.reference : `#${o.reference}`;
+    }
+    const cleanId = (o.id || o.reference || "").replace(/[^a-zA-Z0-9]/g, "");
+    return `#AB-${cleanId.slice(-6).toUpperCase()}`;
   };
 
   return (
@@ -158,7 +178,9 @@ const AdminDashboard = () => {
                 <tbody className="divide-y divide-hairline/5">
                   {recentOrders.map((order: any) => (
                     <tr key={order.id} className="hover:bg-cream-2/5 transition-colors">
-                      <td className="py-3.5 font-mono text-[12px] font-bold text-ink/80">{order.id}</td>
+                      <td className="py-3.5 font-mono text-[12px] font-bold text-ink/80" title={order.id}>
+                        {getShortRef(order)}
+                      </td>
                       <td className="py-3.5">
                         <div className="font-medium text-ink">{order.customerName}</div>
                         <div className="text-[11px] text-muted-foreground">{order.customerEmail}</div>

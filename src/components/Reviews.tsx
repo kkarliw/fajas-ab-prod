@@ -37,6 +37,7 @@ const Reviews = () => {
   }, []);
 
   useEffect(() => {
+    if (reviewsList.length === 0) return;
     const t = setInterval(() => {
       setI((x) => (x + 1) % reviewsList.length);
     }, 7000);
@@ -66,6 +67,8 @@ const Reviews = () => {
               className="absolute inset-0 w-full h-full object-cover"
               style={{ objectPosition: imagePositions[i] }}
               loading="lazy"
+              width="600"
+              height="800"
             />
           </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-r from-cream-2 via-cream-2/10 to-transparent lg:bg-gradient-to-r" />

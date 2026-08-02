@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Settings
 } from "lucide-react";
+import { api } from "@/api";
 
 type AdminLayoutProps = {
   children: React.ReactNode;
@@ -50,12 +51,13 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
     }
   }, []);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     try {
+      await api.auth.logout();
+    } catch {
+      // Fallback
       localStorage.removeItem("ab_session_v1");
       localStorage.removeItem("ab_access_token");
-    } catch {
-      // ignore
     }
     navigate("/");
   };

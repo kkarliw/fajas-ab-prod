@@ -5,6 +5,7 @@ import { prisma } from "../lib/prisma.js";
 import { sendSuccess } from "../utils/response.js";
 import { z } from "zod";
 import { orderService } from "../services/orderService.js";
+import sanitizeHtml from "sanitize-html";
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
   // All admin routes require authentication and admin role
@@ -53,9 +54,21 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       include: { user: true },
     });
 
+    // 5. Active PQRs
+    const activePqrsCount = await prisma.pqrTicket.count({
+      where: { status: { in: ["open", "in_progress"] } }
+    });
+
+    // 6. Active Subscribers
+    const subsCount = await prisma.newsletterSubscriber.count({
+      where: { status: "active" }
+    });
+
     return sendSuccess(reply, {
       totalRevenue,
       statusCounts,
+      activePqrsCount,
+      subsCount,
       lowStockAlerts: lowStockVariants.map((v) => ({
         id: v.id,
         productName: v.product.name,
@@ -69,9 +82,10 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         total: o.totalCents / 100,
         status: o.status,
         paymentStatus: o.paymentStatus,
-        shippingStatus: "pending", // we don't have shipping status in prisma yet, so we mock it
+        shippingStatus: o.status,
         createdAt: o.createdAt,
-        customerName: o.user?.name || "Guest",
+        customerName: o.customerName || o.user?.name || "Guest",
+        customerEmail: o.email || o.user?.email || "",
       })),
     });
   });
@@ -619,6 +633,15 @@ const parsePriceInput = (raw: any): number => {
     }
   });
 
+  const sanitizeQuill = (html: string) => sanitizeHtml(html, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img', 'h1', 'h2', 'span', 'u', 's', 'em' ]),
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      '*': ['class', 'style'],
+      'img': ['src', 'alt', 'width', 'height']
+    }
+  });
+
   app.post("/campaigns", async (request, reply) => {
     try {
       const data = z.object({
@@ -636,16 +659,16 @@ const parsePriceInput = (raw: any): number => {
         const { getBaseEmailTemplate } = await import("../utils/emailTemplate.js");
         const frontendUrl = process.env.FRONTEND_URL || "https://www.fajasab.com";
         
-        let title = data.subject;
-        let messageContent = data.content;
+        let title = sanitizeHtml(data.subject, { allowedTags: [], allowedAttributes: {} });
+        let messageContent = sanitizeQuill(data.content);
         let attachedProductHtml = "";
         let attachedCouponHtml = "";
 
         try {
           if (data.content.trim().startsWith("{")) {
             const parsed = JSON.parse(data.content);
-            if (parsed.title) title = parsed.title;
-            if (parsed.content) messageContent = parsed.content;
+            if (parsed.title) title = sanitizeHtml(parsed.title, { allowedTags: [], allowedAttributes: {} });
+            if (parsed.content) messageContent = sanitizeQuill(parsed.content);
 
             if (parsed.attachedProductSlugs && Array.isArray(parsed.attachedProductSlugs) && parsed.attachedProductSlugs.length > 0) {
               const prods = await prisma.product.findMany({

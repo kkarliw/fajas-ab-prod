@@ -171,6 +171,16 @@ export const authService = {
       }
     });
 
+    // Link guest orders automatically!
+    try {
+      await prisma.order.updateMany({
+        where: { email: user.email, userId: null },
+        data: { userId: user.id }
+      });
+    } catch (err) {
+      console.error("Failed to link guest orders on verify:", err);
+    }
+
     // Issue tokens to log them in directly
     const { accessToken, refreshToken } = issueTokens(user.id, user.role.name);
     if (typeof reply?.setCookie === "function") {

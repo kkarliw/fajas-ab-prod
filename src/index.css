@@ -11,8 +11,10 @@
 @layer base {
   :root {
     /* Brand surfaces */
-    --background: 40 22% 97%;          /* #FAF9F7 cream off-white */
-    --foreground: 30 9% 11%;           /* #1C1A17 near-black warm */
+    --background: 40 22% 97%;
+    /* #FAF9F7 cream off-white */
+    --foreground: 30 9% 11%;
+    /* #1C1A17 near-black warm */
 
     --card: 40 22% 97%;
     --card-foreground: 30 9% 11%;
@@ -21,36 +23,49 @@
     --popover-foreground: 30 9% 11%;
 
     /* Gold (primary accent) */
-    --primary: 36 41% 59%;             /* #C4A46A */
+    --primary: 36 41% 59%;
+    /* #C4A46A */
     --primary-foreground: 30 9% 11%;
 
-    --secondary: 40 32% 92%;           /* warm sand */
+    --secondary: 40 32% 92%;
+    /* warm sand */
     --secondary-foreground: 30 9% 11%;
 
     --muted: 40 18% 94%;
-    --muted-foreground: 33 10% 41%;    /* #7A7060 muted bronze */
+    --muted-foreground: 33 10% 41%;
+    /* #7A7060 muted bronze */
 
-    --accent: 40 50% 88%;              /* #E8D8B8 light gold */
+    --accent: 40 50% 88%;
+    /* #E8D8B8 light gold */
     --accent-foreground: 30 9% 11%;
 
-    --destructive: 12 52% 35%;         /* #8A3A2A burgundy */
+    --destructive: 12 52% 35%;
+    /* #8A3A2A burgundy */
     --destructive-foreground: 38 50% 90%;
 
-    --border: 30 8% 87%;               /* warm hairline */
+    --border: 30 8% 87%;
+    /* warm hairline */
     --input: 30 8% 87%;
     --ring: 36 41% 59%;
 
     --radius: 0px;
 
     /* Brand semantic */
-    --ink: 30 9% 11%;                  /* #1C1A17 */
-    --ink-soft: 38 40% 90%;            /* #F0E8D8 text on dark */
-    --gold: 36 41% 59%;                /* #C4A46A */
-    --gold-light: 40 50% 88%;          /* #E8D8B8 */
+    --ink: 30 9% 11%;
+    /* #1C1A17 */
+    --ink-soft: 38 40% 90%;
+    /* #F0E8D8 text on dark */
+    --gold: 36 41% 59%;
+    /* #C4A46A */
+    --gold-light: 40 50% 88%;
+    /* #E8D8B8 */
     --gold-dark: 34 35% 38%;
-    --cream: 40 22% 97%;               /* #FAF9F7 */
-    --cream-2: 35 26% 93%;             /* #F5F0E8 panels */
-    --hairline: 0 0% 0%;               /* used with /12 opacity */
+    --cream: 40 22% 97%;
+    /* #FAF9F7 */
+    --cream-2: 35 26% 93%;
+    /* #F5F0E8 panels */
+    --hairline: 0 0% 0%;
+    /* used with /12 opacity */
   }
 }
 
@@ -72,7 +87,13 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6, .font-display {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-display {
     font-family: 'Cormorant Garamond', 'Times New Roman', serif;
     font-weight: 300;
     letter-spacing: 0;
@@ -80,29 +101,72 @@
 }
 
 @layer utilities {
-  .font-display { font-family: 'Cormorant Garamond', serif; }
-  .font-body    { font-family: 'Jost', system-ui, sans-serif; }
+  .font-display {
+    font-family: 'Cormorant Garamond', serif;
+  }
 
-  .text-ink         { color: hsl(var(--ink)); }
-  .bg-ink           { background-color: hsl(var(--ink)); }
-  .text-ink-soft    { color: hsl(var(--ink-soft)); }
-  .bg-cream         { background-color: hsl(var(--cream)); }
-  .bg-cream-2       { background-color: hsl(var(--cream-2)); }
-  .text-gold        { color: hsl(var(--gold)); }
-  .bg-gold          { background-color: hsl(var(--gold)); }
-  .text-gold-light  { color: hsl(var(--gold-light)); }
-  .bg-gold-light    { background-color: hsl(var(--gold-light)); }
-  .border-gold      { border-color: hsl(var(--gold)); }
+  .font-body {
+    font-family: 'Jost', system-ui, sans-serif;
+  }
+
+  .text-ink {
+    color: hsl(var(--ink));
+  }
+
+  .bg-ink {
+    background-color: hsl(var(--ink));
+  }
+
+  .text-ink-soft {
+    color: hsl(var(--ink-soft));
+  }
+
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+
+  .bg-cream-2 {
+    background-color: hsl(var(--cream-2));
+  }
+
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+
+  .bg-gold {
+    background-color: hsl(var(--gold));
+  }
+
+  .text-gold-light {
+    color: hsl(var(--gold-light));
+  }
+
+  .bg-gold-light {
+    background-color: hsl(var(--gold-light));
+  }
+
+  .border-gold {
+    border-color: hsl(var(--gold));
+  }
 
   /* Hairline border used in section dividers and grids */
-  .border-hairline  { border-color: rgb(0 0 0 / 0.12); }
-  .bg-hairline      { background-color: rgb(0 0 0 / 0.12); }
-  .divide-hairline > * + * { border-color: rgb(0 0 0 / 0.12); }
+  .border-hairline {
+    border-color: rgb(0 0 0 / 0.12);
+  }
+
+  .bg-hairline {
+    background-color: rgb(0 0 0 / 0.12);
+  }
+
+  .divide-hairline>*+* {
+    border-color: rgb(0 0 0 / 0.12);
+  }
 
   /* Hide scrollbars utility */
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -116,6 +180,7 @@
     font-size: 11px;
     font-weight: 500;
   }
+
   .nav-label {
     font-family: 'Jost', system-ui, sans-serif;
     text-transform: uppercase;
@@ -129,22 +194,29 @@
     margin-inline: auto;
     padding-inline: 20px;
   }
+
   @media (min-width: 768px) {
-    .container-luxe { padding-inline: 40px; }
+    .container-luxe {
+      padding-inline: 40px;
+    }
   }
 
   .btn-gold {
     @apply inline-flex items-center justify-center gap-2 bg-gold-light text-ink uppercase tracking-[0.18em] text-[11px] font-medium px-7 py-4 transition-all duration-300 hover:bg-gold hover:tracking-[0.22em];
   }
+
   .btn-ink {
     @apply inline-flex items-center justify-center gap-2 bg-ink text-ink-soft uppercase tracking-[0.18em] text-[11px] font-medium px-7 py-4 transition-all duration-300 hover:bg-foreground/85 hover:tracking-[0.22em];
   }
+
   .btn-outline-ink {
     @apply inline-flex items-center justify-center gap-2 border border-ink text-ink uppercase tracking-[0.18em] text-[11px] font-medium px-7 py-4 transition-all duration-300 hover:bg-ink hover:text-ink-soft hover:tracking-[0.22em];
   }
+
   .btn-outline-light {
     @apply inline-flex items-center justify-center gap-2 border border-ink-soft/40 text-ink-soft uppercase tracking-[0.18em] text-[11px] font-medium px-7 py-4 transition-all duration-300 hover:bg-ink-soft hover:text-ink hover:tracking-[0.22em];
   }
+
   .hover-lift {
     @apply transition-transform duration-300 hover:-translate-y-0.5;
   }
@@ -156,15 +228,22 @@
   width: max-content;
   animation: ticker 40s linear infinite;
 }
+
 @keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 /* Underline reveal for nav links */
 .nav-link {
   position: relative;
 }
+
 .nav-link::after {
   content: "";
   position: absolute;
@@ -177,6 +256,7 @@
   transform-origin: right;
   transition: transform 0.35s ease;
 }
+
 .nav-link:hover::after,
 .nav-link[aria-current="page"]::after {
   transform: scaleX(1);
@@ -184,14 +264,24 @@
 }
 
 /* Product card hover */
-.product-card .product-image { transition: transform 0.7s ease; }
-.product-card:hover .product-image { transform: scale(1.03); }
+.product-card .product-image {
+  transition: transform 0.7s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.03);
+}
+
 .product-card .quick-cta {
   opacity: 0;
   transform: translateY(8px);
   transition: all 0.3s ease;
 }
-.product-card:hover .quick-cta { opacity: 1; transform: translateY(0); }
+
+.product-card:hover .quick-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* Outline display word used in footer */
 .outline-display {
@@ -203,7 +293,12 @@
 }
 
 /* Legal / long-form prose */
-.prose-luxe { color: hsl(var(--ink) / 0.78); font-size: 14px; line-height: 1.75; }
+.prose-luxe {
+  color: hsl(var(--ink) / 0.78);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
 .prose-luxe h2 {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 400;
@@ -213,6 +308,7 @@
   margin-top: 2.4rem;
   margin-bottom: 0.8rem;
 }
+
 .prose-luxe h3 {
   font-family: 'Jost', sans-serif;
   text-transform: uppercase;
@@ -223,26 +319,51 @@
   margin-top: 1.6rem;
   margin-bottom: 0.6rem;
 }
-.prose-luxe p { margin-bottom: 1rem; }
-.prose-luxe ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+
+.prose-luxe p {
+  margin-bottom: 1rem;
+}
+
+.prose-luxe ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1rem;
+}
+
 .prose-luxe ul li {
   position: relative;
   padding-left: 1.2rem;
   margin-bottom: 0.5rem;
 }
+
 .prose-luxe ul li::before {
   content: "—";
   position: absolute;
   left: 0;
   color: hsl(var(--gold));
 }
-.prose-luxe strong { color: hsl(var(--ink)); font-weight: 500; }
-.prose-luxe a { color: hsl(var(--gold-dark)); text-decoration: underline; text-underline-offset: 3px; }
+
+.prose-luxe strong {
+  color: hsl(var(--ink));
+  font-weight: 500;
+}
+
+.prose-luxe a {
+  color: hsl(var(--gold-dark));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
-  .ticker { animation: none; }
-  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  .ticker {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* Hide WebKit search clear icon to avoid duplicates with custom close button */
@@ -252,4 +373,3 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }
-
