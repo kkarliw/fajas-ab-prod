@@ -47,6 +47,9 @@ const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials.tsx
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.tsx"));
 
 const queryClient = new QueryClient();
+if (typeof window !== "undefined") {
+  (window as any).__queryClient = queryClient;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
