@@ -623,7 +623,15 @@ const AdminProducts = () => {
                           <input
                             type="checkbox"
                             checked={formData.isOutOfStock}
-                            onChange={(e) => setFormData({ ...formData, isOutOfStock: e.target.checked })}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setFormData({ 
+                                ...formData, 
+                                isOutOfStock: checked,
+                                // When un-checking agotado, restore stock to 10 if it was 0
+                                stock: !checked && formData.stock <= 0 ? 10 : (checked ? 0 : formData.stock)
+                              });
+                            }}
                             className="w-5 h-5 appearance-none border border-border rounded cursor-pointer bg-cream/5 checked:bg-red-600 checked:border-red-600 transition-all"
                           />
                           <svg className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white pointer-events-none transition-opacity ${formData.isOutOfStock ? 'opacity-100' : 'opacity-0'}`} viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">

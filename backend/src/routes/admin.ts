@@ -370,7 +370,13 @@ const parsePriceInput = (raw: any): number => {
 
       // 5. Update stock on ALL variants (runs after variants exist)
       if (data.isOutOfStock !== undefined) {
-        const newStock = data.isOutOfStock ? 0 : (data.stock ?? 10);
+        let newStock: number;
+        if (data.isOutOfStock) {
+          newStock = 0;
+        } else {
+          // Safety: if marking as available but stock is 0 or missing, default to 10
+          newStock = (data.stock && data.stock > 0) ? data.stock : 10;
+        }
         await prisma.productVariant.updateMany({
           where: { productId: id },
           data: { stock: newStock }
