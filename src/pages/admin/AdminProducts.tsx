@@ -15,6 +15,14 @@ import { api } from "@/api";
 import { formatCOP } from "@/data/catalog";
 import { toast } from "@/hooks/use-toast";
 
+const defaultCategories = [
+  { id: "cmrcbslex0003q277enepmagf", name: "Fajas" },
+  { id: "cmrcbsleb0000q277rvxvmscs", name: "Brasieres" },
+  { id: "cmrcbsles0002q277zo7bnmib", name: "Cinturillas" },
+  { id: "cmrcbslem0001q2775nv9n5d5", name: "Shorts" },
+  { id: "cmrcbslf20004q277mkcs5ayf", name: "Accesorios" },
+];
+
 const AdminProducts = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -63,6 +71,25 @@ const AdminProducts = () => {
     }
   });
 
+  const availableCategories = useMemo(() => {
+    if (Array.isArray(categories) && categories.length > 0) {
+      return categories;
+    }
+    return defaultCategories;
+  }, [categories]);
+
+  const resolveCategoryId = (p: any) => {
+    if (p?.categoryId) {
+      const found = availableCategories.find((c: any) => c.id === p.categoryId);
+      if (found) return found.id;
+    }
+    if (p?.category) {
+      const found = availableCategories.find((c: any) => c.name.toLowerCase() === String(p.category).toLowerCase());
+      if (found) return found.id;
+    }
+    return availableCategories[0]?.id || "";
+  };
+
   const createMutation = useMutation({
     mutationFn: (data: any) => api.admin.createProduct(data),
     onSuccess: () => {
@@ -103,7 +130,7 @@ const AdminProducts = () => {
       slug: p.slug,
       price: p.price,
       originalPrice: p.originalPrice ? String(p.originalPrice) : "",
-      categoryId: p.categoryId || (categories.length > 0 ? categories[0].id : ""),
+      categoryId: resolveCategoryId(p),
       material: p.material || "",
       description: p.description || "",
       sizes: Array.isArray(p.sizes) ? p.sizes.join(", ") : p.sizes || "",
@@ -130,7 +157,7 @@ const AdminProducts = () => {
       slug: duplicateSlug,
       price: p.price ?? (p.basePriceCents ? p.basePriceCents / 100 : ""),
       originalPrice: p.originalPrice ?? (p.compareAtPriceCents ? p.compareAtPriceCents / 100 : ""),
-      categoryId: p.categoryId || (categories.length > 0 ? categories[0].id : ""),
+      categoryId: resolveCategoryId(p),
       material: p.material || "",
       description: p.description || "",
       sizes: Array.isArray(p.sizes) ? p.sizes.join(", ") : p.sizes || "",
@@ -156,7 +183,7 @@ const AdminProducts = () => {
       slug: "",
       price: "",
       originalPrice: "",
-      categoryId: categories.length > 0 ? categories[0].id : "",
+      categoryId: availableCategories[0]?.id || "",
       material: "",
       description: "",
       sizes: "XS, S, M, L, XL",
@@ -301,7 +328,7 @@ const AdminProducts = () => {
           >
             <option value="all">Todas las Categorías</option>
             <option value="archived">Archivados</option>
-            {categories.map((c: any) => (
+            {availableCategories.map((c: any) => (
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}
           </select>
@@ -567,27 +594,31 @@ const AdminProducts = () => {
                     className="w-full h-10 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold"
                   />
                 </div>
-
-                {/* Status, Out of Stock, Category */}
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">
-                    Categoría y Etiqueta
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-4">
+                     {/* Categoría & Etiqueta */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:col-span-2">
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">
+                      Categoría
+                    </label>
                     <select
                       value={formData.categoryId}
                       onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                      className="w-full sm:w-1/2 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
+                      className="w-full h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
                     >
-                      {categories.map((c: any) => (
+                      {availableCategories.map((c: any) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </select>
+                  </div>
 
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] uppercase tracking-[0.18em] font-semibold text-foreground/70">
+                      Etiqueta (Tag)
+                    </label>
                     <select
                       value={formData.tag}
                       onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
-                      className="w-full sm:w-1/2 h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
+                      className="w-full h-11 px-3 bg-background border border-border rounded text-sm outline-none focus:border-gold font-medium"
                     >
                       <option value="">Sin etiqueta</option>
                       <option value="bestseller">Bestseller</option>
@@ -597,6 +628,7 @@ const AdminProducts = () => {
                       <option value="low_stock">Pocas Unidades</option>
                     </select>
                   </div>
+                </div>
                   
                   {/* Stock & Agotado Controls */}
                   <div className="grid sm:grid-cols-2 gap-4 pt-2">
@@ -647,7 +679,6 @@ const AdminProducts = () => {
                       </label>
                     </div>
                   </div>
-                </div>
 
                 {/* Material */}
                 <div className="space-y-1.5">
