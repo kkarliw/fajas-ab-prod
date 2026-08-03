@@ -9,27 +9,50 @@ import img3 from "@/assets/Fajas AB/fotos grupales/_A9A4477.jpg";
 
 const imagePositions = ["center 18%", "center 22%", "center 12%"] as const;
 
+const defaultReviews = [
+  {
+    quote: "La faja Ariadna es de otro mundo. Cómoda, no se marca en la ropa y comprime justo lo necesario. ¡Súper recomendada!",
+    author: "MILENA GÓMEZ",
+    meta: "★★★★★",
+    image: img1,
+    source: "store"
+  },
+  {
+    quote: "Excelente atención por WhatsApp y la calidad de las prendas es impecable. El bra Emy es súper suave para el postquirúrgico.",
+    author: "SANDRA V.",
+    meta: "★★★★★",
+    image: img2,
+    source: "store"
+  },
+  {
+    quote: "Llegó súper rápido a Medellín. La tabla abdominal y la faja me ayudaron muchísimo en mi recuperación. 10/10.",
+    author: "VALENTINA RESTREPO",
+    meta: "★★★★★",
+    image: img3,
+    source: "store"
+  }
+];
+
 const Reviews = () => {
-  const [reviewsList, setReviewsList] = useState<any[]>([]);
+  const [reviewsList, setReviewsList] = useState<any[]>(defaultReviews);
   const [i, setI] = useState(0);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const res = await api.testimonials.getTestimonials();
-        const mapped = res.map((t: any, idx: number) => ({
-          quote: t.content,
-          author: t.name.toUpperCase(),
-          meta: `${"★".repeat(t.rating)}`,
-          image: idx % 3 === 0 ? img1 : idx % 3 === 1 ? img2 : img3,
-          source: t.source
-        }));
-        
-        if (mapped.length > 0) {
+        if (Array.isArray(res) && res.length > 0) {
+          const mapped = res.map((t: any, idx: number) => ({
+            quote: t.content,
+            author: t.name.toUpperCase(),
+            meta: `${"★".repeat(t.rating)}`,
+            image: idx % 3 === 0 ? img1 : idx % 3 === 1 ? img2 : img3,
+            source: t.source
+          }));
           setReviewsList(mapped);
         }
       } catch {
-        // Handle error silently
+        // Keeps defaultReviews if backend is offline or sleeping
       }
     };
     

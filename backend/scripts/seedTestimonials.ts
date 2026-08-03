@@ -1,46 +1,28 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../src/lib/prisma.js";
 
-const prisma = new PrismaClient();
+const initialTestimonials = [
+  { name: "Milena Gómez", rating: 5, content: "La faja Ariadna es de otro mundo. Cómoda, no se marca en la ropa y comprime justo lo necesario. ¡Súper recomendada!", status: "approved" as const, source: "store" },
+  { name: "Sandra V.", rating: 5, content: "Excelente atención por WhatsApp y la calidad de las prendas es impecable. El bra Emy es súper suave para el postquirúrgico.", status: "approved" as const, source: "store" },
+  { name: "Valentina Restrepo", rating: 5, content: "Llegó súper rápido a Medellín. La tabla abdominal y la faja me ayudaron muchísimo en mi recuperación. 10/10.", status: "approved" as const, source: "store" },
+  { name: "Carolina Mendoza", rating: 5, content: "Increíble la calidad del Powernet. Llevo 3 meses usándola a diario y conserva su compresión firme como el primer día.", status: "approved" as const, source: "store" },
+  { name: "Diana Paola Ortiz", rating: 5, content: "El diseño levanta glúteos de la faja es espectacular. Moldea una silueta increíble sin lastimar.", status: "approved" as const, source: "store" },
+  { name: "María Fernanda R.", rating: 5, content: "Compré la cinturilla y el bra postquirúrgico. La atención al cliente me asesoró perfectamente con la talla antes de comprar.", status: "approved" as const, source: "store" }
+];
 
 async function main() {
-  const testimonials = [
-    {
-      name: "MARÍA CAMILA R.",
-      rating: 5,
-      content: "La calidad es incomparable. Llevo 6 meses usándola a diario y sigue como nueva. Moldea sin incomodar, es como una segunda piel.",
-      source: "store",
-      status: "approved"
-    },
-    {
-      name: "VALENTINA T.",
-      rating: 5,
-      content: "Por fin una faja que no se enrolla ni aprieta de más. Diseño impecable y la atención de AB fue excepcional.",
-      source: "store",
-      status: "approved"
-    },
-    {
-      name: "SARA M.",
-      rating: 5,
-      content: "La uso después de mi cirugía y la diferencia se siente desde el primer día. Cómoda, firme y con un acabado de lujo.",
-      source: "store",
-      status: "approved"
-    }
-  ];
-
-  for (const t of testimonials) {
-    await prisma.testimonial.create({
-      data: t
-    });
-  }
+  const existing = await prisma.testimonial.findMany();
+  console.log(`Current testimonials in DB: ${existing.length}`);
   
-  console.log("Testimonials seeded successfully!");
+  if (existing.length === 0) {
+    for (const t of initialTestimonials) {
+      await prisma.testimonial.create({ data: t });
+    }
+    console.log("Successfully seeded 6 approved initial testimonials into DB!");
+  } else {
+    console.log("Testimonials already exist in database.");
+  }
 }
 
 main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => console.error(e))
+  .finally(() => prisma.$disconnect());
