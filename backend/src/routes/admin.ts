@@ -210,6 +210,33 @@ const parsePriceInput = (raw: any): number => {
   return Math.min(val, 50000000);
 };
 
+async function resolveCategoryIdInDb(categoryId?: string, categoryName?: string): Promise<string> {
+  if (categoryId) {
+    const existing = await prisma.category.findUnique({ where: { id: categoryId } });
+    if (existing) return existing.id;
+  }
+  const allCats = await prisma.category.findMany();
+  if (categoryName && allCats.length > 0) {
+    const target = categoryName.trim().toLowerCase();
+    const found = allCats.find(c => c.name.toLowerCase() === target || c.slug.toLowerCase() === target);
+    if (found) return found.id;
+  }
+  if (allCats.length > 0) return allCats[0].id;
+  
+  const created = await prisma.category.create({
+    data: { name: "Accesorios", slug: "accesorios", description: "Accesorios varios" }
+  });
+  return created.id;
+}
+
+function parseArrayOrCsv(val: any, defaultVal: string[]): string[] {
+  if (Array.isArray(val) && val.length > 0) return val.map(s => String(s).trim()).filter(Boolean);
+  if (typeof val === "string" && val.trim().length > 0) {
+    return val.split(",").map(s => s.trim()).filter(Boolean);
+  }
+  return defaultVal;
+}
+
   app.post("/products", async (request, reply) => {
     try {
       const data = request.body as any;
@@ -218,13 +245,13 @@ const parsePriceInput = (raw: any): number => {
         return reply.status(400).send({ ok: false, error: "El campo 'name' es requerido." });
       }
 
-      const categoryId = data.categoryId;
-      if (!categoryId) {
-        return reply.status(400).send({ ok: false, error: "El campo 'categoryId' es requerido." });
-      }
+      const categoryId = await resolveCategoryIdInDb(data.categoryId, data.category);
 
       const pricePesos = parsePriceInput(data.price);
       const priceCents = Math.round(pricePesos * 100);
+
+      const sizesArr = parseArrayOrCsv(data.sizes, ["U"]);
+      const colorsArr = parseArrayOrCsv(data.colors, ["Base"]);
 
       // Only persist real URLs — reject base64 data: URIs (too large for VARCHAR)
       const validImages = Array.isArray(data.images) 
@@ -247,8 +274,8 @@ const parsePriceInput = (raw: any): number => {
           status: data.status || "draft",
           tag: data.tag || null,
           variants: {
-            create: (data.sizes && data.sizes.length > 0 ? data.sizes : ["U"]).flatMap((s: string) => 
-              (data.colors && data.colors.length > 0 ? data.colors : ["Base"]).map((c: string) => ({
+            create: sizesArr.flatMap((s: string) => 
+              colorsArr.map((c: string) => ({
                 sku: `SKU-${Math.random().toString(36).substring(7).toUpperCase()}-${s}-${c}`,
                 stock: data.isOutOfStock ? 0 : (data.stock ?? 10),
                 priceCents: priceCents,
@@ -282,6 +309,7 @@ const parsePriceInput = (raw: any): number => {
     try {
       const pricePesos = parsePriceInput(data.price);
       const priceCents = Math.round(pricePesos * 100);
+      const resolvedCategoryId = await resolveCategoryIdInDb(data.categoryId, data.category);
 
       // 1. Update the product record itself
       await prisma.product.update({
@@ -299,7 +327,7 @@ const parsePriceInput = (raw: any): number => {
           seoDescription: data.seoDescription,
           status: data.status,
           tag: data.tag || null,
-          categoryId: data.categoryId || undefined,
+          categoryId: resolvedCategoryId,
         }
       });
 
@@ -326,8 +354,8 @@ const parsePriceInput = (raw: any): number => {
       }
 
       // 4. Ensure variants exist — create missing size/color combos FIRST
-      const sizesArr = Array.isArray(data.sizes) && data.sizes.length > 0 ? data.sizes : ["Única"];
-      const colorsArr = Array.isArray(data.colors) && data.colors.length > 0 ? data.colors : ["Cocoa"];
+      const sizesArr = parseArrayOrCsv(data.sizes, ["Única"]);
+      const colorsArr = parseArrayOrCsv(data.colors, ["Cocoa"]);
       
       const currentVariants = await prisma.productVariant.findMany({ where: { productId: id } });
       
