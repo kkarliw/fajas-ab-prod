@@ -37,7 +37,31 @@ async function ensureAdminUsers() {
   }
 }
 
+async function ensureInitialTestimonials() {
+  try {
+    const { prisma } = await import("./lib/prisma.js");
+    const count = await prisma.testimonial.count();
+    if (count === 0) {
+      const initialTestimonials = [
+        { name: "Milena Gómez", rating: 5, content: "La faja Ariadna es de otro mundo. Cómoda, no se marca en la ropa y comprime justo lo necesario. ¡Súper recomendada!", status: "approved" as const, source: "store" },
+        { name: "Sandra V.", rating: 5, content: "Excelente atención por WhatsApp y la calidad de las prendas es impecable. El bra Emy es súper suave para el postquirúrgico.", status: "approved" as const, source: "store" },
+        { name: "Valentina Restrepo", rating: 5, content: "Llegó súper rápido a Medellín. La tabla abdominal y la faja me ayudaron muchísimo en mi recuperación. 10/10.", status: "approved" as const, source: "store" },
+        { name: "Carolina Mendoza", rating: 5, content: "Increíble la calidad del Powernet. Llevo 3 meses usándola a diario y conserva su compresión firme como el primer día.", status: "approved" as const, source: "store" },
+        { name: "Diana Paola Ortiz", rating: 5, content: "El diseño levanta glúteos de la faja es espectacular. Moldea una silueta increíble sin lastimar.", status: "approved" as const, source: "store" },
+        { name: "María Fernanda R.", rating: 5, content: "Compré la cinturilla y el bra postquirúrgico. La atención al cliente me asesoró perfectamente con la talla antes de comprar.", status: "approved" as const, source: "store" }
+      ];
+      for (const t of initialTestimonials) {
+        await prisma.testimonial.create({ data: t });
+      }
+      console.log("✅ Initial approved testimonials ensured in database.");
+    }
+  } catch (err) {
+    console.error("⚠️ Failed to ensure initial testimonials:", err);
+  }
+}
+
 await ensureAdminUsers();
+await ensureInitialTestimonials();
 
 const app = await buildApp();
 
